@@ -26,7 +26,8 @@ etc.
 
 ### Example
 There is a slice of data which OSBuild got from my Android phone:
-`android.view.Display.
+```
+android.view.Display.
    getRealSize().
       x: 1080  360.0dp
       y: 1920  640.0dp
@@ -48,7 +49,8 @@ android.content.res.Configuration.
    locale: zh_CN  SIMPLIFIED_CHINESE CHINA PRC
 Extra:
    Width-height Ratio: 9:16  FHD
-   Diagonal Size: 4.92"`
+   Diagonal Size: 4.92"
+```
 
 ### Donate
 Not financially.
