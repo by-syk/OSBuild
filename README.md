@@ -25,9 +25,9 @@ A simple UI and some nice features make it great tool especially for Android dev
 etc.
 
 ### Donate
-Not financially.
+`Not financially.
 Just **Share the Page** to me by E-mail. As you can see, only some hardware info about the device (**NO PRIVACY**).
-I'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you.
+I'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you.`
 
 Meet a new device and want to figure its info out? Install **OSBuild** and **Share the Page**. OK, you've got it.
 
