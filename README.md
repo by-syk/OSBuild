@@ -26,36 +26,34 @@ etc.
 
 ### Example
 There is a slice of data which OSBuild got from my Android phone:
-```
-android.view.Display.
-   getRealSize().
-      x: 1080  360.0dp
-      y: 1920  640.0dp
-   getRefreshRate(): 60.0
-   getRotation(): 0  ROTATION_0
-android.util.DisplayMetrics.
-   density: 3.0
-   densityDpi: 480  DENSITY_XXHDPI
-   widthPixels: 1080  360.0dp
-   heightPixels: 1920  640.0dp
-   xdpi: 449.704  2.40"
-   ydpi: 447.412  4.29"
-android.content.res.Configuration.
-   screenWidthDp: 360
-   screenHeightDp: 620
-   orientation: 1  ORIENTATION_PORTRAIT
-   fontScale: 1.0
-   screenLayout & 15: 2  SCREENLAYOUT_SIZE_NORMAL  Handset
-   locale: zh_CN  SIMPLIFIED_CHINESE CHINA PRC
-Extra:
-   Width-height Ratio: 9:16  FHD
-   Diagonal Size: 4.92"
-```
+		android.view.Display.
+		   getRealSize().
+		      x: 1080  360.0dp
+		      y: 1920  640.0dp
+		   getRefreshRate(): 60.0
+		   getRotation(): 0  ROTATION_0
+		android.util.DisplayMetrics.
+		   density: 3.0
+		   densityDpi: 480  DENSITY_XXHDPI
+		   widthPixels: 1080  360.0dp
+		   heightPixels: 1920  640.0dp
+		   xdpi: 449.704  2.40"
+		   ydpi: 447.412  4.29"
+		android.content.res.Configuration.
+		   screenWidthDp: 360
+		   screenHeightDp: 620
+		   orientation: 1  ORIENTATION_PORTRAIT
+		   fontScale: 1.0
+		   screenLayout & 15: 2  SCREENLAYOUT_SIZE_NORMAL  Handset
+		   locale: zh_CN  SIMPLIFIED_CHINESE CHINA PRC
+		Extra:
+		   Width-height Ratio: 9:16  FHD
+		   Diagonal Size: 4.92"
 
 ### Donate
-		Not financially.
-		Just **Share the Page** to me by E-mail. As you can see, only some hardware info about the device (**NO PRIVACY**).
-		I'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you.
+Not financially.
+> Just **Share the Page** to me by E-mail. As you can see, only some hardware info about the device (**NO PRIVACY**).
+> I'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you.
 
 ### Besides...
 Meet a new device and want to figure its info out? Install **OSBuild** and **Share the Page**. OK, you've got it.
