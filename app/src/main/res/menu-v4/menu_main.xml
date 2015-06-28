@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="@string/action_share"
+        android:icon="@android:drawable/ic_menu_share">
+
+        <menu>
+
+            <item
+                android:id="@+id/action_sub_share_text"
+                android:title="@string/action_sub_share_text"/>
+
+            <item
+                android:id="@+id/action_sub_share_app"
+                android:title="@string/action_sub_share_app"/>
+
+        </menu>
+
+    </item>
+    
+    <item
+        android:id="@+id/action_const"
+        android:title="@string/action_const"
+        android:icon="@android:drawable/ic_menu_help"/>
+
+    <item
+        android:id="@+id/action_sys_files"
+        android:title="@string/action_sys_files"
+        android:icon="@android:drawable/ic_menu_view"/>
+
+    <item
+        android:id="@+id/action_sys_settings"
+        android:title="@string/action_sys_settings"
+        android:icon="@android:drawable/ic_menu_preferences"/>
+    
+    <item
+        android:id="@+id/action_donate"
+        android:title="@string/action_donate"
+        android:icon="@android:drawable/ic_menu_send"/>
+
+</menu>

@@ -1,0 +1,82 @@
+v1.2.0.nightly 2015-06-28
+Add warning dialog before reading "wpa_supplicant.conf".
+
+v1.2.0.nightly 2015-06-27
+Update "desc.txt".
+Open sources on GitHub and add button "GitHub" in dialog "Donate" to link to https://github.com/by-syk/OSBuild.
+Add option "bootprof" for devices with MTK chip in menu option "View System Files".
+Remove option "scaling_available_frequencies" in menu option "View System Files".
+Remove option "version" in menu option "System Settings".
+Add the node "Settings.Secure" in Telephony Module.
+
+v1.2.0.nightly 2015-06-24
+Add option "MIUI Cit" for Xiaomi devices in menu option "System Settings".
+Fix crash issue when showing description dialog (Activity has been destroyed).
+
+v1.2.0.nightly 2015-06-23
+Cut down padding in land layout.
+
+v1.2.0.nightly 2015-06-22
+Show description about OSBuild when launching firstly.
+Add option "wpa_supplicant.conf" in menu option "View System Files". (Need su permission.)
+Add the node "StorageManager" in Memory Module.
+Add the line "getNetworkType()" in TelephonyManager Module.
+Add option "scaling_available_frequencies" in menu option "View System Files".
+Make a distinction between file and folder, like /x/y/ (folder), /x/y (file).
+
+v1.1.9.nightly 2015-06-21
+Log launching times.
+Add some new resolution format after the line "Width-height Ratio" in Display Module.
+
+v1.1.8.nightly 2015-06-20
+Add mark like "wT" in the file name to indicate that the Telephony info is included.
+Fix issue in option "Memory Module" in menu option "Constant Reference".
+Remove value (double) after the line "Width-height Ratio" in Display Module.
+
+v1.1.7.nightly 2015-06-14
+Add Google Install Stats to "Constant Reference", including Platform Versions, Screen Sizes and Densities, Open GL Version.
+Add the line "reqGlEsVersion" after the node after the node "ActivityManager" in Memory Module.
+Remove the line "screenLayout & 48" after the node "Configuration" in Display Module.
+
+v1.1.7.nightly 2015-06-13
+Remove lines "kernel version" and "baseband version" in Build Module.
+
+v1.1.6.nightly 2015-06-12
+Add lines "kernel version" and "baseband version" in Build Module.
+Fix wrong Processor info issue after the node "/proc/cpuinfo" in CPU Module. (In Model M463C, it's "model name", not "Processor".)
+"Share" with "subject" (just file name).
+
+v1.1.5.nightly 2015-06-11
+Add "ic_menu_share.png" icons in "/mipmap-v21/".
+Fix wrong device type to "SCREENLAYOUT_SIZE_LARGE" issue after the line "screenLayout & 15" in Display Module.
+
+v1.1.4.nightly 2015-06-10
+Remove the line "Device Type" and add the line "screenLayout & 15" after the node "Configuration" in Display Module.
+Apply the style used in the page to "Donate" dialog.
+Add the line "screenLayout & 48" after the node "Configuration" in Display Module.
+Fix lost Package Module in shared text file issue.
+Remove the second puzzled value after the line "Diagonal Size" in Display Module.
+
+v1.1.3.nightly 2015-06-09
+Fix lost "DENSITY_280" issue after the line "densityDpi" in Display Module.
+Fix lost "MEDIA_UNMOUNTABLE" issue after the line "getExternalStorageState()" in Memory Module.
+Fix lost "TYPE_ALL" issue after "getSensorList()" in Sensor Module.
+Finish menu option "Constant Reference".
+Remove vertical mark "+" added in v1.1.1.nightly.
+Add another width-height ratio after the line "Width-height Ratio" in Display Module.
+Use round-off methed somewhere.
+
+v1.1.2.nightly 2015-06-08
+Add resolution format (like: HVGA) after the line "Width-height Ratio".
+Add "changelog.txt" located in "/assets/".
+Fix mistaken release date of "ECLAIR", "ECLAIR_0_1" issue after "SDK_INT" in Build Module.
+Add menu option "Constant Reference" to list all constants used. Unfinished.
+
+v1.1.1.nightly 2015-06-07
+Fix mistaken space issue.
+Add more mark "+".
+
+v1.1.0 2015-06-06
+Initial release.
+Based on OSBild(com.By_syk.OSBuild) finished and lost unexpectedly in this winter vocation.
+Modules: Build, Display, Telephony, CPU, Memory, Package, Sensor, SuperSu, Time and About.

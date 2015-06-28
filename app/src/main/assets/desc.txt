@@ -1,4 +1,4 @@
-# OSBuild - FOR ANDROID DEVELOPERS
+OSBuild - FOR ANDROID DEVELOPERS
 
 Ever wanted to peek inside and know more about your device? Well, OSBuild, a simple, lightweight, clean and beautiful app, meets your needs. And it works on all phones running Android 2.2 and above!
 

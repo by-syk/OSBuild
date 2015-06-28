@@ -1,0 +1,16 @@
+/app/src/main/assets/link.txt
+/app/build
+/app/app.iml
+/.git
+/.gradle
+/.idea
+/build
+/gradle
+gradlew
+gradlew.bat
+OSBuild.codelines
+OSBuild.iml
+build.gradle
+settings.gradle
+gradle.properties
+local.properties

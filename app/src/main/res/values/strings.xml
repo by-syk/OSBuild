@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">OSBuild</string>
+    <string name="copyright">Copyright \u00a9 2015 By_syk. All rights reserved.</string>
+    <string name="my_email">shi201107201409@163.com</string>
+    
+    <string name="dia_title_with_tel">With Telephony Info?</string>
+    <string name="dia_title_const">Constant Reference</string>
+    <string name="dia_title_sys_files">View System Files</string>
+    <string name="dia_title_sys_settings">System Settings</string>
+    <string name="dia_title_donate">Donate</string>
+    <string name="dia_title_about">What\'s OSBuild?</string>
+    <string name="dia_title_warning">Warning</string>
+    <string name="dia_pos_ok">OK</string>
+    <string name="dia_pos_continue">Continue</string>
+    <string name="dia_neg_cancel">Cancel</string>
+    <string name="dia_pos_yes">Yes</string>
+    <string name="dia_neg_no">No</string>
+    <string name="dia_neu_github">GitHub</string>
+    <string name="dia_su_desc">
+"OSBuild need get root permission to read this file, are you sure to continue?
+\nNotice: OSBuild just do what should do with root permission."</string>
+    
+    <string name="share_via">Share via&#8230;</string>
+    <string name="copied">Developer\'s E-mail address has been copied.</string>
+    <string name="not_show">Don\'t show again.</string>
+    
+    <string name="action_share">Share</string>
+    <string name="action_sub_share_text">Share the Page</string>
+    <string name="action_sub_share_app">Share OSBuild</string>
+    <string name="action_const">Constant Reference</string>
+    <string name="action_sys_files">View System Files</string>
+    <string name="action_sys_settings">System Settings</string>
+    <string name="action_donate">Donate</string>
+    
+    <string name="donate_desc">
+"Not financially.
+\nJust \"Share the Page\" to me by E-mail. As you can see, only some hardware info about the device (No Privicy).
+\nI'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you."</string>
+    
+</resources>

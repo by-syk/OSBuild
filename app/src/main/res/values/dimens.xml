@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <dimen name="space_line">6dp</dimen>
+    <dimen name="space_block">36dp</dimen>
+    <dimen name="space_block_top">21dp</dimen>
+    <dimen name="space_block_bottom">15dp</dimen>
+    <dimen name="padding_page">4dp</dimen>
+    <dimen name="padding_dialog">8dp</dimen>
+    
+</resources>

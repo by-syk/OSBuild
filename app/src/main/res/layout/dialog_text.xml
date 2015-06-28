@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:layout_width="wrap_content"
+    android:padding="@dimen/padding_dialog">
+
+	<ScrollView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
+
+		<com.by_syk.osbuild.widget.MyTextView
+			android:id="@+id/tv_text"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			style="@style/Text"
+			android:padding="@dimen/padding_page"/>
+
+	</ScrollView>
+
+</RelativeLayout>
+
