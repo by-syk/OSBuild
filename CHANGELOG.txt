@@ -1,5 +1,7 @@
 v1.2.0.nightly 2015-06-28
 Add warning dialog before reading "wpa_supplicant.conf".
+Fix API level issue: android:textIsSelectable requires API level 11.
+Fix API level issue: StorageMnager requires API level 11.
 
 v1.2.0.nightly 2015-06-27
 Update "desc.txt".

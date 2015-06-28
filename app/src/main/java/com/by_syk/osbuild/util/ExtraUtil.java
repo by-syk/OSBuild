@@ -22,10 +22,6 @@ import android.os.Build;
 import java.util.Locale;
 import java.text.DecimalFormat;
 import java.io.PrintWriter;
-import android.telephony.TelephonyManager;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import android.text.TextUtils;
 
 public class ExtraUtil
 {
@@ -394,7 +390,7 @@ public class ExtraUtil
         
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("/proc/cpuinfo");
-        //少数机型会使用“model name”而不是“Processir”，如魅蓝Note
+        //少数机型会使用“model name”而不是“Processor”，如魅蓝Note
         if (text.contains("model name"))
         {
             int index = text.indexOf("model name");
@@ -470,12 +466,12 @@ public class ExtraUtil
     /**
      * 化简宽高比（比值）
      */
-    public static String getWHRatio(int width, int height)
+    /*public static String getWHRatio(int width, int height)
     {
         //四舍五入保留三位小数
         DecimalFormat decimalFormat = new DecimalFormat("#0.000");
         return decimalFormat.format((double)width / height);
-    }
+    }*/
     /**
      * 获取CPU核心数
      * 读取系统目录“/sys/devices/system/cpu/”下类似“/cpu0”文件夹的数量
@@ -622,107 +618,5 @@ public class ExtraUtil
             return "";
         }
         return getPathRuled(new File(file_str));
-    }
-    
-    public static void initMtkDoubleSim(Context context)
-    {
-        int simId_1;
-        int simId_2;
-        String imsi_1;
-        String imsi_2;
-        String imei_1;
-        String imei_2;
-        int phoneType_1;
-        int phoneType_2;
-        String defaultImsi;
-        boolean isMtkDoubleSim;
-        try
-        {
-            TelephonyManager tm = (TelephonyManager)
-                context.getSystemService(Context.TELEPHONY_SERVICE);
-            Class<?> c = Class.forName("com.android.internal.telephony.Phone");
-            Field fields1 = c.getField("GEMINI_SIM_1");
-            fields1.setAccessible(true);
-            simId_1 = (Integer) fields1.get(null);
-            Field fields2 = c.getField("GEMINI_SIM_2");
-            fields2.setAccessible(true);
-            simId_2 = (Integer) fields2.get(null);
-            Method m = TelephonyManager.class
-                .getDeclaredMethod("getSubscriberIdGemini", int.class);
-            imsi_1 = (String) m.invoke(tm, simId_1);
-            imsi_2 = (String) m.invoke(tm, simId_2);
-            Method m1 = TelephonyManager.class
-                .getDeclaredMethod("getDeviceIdGemini", int.class);
-            imei_1 = (String) m1.invoke(tm, simId_1);
-            imei_2 = (String) m1.invoke(tm, simId_2);
-            Method mx = TelephonyManager.class
-                .getDeclaredMethod("getPhoneTypeGemini", int.class);
-            phoneType_1 = (Integer) mx.invoke(tm, simId_1);
-            phoneType_2 = (Integer) mx.invoke(tm, simId_2);
-            if (TextUtils.isEmpty(imsi_1) && (!TextUtils.isEmpty(imsi_2)))
-            {
-                defaultImsi = imsi_2;
-            }
-            if (TextUtils.isEmpty(imsi_2) && (!TextUtils.isEmpty(imsi_1)))
-            {
-                defaultImsi = imsi_1;
-            }
-        }
-        catch (Exception e)
-        {
-            isMtkDoubleSim = false;
-            return;
-        }
-        isMtkDoubleSim = true;
-    }
-    
-    public static void initMtkSecondDoubleSim(Context context)
-    {
-        int simId_1;
-        int simId_2;
-        String imsi_1;
-        String imsi_2;
-        String imei_1;
-        String imei_2;
-        int phoneType_1;
-        int phoneType_2;
-        String defaultImsi;
-        boolean isMtkSecondDoubleSim;
-        try
-        {
-            TelephonyManager tm = (TelephonyManager)
-                context.getSystemService(Context.TELEPHONY_SERVICE);
-            Class<?> c = Class.forName("com.android.internal.telephony.Phone");
-            Field fields1 = c.getField("GEMINI_SIM_1");
-            fields1.setAccessible(true);
-            simId_1 = (Integer) fields1.get(null);
-            Field fields2 = c.getField("GEMINI_SIM_2");
-            fields2.setAccessible(true);
-            simId_2 = (Integer) fields2.get(null);
-            Method mx = TelephonyManager.class.getMethod("getDefault",
-                                                         int.class);
-            TelephonyManager tm1 = (TelephonyManager) mx.invoke(tm, simId_1);
-            TelephonyManager tm2 = (TelephonyManager) mx.invoke(tm, simId_2);
-            imsi_1 = tm1.getSubscriberId();
-            imsi_2 = tm2.getSubscriberId();
-            imei_1 = tm1.getDeviceId();
-            imei_2 = tm2.getDeviceId();
-            phoneType_1 = tm1.getPhoneType();
-            phoneType_2 = tm2.getPhoneType();
-            if (TextUtils.isEmpty(imsi_1) && (!TextUtils.isEmpty(imsi_2)))
-            {
-                defaultImsi = imsi_2;
-            }
-            if (TextUtils.isEmpty(imsi_2) && (!TextUtils.isEmpty(imsi_1)))
-            {
-                defaultImsi = imsi_1;
-            }
-        }
-        catch (Exception e)
-        {
-            isMtkSecondDoubleSim = false;
-            return;
-        }
-        isMtkSecondDoubleSim = true;
     }
 }

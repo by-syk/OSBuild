@@ -1,5 +1,10 @@
 <resources>
 
     <style name="AppTheme" parent="@android:style/Theme.Black"/>
+        
+    <style name="Text">
+        <item name="android:lineSpacingExtra">@dimen/space_line</item>
+        <item name="android:lineSpacingMultiplier">1</item>
+    </style>
 
 </resources>

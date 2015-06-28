@@ -87,7 +87,7 @@ public class MainActivity extends Activity
     final String L0 = "\n";
     final String L1 = "\n   ";
     final String L2 = "\n      ";
-    final String L3 = "\n         ";
+    //final String L3 = "\n         ";
     final String L_N = "\n";
     final String SPACE = "  ";
     
@@ -124,7 +124,7 @@ public class MainActivity extends Activity
     {
         sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         //程序描述信息
-        if (!sharedPreferences.getBoolean("not_show", false))
+        if (!sharedPreferences.getBoolean("not_show_about", false))
         {
             (new Handler()).postDelayed(new Runnable()
             {
@@ -135,8 +135,6 @@ public class MainActivity extends Activity
                     if (isRunning)
                     {
                         aboutDialog();
-                        //Testin
-                        //showTextFileDialog("proc/bootprof", false);
                     }
                 }
             }, 2000);
@@ -475,7 +473,8 @@ public class MainActivity extends Activity
         //屏幕休眠时间
         /*try
         {
-            float result = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT);
+            float result = Settings.System.getInt(getContentResolver(),
+                Settings.System.SCREEN_OFF_TIMEOUT);
             System.out.println(result);
         }
         catch (Settings.SettingNotFoundException e)
@@ -527,7 +526,8 @@ public class MainActivity extends Activity
         stringBuilder.append(L1).append("getNetworkType(): ").append(network_type);
         stringBuilder.append(SPACE).append(ConstUtil.getNetworkTypeStr(network_type));
         
-        String android_id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        String android_id = Settings.Secure.getString(getContentResolver(),
+            Settings.Secure.ANDROID_ID);
         stringBuilder.append(L0).append("android.provider.Settings.Secure.");
         stringBuilder.append(L1).append("get(ANDROID_ID): ").append(android_id);
         
@@ -557,7 +557,8 @@ public class MainActivity extends Activity
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.app.ActivityManager.");
         stringBuilder.append(L1).append("getDeviceConfigurationInfo().");
-        stringBuilder.append(L2).append("reqGlEsVersion: ").append(UnitUtil.convertBits(gles_version, 16));
+        stringBuilder.append(L2).append("reqGlEsVersion: ").append(UnitUtil
+            .convertBits(gles_version, 16));
         stringBuilder.append(SPACE).append(ConstUtil.getGlEsVersion(gles_version));
         stringBuilder.append(L1).append("getMemoryClass(): ").append(mem_class);
         stringBuilder.append(SPACE).append(UnitUtil.convertMemory(mem_class * 1024 * 1024));
@@ -627,38 +628,41 @@ public class MainActivity extends Activity
             stringBuilder.append(L2).append("Available Size: ");
         }
         //通过反射获取存储器列表
-        stringBuilder.append(L0).append("android.os.storage.StorageManager.");
-        stringBuilder.append(L1).append("getVolumePaths().");
-        StorageManager storageManager = (StorageManager)
-            getSystemService(Activity.STORAGE_SERVICE); 
-        try
+        if (SDK >= 9)
         {
-            Method method = storageManager.getClass().getMethod("getVolumePaths");
-            String[] paths = (String[]) method.invoke(storageManager);
-            File temp_file;
-            for (String path : paths)
+            stringBuilder.append(L0).append("android.os.storage.StorageManager.");
+            stringBuilder.append(L1).append("getVolumePaths().");
+            StorageManager storageManager = (StorageManager)
+                getSystemService(STORAGE_SERVICE);
+            try
             {
-                temp_file = new File(path);
-                stringBuilder.append(L2).append(ExtraUtil.getPathRuled(path));
-                stringBuilder.append(SPACE).append(temp_file.exists()
-                    && temp_file.canRead());
+                Method method = storageManager.getClass().getMethod("getVolumePaths");
+                String[] paths = (String[]) method.invoke(storageManager);
+                File temp_file;
+                for (String path : paths)
+                {
+                    temp_file = new File(path);
+                    stringBuilder.append(L2).append(ExtraUtil.getPathRuled(path));
+                    stringBuilder.append(SPACE).append(temp_file.exists()
+                                                       && temp_file.canRead());
+                }
             }
-        }
-        catch (NoSuchMethodException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IllegalArgumentException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-        }
-        catch (InvocationTargetException e)
-        {
-            e.printStackTrace();
+            catch (NoSuchMethodException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IllegalArgumentException e)
+            {
+                e.printStackTrace();
+            }
+            catch (IllegalAccessException e)
+            {
+                e.printStackTrace();
+            }
+            catch (InvocationTargetException e)
+            {
+                e.printStackTrace();
+            }
         }
         
         return stringBuilder;
@@ -685,7 +689,7 @@ public class MainActivity extends Activity
         Collections.sort(features);
         for (String feature : features)
         {
-            stringBuilder.append(L2).append("").append(feature);
+            stringBuilder.append(L2).append(feature);
             stringBuilder.append(SPACE).append(ConstUtil.getFeature(feature));
         }
 
@@ -704,7 +708,7 @@ public class MainActivity extends Activity
         {
             if (sensorManager.getDefaultSensor(i) != null)
             {
-                stringBuilder.append(L2).append("").append(i);
+                stringBuilder.append(L2).append(i);
                 stringBuilder.append(SPACE).append(ConstUtil.getSensorTypeStr(i));
             }
         }
@@ -978,7 +982,7 @@ public class MainActivity extends Activity
         
         AlertDialog alertDialog = new AlertDialog.Builder(this)
             .setTitle(R.string.dia_title_sys_files)
-            .setItems(LIST_TITLE.toArray(new String[0]),
+            .setItems(LIST_TITLE.toArray(new String[LIST_TITLE.size()]),
                 new DialogInterface.OnClickListener()
             {
                 @Override
@@ -993,6 +997,7 @@ public class MainActivity extends Activity
     }
     /**
      * 弹出对话框询问是否继续读取需ROOT权限的文件
+     * 不需要ROOT权限则跳过
      */
     private void askSUDialog(final String FILE_STR)
     {
@@ -1002,8 +1007,13 @@ public class MainActivity extends Activity
             showTextFileDialog(FILE_STR, false);
             return;
         }
+        else if (sharedPreferences.getBoolean("not_show_su", false))
+        {
+            showTextFileDialog(FILE_STR, true);
+            return;
+        }
         
-        ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_desc, null);
+        ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text_ask, null);
         ((MyTextView) viewGroup.findViewById(R.id.tv_desc)).setText(R.string.dia_su_desc);
 
         ((CheckBox) viewGroup.findViewById(R.id.cb_not_show))
@@ -1091,7 +1101,8 @@ public class MainActivity extends Activity
         
         AlertDialog alertDialog = new AlertDialog.Builder(this)
             .setTitle(R.string.dia_title_sys_settings)
-            .setItems(LIST_TITLE.toArray(new String[0]), new DialogInterface.OnClickListener()
+            .setItems(LIST_TITLE.toArray(new String[LIST_TITLE.size()]),
+                new DialogInterface.OnClickListener()
             {
                 @Override
                 public void onClick(DialogInterface p1, int p2)
@@ -1186,7 +1197,7 @@ public class MainActivity extends Activity
             e.printStackTrace();
         }
 
-        ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_desc, null);
+        ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text_ask, null);
         ((MyTextView) viewGroup.findViewById(R.id.tv_desc)).setText(text);
         
         ((CheckBox) viewGroup.findViewById(R.id.cb_not_show))

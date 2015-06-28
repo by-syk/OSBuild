@@ -451,8 +451,8 @@ public class ConstUtil
         {
             return "FEATURE_APP_WIDGETS";
         }
-        else if (feature.equals(PackageManager.FEATURE_AUDIO_LOW_LATENCY))//android.hardware.audio.low_latency
-        {
+        else if (feature.equals(PackageManager.FEATURE_AUDIO_LOW_LATENCY))
+        {//android.hardware.audio.low_latency
             return "FEATURE_AUDIO_LOW_LATENCY";
         }
         else if (feature.equals(PackageManager.FEATURE_AUDIO_OUTPUT))//android.hardware.audio.output
@@ -479,8 +479,8 @@ public class ConstUtil
         {
             return "FEATURE_CAMERA_ANY";
         }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_AUTOFOCUS))//android.hardware.camera.autofocus
-        {
+        else if (feature.equals(PackageManager.FEATURE_CAMERA_AUTOFOCUS))
+        {//android.hardware.camera.autofocus
             return "FEATURE_CAMERA_AUTOFOCUS";
         }
         else if (feature.equals(PackageManager.FEATURE_CAMERA_CAPABILITY_MANUAL_POST_PROCESSING))
@@ -495,8 +495,8 @@ public class ConstUtil
         {//android.hardware.camera.capability.raw
             return "FEATURE_CAMERA_CAPABILITY_RAW";
         }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_EXTERNAL))//android.hardware.camera.external
-        {
+        else if (feature.equals(PackageManager.FEATURE_CAMERA_EXTERNAL))
+        {//android.hardware.camera.external
             return "FEATURE_CAMERA_EXTERNAL";
         }
         else if (feature.equals(PackageManager.FEATURE_CAMERA_FLASH))//android.hardware.camera.flash
@@ -507,12 +507,12 @@ public class ConstUtil
         {
             return "FEATURE_CAMERA_FRONT";
         }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_LEVEL_FULL))//android.hardware.camera.level.full
-        {
+        else if (feature.equals(PackageManager.FEATURE_CAMERA_LEVEL_FULL))
+        {//android.hardware.camera.level.full
             return "FEATURE_CAMERA_LEVEL_FULL";
         }
-        else if (feature.equals(PackageManager.FEATURE_CONNECTION_SERVICE))//android.software.connectionservice
-        {
+        else if (feature.equals(PackageManager.FEATURE_CONNECTION_SERVICE))
+        {//android.software.connectionservice
             return "FEATURE_CONNECTION_SERVICE";
         }
         else if (feature.equals(PackageManager.FEATURE_CONSUMER_IR))//android.hardware.consumerir
@@ -567,8 +567,8 @@ public class ConstUtil
         {
             return "FEATURE_LOCATION_GPS";
         }
-        else if (feature.equals(PackageManager.FEATURE_LOCATION_NETWORK))//android.hardware.location.network
-        {
+        else if (feature.equals(PackageManager.FEATURE_LOCATION_NETWORK))
+        {//android.hardware.location.network
             return "FEATURE_LOCATION_NETWORK";
         }
         else if (feature.equals(PackageManager.FEATURE_MANAGED_USERS))//android.software.managed_users
@@ -583,24 +583,24 @@ public class ConstUtil
         {
             return "FEATURE_NFC";
         }
-        else if (feature.equals(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION))//android.hardware.nfc.hce
-        {
+        else if (feature.equals(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION))
+        {//android.hardware.nfc.hce
             return "FEATURE_NFC_HOST_CARD_EMULATION";
         }
-        else if (feature.equals(PackageManager.FEATURE_OPENGLES_EXTENSION_PACK))//android.hardware.opengles.aep
-        {
+        else if (feature.equals(PackageManager.FEATURE_OPENGLES_EXTENSION_PACK))
+        {//android.hardware.opengles.aep
             return "FEATURE_OPENGLES_EXTENSION_PACK";
         }
         else if (feature.equals(PackageManager.FEATURE_PRINTING))//android.software.print
         {
             return "FEATURE_PRINTING";
         }
-        else if (feature.equals(PackageManager.FEATURE_SCREEN_LANDSCAPE))//android.hardware.screen.landscape
-        {
+        else if (feature.equals(PackageManager.FEATURE_SCREEN_LANDSCAPE))
+        {//android.hardware.screen.landscape
             return "FEATURE_SCREEN_LANDSCAPE";
         }
-        else if (feature.equals(PackageManager.FEATURE_SCREEN_PORTRAIT))//android.hardware.screen.portrait
-        {
+        else if (feature.equals(PackageManager.FEATURE_SCREEN_PORTRAIT))
+        {//android.hardware.screen.portrait
             return "FEATURE_SCREEN_PORTRAIT";
         }
         else if (feature.equals(PackageManager.FEATURE_SECURELY_REMOVES_USERS))
@@ -615,20 +615,20 @@ public class ConstUtil
         {//android.hardware.sensor.ambient_temperature
             return "FEATURE_SENSOR_AMBIENT_TEMPERATURE";
         }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_BAROMETER))//android.hardware.sensor.barometer
-        {
+        else if (feature.equals(PackageManager.FEATURE_SENSOR_BAROMETER))
+        {//android.hardware.sensor.barometer
             return "FEATURE_SENSOR_BAROMETER";
         }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_COMPASS))//android.hardware.sensor.compass
-        {
+        else if (feature.equals(PackageManager.FEATURE_SENSOR_COMPASS))
+        {//android.hardware.sensor.compass
             return "FEATURE_SENSOR_COMPASS";
         }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_GYROSCOPE))//android.hardware.sensor.gyroscope
-        {
+        else if (feature.equals(PackageManager.FEATURE_SENSOR_GYROSCOPE))
+        {//android.hardware.sensor.gyroscope
             return "FEATURE_SENSOR_GYROSCOPE";
         }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_HEART_RATE))//android.hardware.sensor.heartrate
-        {
+        else if (feature.equals(PackageManager.FEATURE_SENSOR_HEART_RATE))
+        {//android.hardware.sensor.heartrate
             return "FEATURE_SENSOR_HEART_RATE";
         }
         else if (feature.equals(PackageManager.FEATURE_SENSOR_HEART_RATE_ECG))
@@ -639,8 +639,8 @@ public class ConstUtil
         {
             return "FEATURE_SENSOR_LIGHT";
         }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_PROXIMITY))//android.hardware.sensor.proximity
-        {
+        else if (feature.equals(PackageManager.FEATURE_SENSOR_PROXIMITY))
+        {//android.hardware.sensor.proximity
             return "FEATURE_SENSOR_PROXIMITY";
         }
         else if (feature.equals(PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY))

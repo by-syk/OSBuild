@@ -108,7 +108,7 @@ public class UnitUtil
      */
     public static String convertBits(int decimal, int radix)
     {
-        String num = "";
+        String num;
         switch (radix)
         {
             case 2:
