@@ -22,7 +22,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * Package (`systemAvailableFeatures`, etc.)
 * Sensor (`sensorList`, etc.)
 * SuperSu
-etc.
+* etc.
 
 ### Example
 There is a slice of data which OSBuild got from my Android phone:
