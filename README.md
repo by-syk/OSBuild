@@ -21,7 +21,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * Memory (`volumePaths`, etc.)
 * Package (`systemAvailableFeatures`, etc.)
 * Sensor (`sensorList`, etc.)
-* SuperSu
+* Superuser
 * etc.
 
 ### Example
@@ -35,20 +35,21 @@ android.app.ActivityManager.
    MemoryInfo.
       threshold: 100663296  96.00MB
       totalMem: 1940213760  1.81GB
+      availMem: 399622144  381.11MB  21%
 android.os.Environment.
    getRootDirectory(): /system/
       Total Size: 660058112  629.48MB
-      Available Size: 142319616  135.73MB  21%
+      Available Size: 126816256  120.94MB  19%
    getDataDirectory(): /data/
       Total Size: 13394399232  12.47GB
-      Available Size: 1620070400  1.51GB  12%
+      Available Size: 869711872  829.42MB  6%
    getExternalStorageState(): mounted  MEDIA_MOUNTED
    isExternalStorageRemovable(): false
    getExternalStorageDirectory(): /storage/emulated/0/
       Total Size: 13341970432  12.43GB
-      Available Size: 1567641600  1.46GB  11%
+      Available Size: 817283072  779.42MB  6%
 android.os.storage.StorageManager.
-   getVolumePaths().
+   getVolumePaths():
       /storage/emulated/0/  true
       /storage/usbotg/  false
 ```
@@ -58,10 +59,10 @@ Not financially.
 
 Just **Share the Page** to me by E-mail. As you can see, only some hardware info about the device (**NO PRIVACY**).
 
-I'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you.
+I'm making the effort to finish my project, DAD (Database of Android Devices). If you find OSBuild useful, please help me a lot. Thank you.
 
 ### Besides...
-Meet a new device and want to figure its info out? Install **OSBuild** and **Share the Page**. OK, you've got it.
+Meet a new device and want to figure its characteristic out? Install **OSBuild** and **Share the Page**. OK, you've got it.
 
 Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base/tools/download-appxplore-and-learn-more-about-your-apps/).
 
@@ -72,9 +73,7 @@ Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base
 
 [OSBuild_v1.2.0(150628).apk](/Other/OSBuild_v1.2.0(150628).apk)
 
+[OSBuild_v1.2.7(150708).apk](/Other/OSBuild_v1.2.7(150708).apk)
+
 ### Screenshots
-![screenshot1.png](/Other/screenshot1.png)
-
-![screenshot2.png](/Other/screenshot2.png)
-
-![screenshot3.png](/Other/screenshot3.png)
+![screenshot.png](/Other/screenshot.png)

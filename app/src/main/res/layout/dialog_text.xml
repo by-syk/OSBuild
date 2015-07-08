@@ -13,9 +13,10 @@
 			android:id="@+id/tv_text"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			style="@style/Text"
+			style="@style/TextSel"
 			android:padding="@dimen/padding_page"/>
 
 	</ScrollView>
 
 </RelativeLayout>
+

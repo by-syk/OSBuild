@@ -5,6 +5,9 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+/**
+ * @author By_syk
+ */
 public class MyTextView extends TextView
 {
     public MyTextView(Context context)
@@ -17,8 +20,9 @@ public class MyTextView extends TextView
         super(context, attrs);
         changeTypeFace(context, attrs);
     }
+    
     /**
-     * 自定义等宽字体
+     * Modify typeface to Monaco, a monospaced font from Apple Mac.
      */
     private void changeTypeFace(Context context, AttributeSet attrs)
     {

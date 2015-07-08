@@ -6,5 +6,7 @@
         <item name="android:lineSpacingExtra">@dimen/space_line</item>
         <item name="android:lineSpacingMultiplier">1</item>
     </style>
+    
+    <style name="TextSel" parent="@style/Text"/>
 
 </resources>

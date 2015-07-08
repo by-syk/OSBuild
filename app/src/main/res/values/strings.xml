@@ -4,6 +4,7 @@
     <string name="app_name">OSBuild</string>
     <string name="copyright">Copyright \u00a9 2015 By_syk. All rights reserved.</string>
     <string name="my_email">shi201107201409@163.com</string>
+    <string name="program_github">https://github.com/by-syk/OSBuild</string>
     
     <string name="dia_title_with_tel">With Telephony Module?</string>
     <string name="dia_title_const">Constant Reference</string>
@@ -12,21 +13,24 @@
     <string name="dia_title_donate">Donate</string>
     <string name="dia_title_about">What\'s OSBuild?</string>
     <string name="dia_title_warning">Warning</string>
+    <string name="dia_title_theme">Switch Theme</string>
     <string name="dia_pos_ok">OK</string>
     <string name="dia_pos_continue">Continue</string>
     <string name="dia_neg_cancel">Cancel</string>
     <string name="dia_pos_yes">Yes</string>
     <string name="dia_neg_no">No</string>
     <string name="dia_neu_github">GitHub</string>
-    <string name="dia_su_desc">
-"OSBuild need get root permission to read this file, are you sure to continue?
-\nNotice: OSBuild just do what should do with root permission."</string>
+    <string name="dia_su_desc">"OSBuild need get root permission to read this file, are you sure to continue?
+\nNotice:
++ It\'s NOT a problem with OSBuild if you see nothing then. You should make sure that your device has been rooted and you have authorized OSBuild's request for root permission.
++ OSBuild just do what should do with root permission."
+    </string>
     
-    <string name="share_via">Share via&#8230;</string>
-    <string name="copied">Developer\'s E-mail address has been copied.</string>
+    <string name="share_via">Share via...</string>
+    <!--<string name="copied">Developer\'s E-mail address has been copied.</string>-->
     <string name="not_show">Don\'t show again.</string>
     
-    <string name="action_share">Share</string>
+    <string name="action_share">Share...</string>
     <string name="action_sub_share_text">Share the Page</string>
     <string name="action_sub_share_app">Share OSBuild</string>
     <string name="action_const">Constant Reference</string>
@@ -34,9 +38,31 @@
     <string name="action_sys_settings">System Settings</string>
     <string name="action_donate">Donate</string>
     
-    <string name="donate_desc">
-"Not financially.
+    <string name="app_desc">"OSBuild - FOR ANDROID DEVELOPERS
+\nEver wanted to peek inside and know more about your device? Well, OSBuild, a simple, lightweight, clean and beautiful app, meets your needs. And it works on all phones running Android 2.2 and above!
+\nA simple UI and some nice features make it great tool especially for Android developers and learners.
+\nFeatures
++ List RICH RAW info about the device with keeping most programming words.
++ Provide RICH related data, like "19  KITKAT  2013-10  39.2%  19".
++ List all features the system supported, such as FEATURE_USB_HOST.
++ READ WIFI PASSWORDS. (If ROOTED)
++ OPEN SOURCE. You can see its source codes on GitHub to get useful code sections. (https://github.com/by-syk/OSBuild)
+\nModules
++ Build (MODEL, etc.)
++ Display (densityDpi, etc.)
++ Telephony (deviceId, etc.)
++ CPU (cpuinfo_max_freq, etc.)
++ Memory (volumePaths, etc.)
++ Package (systemAvailableFeatures, etc.)
++ Sensor (sensorList, etc.)
++ Superuser
+etc.
+\nMeet a new device and want to figure its characteristic out? Install OSBuild and "Share the Page". OK, you've got it.
+\nSalute to Sony Xperia AppXplore."
+    </string>
+    <string name="donate_desc">"Not financially.
 \nJust \"Share the Page\" to me by E-mail. As you can see, only some hardware info about the device (NO PRIVACY).
-\nI'm making the effort to finish my project, DAD (Database of Android Devices). If OSBuild helps a lot, please help me a bit. Thank you."</string>
+\nI'm making the effort to finish my project, DAD (Database of Android Devices). If you find OSBuild useful, please help me a lot. Thank you."
+    </string>
     
 </resources>

@@ -1,7 +1,49 @@
+v1.2.7.nightly 2015-07-08
+Rename "Device Brand" to "Brand & Manufacturer" in Primer Module.
+Move description of OSBuild from "/assets/desc.txt" to "strings.xml".
+Fix wrong Hardware info issue after the node "/proc/cpuinfo" in CPU Module. (In few devices, it's "vendor_id", not "Hardware".)
+Improve Primer Module.
+Add more sim operators after the line getSimOperator() in Telephony Module.
+
+v1.2.6.nightly 2015-07-07
+Restore "Device Brand" to raw value in Primer Module.
+Check more value "unknown" in Build Module.
+
+v1.2.6.nightly 2015-07-05
+Improve Primer Module.
+
+v1.2.5.nightly 2015-07-04
+Improve Primer Module.
+Fix lost "ESN" issue after the line "getDeviceId()" in Telephony Module.
+
+v1.2.4.nightly 2015-07-03
+Add BRAND param to shared text file name, like "MOTO_XT882_10__OSBuild_v1.2.4.nightly(150703).info.txt".
+Add Primer Module for non developers and place it on the top.
+Remove the first way to get cores of cpu from Runtime.
+Modify the style of CPU Module.
+
+v1.2.3.nightly 2015-07-02
+Add the line availMem after the node ActivityManager in Memory Module.
+Try to add a menu option User Mode. (I called the current mode Developer Mode.)
+Fix careless omission: "getVolumePaths()." to "getVolumePaths():".
+If the result of two methods to get cores of cpu are not the same, just show the second (by reading "/sys/devices/system/cpu/").
+Remove "getSystemSharedLibraryNames()" after the node "PackageManager" in Package Module.
+
+v1.2.2.nightly 2015-07-01
+Add option "CPU Module" in menu option "Constant Reference".
+Move the node "Settings.Secure" from Telephony Module to Build Module.
+Try to add a new Activity to show something which is refreshed automatically.
+
+v1.2.1.nightly 2015-06-30
+Add "getSystemSharedLibraryNames()" after the node "PackageManager" in Package Module.
+Modify the style of CPU Module and add the line "scaling_governor" after the node "/sys/devices/system/cpu/cpu0/cpufreq/".
+Change stratege to read "wpa_supplicant.conf". (Because copying and reading it is not safe before.)
+Add the node "System" and lines "getProperty("os.version")", "getProperty("java.vm.version")" in Build Module.
+
 v1.2.0.nightly 2015-06-28
 Add warning dialog before reading "wpa_supplicant.conf".
 Fix API level issue: android:textIsSelectable requires API level 11.
-Fix API level issue: StorageMnager requires API level 11.
+Fix API level issue: StorageManager requires API level 11.
 
 v1.2.0.nightly 2015-06-27
 Update "desc.txt".

@@ -18,7 +18,7 @@
                 android:id="@+id/tv_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Text"
+                style="@style/TextSel"
                 android:padding="@dimen/padding_page"/>
 
             <CheckBox

@@ -8,8 +8,8 @@ android {
         applicationId "com.by_syk.osbuild"
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 150628
-        versionName "1.2.0"
+        versionCode 150708
+        versionName "1.2.7"
     }
     
     buildTypes {
@@ -21,4 +21,5 @@ android {
 }
 
 dependencies {
+	
 }

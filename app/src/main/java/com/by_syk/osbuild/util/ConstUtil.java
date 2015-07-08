@@ -9,13 +9,24 @@ import android.telephony.TelephonyManager;
 import java.util.Locale;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.annotation.TargetApi;
+import android.text.TextUtils;
 
+/**
+ * @author By_syk
+ */
 public class ConstUtil
 {
-    private static int SDK = Build.VERSION.SDK_INT;//系统版本
-    //private static String UNKNOWN = "UNKNOWN";
+    //Android Version
+    private static int SDK = Build.VERSION.SDK_INT;
+    
     private static String UNKNOWN = "";
-
+    
+    /**
+     * The user-visible SDK version of the framework;
+     * its possible values are defined in Build.VERSION_CODES.
+     * @param sdk_int SDK_INT
+     */
     public static String getSDKIntStr(int sdk_int)
     {
         switch (sdk_int)
@@ -69,6 +80,10 @@ public class ConstUtil
         }
     }
     
+    /**
+     * @param sdk_int SDK_INT
+     * @return The date Google release the given Android version.
+     */
     public static String getSDKIntTimeStr(int sdk_int)
     {
         switch (sdk_int)
@@ -122,9 +137,13 @@ public class ConstUtil
         }
     }
     
-    public static String getDensityDPIStr(int densityDpi)
+    /**
+     * The screen density expressed as dots-per-inch.
+     * @param density_dpi densityDpi
+     */
+    public static String getDensityDPIStr(int density_dpi)
     {
-        switch (densityDpi)
+        switch (density_dpi)
         {
             case DisplayMetrics.DENSITY_LOW://120
                 return "DENSITY_LOW";
@@ -150,7 +169,11 @@ public class ConstUtil
                 return UNKNOWN;
         }
     }
-
+    
+    /**
+     * Overall orientation of the screen.
+     * @param orientation orientation
+     */
     public static String getOrientationStr(int orientation)
     {
         switch (orientation)
@@ -167,53 +190,74 @@ public class ConstUtil
                 return UNKNOWN;
         }
     }
-
-    public static String getSensorTypeStr(int sensor_type)
+    
+    public static String getSensorTypeStr(int type)
     {
-        switch (sensor_type)
+        switch (type)
         {
             case Sensor.TYPE_ALL://-1
                 return "TYPE_ALL";
-            case Sensor.TYPE_ACCELEROMETER://1 加速度传感器
+            //Accelerometer sensor type
+            case Sensor.TYPE_ACCELEROMETER://1
                 return "TYPE_ACCELEROMETER";
-            case Sensor.TYPE_MAGNETIC_FIELD://2 磁场传感器
+            //Magnetic field sensor type
+            case Sensor.TYPE_MAGNETIC_FIELD://2
                 return "TYPE_MAGNETIC_FIELD";
-            case Sensor.TYPE_ORIENTATION://3 方向传感器
+            //Orientation sensor type
+            case Sensor.TYPE_ORIENTATION://3
                 return "TYPE_ORIENTATION";
-            case Sensor.TYPE_GYROSCOPE://4 陀螺仪传感器
+            //Gyroscope sensor type
+            case Sensor.TYPE_GYROSCOPE://4
                 return "TYPE_GYROSCOPE";
-            case Sensor.TYPE_LIGHT://5 光线传感器
+            //Light sensor type
+            case Sensor.TYPE_LIGHT://5
                 return "TYPE_LIGHT";
-            case Sensor.TYPE_PRESSURE://6 压力传感器
+            //Pressure sensor type
+            case Sensor.TYPE_PRESSURE://6
                 return "TYPE_PRESSURE";
-            case Sensor.TYPE_TEMPERATURE://7 温度传感器
+            //Temperature sensor type
+            case Sensor.TYPE_TEMPERATURE://7
                 return "TYPE_TEMPERATURE";
-            case Sensor.TYPE_PROXIMITY://8 距离传感器
+             //Proximity sensor type
+            case Sensor.TYPE_PROXIMITY://8
                 return "TYPE_PROXIMITY";
-            case Sensor.TYPE_GRAVITY://9 重力传感器
+            //Gravity sensor type
+            case Sensor.TYPE_GRAVITY://9
                 return "TYPE_GRAVITY";
-            case Sensor.TYPE_LINEAR_ACCELERATION://10 线性加速度传感器
+            //Linear acceleration sensor type
+            case Sensor.TYPE_LINEAR_ACCELERATION://10
                 return "TYPE_LINEAR_ACCELERATION";
-            case Sensor.TYPE_ROTATION_VECTOR://11 旋转矢量传感器
+            //Rotation vector sensor type
+            case Sensor.TYPE_ROTATION_VECTOR://11
                 return "TYPE_ROTATION_VECTOR";
+            //Relative humidity sensor type
             case Sensor.TYPE_RELATIVE_HUMIDITY://12
                 return "TYPE_RELATIVE_HUMIDITY";
+            //Ambient temperature sensor type
             case Sensor.TYPE_AMBIENT_TEMPERATURE://13
                 return "TYPE_AMBIENT_TEMPERATURE";
+            //Uncalibrated magnetic field sensor type
             case Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED://14
                 return "TYPE_MAGNETIC_FIELD_UNCALIBRATED";
+            //Uncalibrated rotation vector sensor type
             case Sensor.TYPE_GAME_ROTATION_VECTOR://15
                 return "TYPE_GAME_ROTATION_VECTOR";
+            //Uncalibreted gyroscope sensor type
             case Sensor.TYPE_GYROSCOPE_UNCALIBRATED://16
                 return "TYPE_GYROSCOPE_UNCALIBRATED";
+            //Significant motion trigger sensor
             case Sensor.TYPE_SIGNIFICANT_MOTION://17
                 return "TYPE_SIGNIFICANT_MOTION";
+            //Step detector sensor
             case Sensor.TYPE_STEP_DETECTOR://18
                 return "TYPE_STEP_DETECTOR";
+            //Step counter sensor
             case Sensor.TYPE_STEP_COUNTER://19
                 return "TYPE_STEP_COUNTER";
+            //Geo-magnetic rotation vector
             case Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR://20
                 return "TYPE_GEOMAGNETIC_ROTATION_VECTOR";
+            //Heart rate monitor
             case Sensor.TYPE_HEART_RATE://21
                 return "TYPE_HEART_RATE";
             default:
@@ -221,11 +265,16 @@ public class ConstUtil
         }
 	}
     
+    /**
+     * Returns the rotation of the screen from its "natural" orientation.
+     * Anticlockwise
+     * @param rotation getRotation()
+     */
     public static String getRotationStr(int rotation)
     {
-        //设备逆时针旋转
         switch (rotation)
         {
+            //Natural orientation
             case Surface.ROTATION_0://0
                 return "ROTATION_0";
             case Surface.ROTATION_90://1
@@ -239,25 +288,78 @@ public class ConstUtil
         }
     }
     
+    /**
+     * Returns the MCC+MNC (mobile country code + mobile network code) of the provider of the SIM.
+     * 5 or 6 decimal digits.
+     * @param sim_operator getSimOperator()
+     */
     public static String getSimOperator(String sim_operator)
     {
-        if (sim_operator.equals("46000") || sim_operator.equals("46002") || sim_operator.equals("46007"))
+        if (sim_operator == null || sim_operator.length() < 5)
         {
-            return "China Mobile";//中国移动
+            return UNKNOWN;
         }
-        else if (sim_operator.equals("46001") || sim_operator.equals("46006"))
+        
+        int mcc = ExtraUtil.convertInt(sim_operator.substring(0, 3));
+        int mnc = ExtraUtil.convertInt(sim_operator.substring(3));
+        
+        switch (mcc)
         {
-            return "China Unicom";//中国联通
+            case 454:
+                switch (mcc)
+                {
+                    default:
+                        return "Hong Kong ?";
+                }
+            case 455:
+                switch (mcc)
+                {
+                    default:
+                        return "Macao ?";
+                }
+            case 460:
+                switch (mnc)
+                {
+                    case 0:
+                    case 2:
+                    case 7:
+                        //00 for TD of China Mobile; 02 for GSM of China Mobile.
+                        return "China Mobile";
+                    case 1:
+                    case 6:
+                        //01 for GSM of China Unicom.
+                        return "China Unicom";
+                    case 3:
+                    case 5:
+                        //03 for CDMA of China Telecom.
+                        return "China Telecom";
+                    case 20:
+                        return "China Tietong";
+                    default:
+                        return UNKNOWN;
+                }
+            case 466:
+                switch (mcc)
+                {
+                    default:
+                        return "Taiwan ?";
+                }
+            default:
+                return UNKNOWN;
         }
-        else if (sim_operator.equals("46003") || sim_operator.equals("46005"))
-        {
-            return "China Telecom";//中国电信
-        }
-        return UNKNOWN;
 	}
     
+    /**
+     * Returns the current state of the storage device that provides the given path.
+     * @param state getExternalStorageState()
+     */
     public static String getExternalStorageState(String state)
     {
+        if (TextUtils.isEmpty(state))
+        {
+            return UNKNOWN;
+        }
+        
         if (state.equals(Environment.MEDIA_BAD_REMOVAL))//bad_removal
         {
             return "MEDIA_BAD_REMOVAL";
@@ -301,6 +403,11 @@ public class ConstUtil
         return UNKNOWN;
     }
     
+    /**
+     * Returns a constant indicating the device phone type.
+     * This indicates the type of radio used to transmit voice calls.
+     * @param phone_type getPhoneType()
+     */
     public static String getPhoneTypeStr(int phone_type)
     {
         switch (phone_type)
@@ -318,19 +425,32 @@ public class ConstUtil
         }
     }
     
-    public static String getDeviceIdType(int phone_type)
+    /**
+     * @param phone_type getPhoneType()
+     * @param id_length Length of device id string.
+     * @return The date Google release the given Android version.
+     */
+    public static String getDeviceIdType(int phone_type, int id_length)
     {
         switch (phone_type)
         {
             case TelephonyManager.PHONE_TYPE_GSM://1
                 return "IMEI";
             case TelephonyManager.PHONE_TYPE_CDMA://2
+                if (id_length == 8)
+                {
+                    return "ESN";
+                }
                 return "MEID";
             default:
                 return UNKNOWN;
         }
     }
     
+    /**
+     * Returns a constant indicating the state of the default SIM card.
+     * @param sim_state getSimState()
+     */
     public static String getSimStateStr(int sim_state)
     {
         switch (sim_state)
@@ -352,6 +472,11 @@ public class ConstUtil
         }
     }
     
+    /**
+     * Current user preference for the locale, corresponding to locale resource qualifier.
+     * @param locale locale
+     */
+    @TargetApi(9)
     public static String getLocale(Locale locale)
     {
         if (SDK >= 9 && locale.equals(Locale.ROOT))//null
@@ -445,8 +570,19 @@ public class ConstUtil
         return UNKNOWN;
     }
     
+    /**
+     * A single feature that can be requested by an application.
+     * This corresponds to information collected from the AndroidManifest.xml's tag.
+     * @param feature FeatureInfo
+     */
     public static String getFeature(String feature)
     {
+        
+        if (TextUtils.isEmpty(feature))
+        {
+            return UNKNOWN;
+        }
+        
         if (feature.equals(PackageManager.FEATURE_APP_WIDGETS))//android.software.app_widgets
         {
             return "FEATURE_APP_WIDGETS";
@@ -725,8 +861,11 @@ public class ConstUtil
         }
         return UNKNOWN;
     }
+    
     /**
-     * 获取分辨率格式
+     * @param width Physical width of screen
+     * @param height Physical height of screen
+     * @return The resolution format, like QVGA.
      */
     public static String getResolutionFormat(int width, int height)
     {
@@ -813,6 +952,10 @@ public class ConstUtil
         }
     }
     
+    /**
+     * Constant for screenLayout: bits that encode the size.
+     * @param sl_size_mask screenLayout & SCREENLAYOUT_SIZE_MASK
+     */
     public static String getSLSizeMaskStr(int sl_size_mask)
     {
         switch (sl_size_mask)
@@ -832,22 +975,10 @@ public class ConstUtil
         }
     }
     
-    /*public static String getSLLongMaskStr(int sl_long_mask)
-    {
-        switch (sl_long_mask)
-        {
-            case Configuration.SCREENLAYOUT_LONG_UNDEFINED://0
-                return "SCREENLAYOUT_LONG_UNDEFINED";
-            case Configuration.SCREENLAYOUT_LONG_NO://16
-                return "SCREENLAYOUT_LONG_NO";
-            case Configuration.SCREENLAYOUT_LONG_YES://32
-                return "SCREENLAYOUT_LONG_YES";
-            default:
-                return UNKNOWN;
-        }
-    }*/
     /**
-     * 获取设备类型：Handset，Tablet
+     * Constant for screenLayout: bits that encode the size.
+     * @param sl_size_mask screenLayout & SCREENLAYOUT_SIZE_MASK
+     * @return Device type by screen size, "Handset" or "Tablet".
      */
     public static String getDeviceTypeStr(int sl_size_mask)
     {
@@ -863,49 +994,71 @@ public class ConstUtil
                 return UNKNOWN;
         }
     }
+    
     /**
-     * 获取 OpenGL ES 版本，如：0x00030000 - 3.0
-     * @param gles_version OpenGL ES 版本，高16位为主版本号，次16位为次版本号
+     * The GLES version used by an application.
+     * The upper order 16 bits represent the major version and the lower order 16 bits the minor version.
+     * @param gles_version reqGlEsVersion
+     * @return readable version of OpenGL ES, like 0x00030000 - 3.0
      */
     public static String getGlEsVersion(int gles_version)
     {
         return String.format("%1$d.%2$d", gles_version >> 16, gles_version & 0x00001111);
     }
     
+    /**
+     * The NETWORK_TYPE_xxxx for current data connection.
+     * @param network_type getNetworkType()
+     */
     public static String getNetworkTypeStr(int network_type)
     {
         switch (network_type)
         {
             case TelephonyManager.NETWORK_TYPE_UNKNOWN://0
                 return "NETWORK_TYPE_UNKNOWN";
+            //GPRS (2.5G)
             case TelephonyManager.NETWORK_TYPE_GPRS://1
                 return "NETWORK_TYPE_GPRS";
+            //EDGE (2.75G)
             case TelephonyManager.NETWORK_TYPE_EDGE://2
                 return "NETWORK_TYPE_EDGE";
+            //UMTS (3G)
             case TelephonyManager.NETWORK_TYPE_UMTS://3
                 return "NETWORK_TYPE_UMTS";
+            //CDMA: Either IS95A or IS95B, also cdmaOne (2G)
             case TelephonyManager.NETWORK_TYPE_CDMA://4
                 return "NETWORK_TYPE_CDMA";
+            //EVDO revision 0 (3G)
             case TelephonyManager.NETWORK_TYPE_EVDO_0://5
                 return "NETWORK_TYPE_EVDO_0";
+            //EVDO revision A (3G)
             case TelephonyManager.NETWORK_TYPE_EVDO_A://6
                 return "NETWORK_TYPE_EVDO_A";
+            //1xRTT, also CDMA2000 1x (3G)
             case TelephonyManager.NETWORK_TYPE_1xRTT://7
                 return "NETWORK_TYPE_1xRTT";
+            //HSDPA, also W-CDMA R5 (3.5G)
             case TelephonyManager.NETWORK_TYPE_HSDPA://8
                 return "NETWORK_TYPE_HSDPA";
+            //HSUPA, also W-CDMA R6 (3.5G)
             case TelephonyManager.NETWORK_TYPE_HSUPA://9
                 return "NETWORK_TYPE_HSUPA";
+            //HSPA also W-CDMA R5/R6 (3G)
             case TelephonyManager.NETWORK_TYPE_HSPA://10
                 return "NETWORK_TYPE_HSPA";
+            //iDEN (2G)
             case TelephonyManager.NETWORK_TYPE_IDEN://11
                 return "NETWORK_TYPE_IDEN";
+            //EVDO revision B (3G)
             case TelephonyManager.NETWORK_TYPE_EVDO_B://12
                 return "NETWORK_TYPE_EVDO_B";
+            //LTE (4G)
             case TelephonyManager.NETWORK_TYPE_LTE://13
                 return "NETWORK_TYPE_LTE";
+            //eHRPD, also Enhanced 1xEVDO (3G)
             case TelephonyManager.NETWORK_TYPE_EHRPD://14
                 return "NETWORK_TYPE_EHRPD";
+            //HSPA+, also W-CDMA R7 (3.75G)
             case TelephonyManager.NETWORK_TYPE_HSPAP://15
                 return "NETWORK_TYPE_HSPAP";
             default:

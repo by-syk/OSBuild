@@ -2,12 +2,16 @@ package com.by_syk.osbuild.util;
 
 import java.text.DecimalFormat;
 
+/**
+ * @author By_syk
+ */
 public class UnitUtil
 {
     private static String UNKNOWN = "";
+    
     /**
-     * CPU频率
-     * @param freq Hz
+     * About CPU frequency.
+     * @param freq Unit: Hz
      */
     public static String convertFreq(int freq)
     {
@@ -24,9 +28,10 @@ public class UnitUtil
             return freq + "Hz";
         }
     }
+    
     /**
-     * 文件大小
-     * @param size B
+     * About file size.
+     * @param size Unit: byte
      */
     public static String convertMemory(long size)
     {
@@ -47,42 +52,60 @@ public class UnitUtil
             return size + "B";
         }
     }
+    
     /**
-     * 包装DP值
+     * Process dp value.
      */
     public static String convertDp(double size)
     {
-        //四舍五入保留一位小数
+        //Rounding-off method. Remain 1 decimal number.
         DecimalFormat decimalFormat = new DecimalFormat("#0.0dp");
         return decimalFormat.format(size);
     }
+    
     /**
-     * 包装英寸数
+     * Process inch value.
      */
     public static String convertInch(double size)
     {
-        //四舍五入保留两位小数
+        //Rounding-off method. Remain 2 decimal number.
         DecimalFormat decimalFormat = new DecimalFormat("#0.00\"");
         return decimalFormat.format(size);
     }
+    
     /**
-     * 化为百分数（精确到整数位）
-     * @param usage 数组[总、可用]
+     * Convert to percentage and drop out decimal number.
+     * @param usage Array like [total, available]
      */
     public static String convertPercent(long[] usage)
     {
         return convertPercent(usage[0], usage[1]);
     }
     
+    /**
+     * Convert to percentage and drop out decimal number.
+     */
     public static String convertPercent(long total, long avail)
+    {
+        return convertPercent(total, avail, 0);
+    }
+    
+    /**
+     * Convert to percentage.
+     * @param precision How many decimal number to remain.
+     */
+    public static String convertPercent(long total, long avail, int precision)
     {
         if (total <= 0)
         {
             return UNKNOWN;
         }
-        return String.format("%d%%", avail * 100 / total);
+        return String.format("%." + precision + "f%%", avail * 100.0 / total);
     }
     
+    /**
+     * Convert milliseconds to readable time.
+     */
     public static String convertTime(long millis)
     {
         long day = millis / (24 * 60 * 60 * 1000);
@@ -103,8 +126,11 @@ public class UnitUtil
         }
         return String.format("%1$02d:%2$03d", second, millis);
     }
+    
     /**
-     * 进制转换
+     * Convert decimalism to other.
+     * @param decimal Value in decimalism.
+     * @param radix Which system to convert. (Only 2, 8, 16)
      */
     public static String convertBits(int decimal, int radix)
     {

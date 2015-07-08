@@ -4,9 +4,11 @@ android.telephony.TelephonyManager.
       1  PHONE_TYPE_GSM  1
       2  PHONE_TYPE_CDMA  4
       3  PHONE_TYPE_SIP  11
-   getDeviceId(): _  (Phone Type)  ID Type
-      _  PHONE_TYPE_GSM  IMEI
-      _  PHONE_TYPE_CDMA  MEID
+   getDeviceId(): _  (ID Length)  (Phone Type)  ID Type
+      _  15  PHONE_TYPE_GSM  IMEI
+      _  8  PHONE_TYPE_CDMA  ESN
+      _  14  PHONE_TYPE_CDMA  MEID
+      _  15  PHONE_TYPE_CDMA  MEID
    getSimState(): Value  Name  (API Level)
       0  SIM_STATE_UNKNOWN  1
       1  SIM_STATE_ABSENT  1
@@ -15,6 +17,8 @@ android.telephony.TelephonyManager.
       4  SIM_STATE_NETWORK_LOCKED  1
       5  SIM_STATE_READY  1
    getSimOperator(): Value  Sim Operator
+      454xx  Hong Kong xxx
+      455xx  Macao xxx
       46000  China Mobile
       46001  China Unicom
       46002  China Mobile
@@ -22,6 +26,8 @@ android.telephony.TelephonyManager.
       46005  China Telecom
       46006  China Unicom
       46007  China Mobile
+      46020  China Tietong
+      466xx  Taiwan xxx
    getNetworkType(): Value  Name  (API Level)
       0  NETWORK_TYPE_UNKNOWN  1
       1  NETWORK_TYPE_GPRS  1

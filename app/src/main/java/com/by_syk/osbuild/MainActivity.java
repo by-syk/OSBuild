@@ -34,9 +34,6 @@ import android.view.Window;
 import android.os.AsyncTask;
 import android.widget.LinearLayout;
 import android.view.animation.AnimationUtils;
-import android.content.ClipboardManager;
-import android.content.ClipData;
-import android.widget.Toast;
 import java.util.Locale;
 import android.content.pm.PackageManager;
 import android.content.pm.FeatureInfo;
@@ -44,19 +41,39 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import android.content.SharedPreferences;
-import java.io.IOException;
 import android.os.Handler;
 import android.widget.CheckBox;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.CompoundButton;import android.os.storage.StorageManager;
-import java.lang.reflect.InvocationTargetException;
+import android.widget.CompoundButton;
+import android.os.storage.StorageManager;
 import android.provider.Settings;
+import java.util.Map;
+import java.util.HashMap;
+import android.hardware.Sensor;
+import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 
+/**
+ * There are 11 modules:
+ *     Primer Module
+ *     Build Module
+ *     Display Module
+ *     Telephony Module
+ *     CPU Module
+ *     Memory Module
+ *     Package Module
+ *     Sensor Module
+ *     Superuser Module
+ *     Time Module
+ *     About Module
+ * @author By_syk
+ */
 public class MainActivity extends Activity
 {
     SharedPreferences sharedPreferences;
     
     MyTextView tv_line_top;
+    MyTextView tv_primer;
     MyTextView tv_build;
     MyTextView tv_display;
     MyTextView tv_telephony;
@@ -69,7 +86,11 @@ public class MainActivity extends Activity
     MyTextView tv_about;
     MyTextView tv_line_bottom;
     
+    //Map for Primer Module
+    Map<String, String> map_primer = null;
+    
     StringBuilder sb_line = null;
+    StringBuilder sb_primer = null;
     StringBuilder sb_build = null;
     StringBuilder sb_display = null;
     StringBuilder sb_telephony = null;
@@ -81,7 +102,8 @@ public class MainActivity extends Activity
     StringBuilder sb_time = null;
     StringBuilder sb_about = null;
     
-    final int SDK = Build.VERSION.SDK_INT;//系统版本
+    //Android Version
+    final int SDK = Build.VERSION.SDK_INT;
     
     final String L = "";
     final String L0 = "\n";
@@ -90,19 +112,25 @@ public class MainActivity extends Activity
     //final String L3 = "\n         ";
     final String L_N = "\n";
     final String SPACE = "  ";
+    final String UNKNOWN = "Unknown";
     
-    boolean isRunning = true;//标识Activity是否活动
+    //Mark the status of current Activity, running or not.
+    boolean isRunning = true;
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        //允许ActionBar或标题栏显示环形进度条
+        
+        //Indeterminate progress can be showed on the ActionBar or TitleBar.
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        
         setContentView(R.layout.activity_main);
-        //统计启动次数
+        
+        //Count and log times of launching.
         stats();
-        //加载数据
+        
+        //Load data in another thread.
         (new LoadDataTask()).execute();
     }
 
@@ -123,7 +151,8 @@ public class MainActivity extends Activity
     private void stats()
     {
         sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
-        //程序描述信息
+        
+        //To show dialog with description of OSBuild after 2 seconds.
         if (!sharedPreferences.getBoolean("not_show_about", false))
         {
             (new Handler()).postDelayed(new Runnable()
@@ -131,15 +160,16 @@ public class MainActivity extends Activity
                 @Override
                 public void run()
                 {
-                    //避免退出程序后弹出对话框导致崩溃
+                    //Check if the app is running to avoid crashing.
                     if (isRunning)
                     {
-                        aboutDialog();
+                        appDescDialog();
                     }
                 }
             }, 2000);
         }
-        int launch_times = sharedPreferences.getInt("launch_times", 1);
+        
+        int launch_times = sharedPreferences.getInt("launch_times", 0);
         sharedPreferences.edit().putInt("launch_times", launch_times + 1).commit();
     }
 
@@ -149,17 +179,20 @@ public class MainActivity extends Activity
         protected void onPreExecute()
         {
             super.onPreExecute();
-            //环形进度条提示
+            
+            //Show round progress bar on the ActionBar.
             setProgressBarIndeterminateVisibility(true);
-            //初始化组件
+            
+            //Initialize text views.
             init();
         }
         
         @Override
         protected String doInBackground(String[] p1)
         {
-            //加载数据
+            //Load data.
             loadData();
+            
             return null;
         }
 
@@ -167,12 +200,15 @@ public class MainActivity extends Activity
         protected void onPostExecute(String result)
         {
             super.onPostExecute(result);
-            //填充数据
+            
+            //Fill data to text views.
             fillData();
-            //动画
+            
+            //Show animation.
             ((LinearLayout)findViewById(R.id.ll_info)).setLayoutAnimation(AnimationUtils
                 .loadLayoutAnimation(MainActivity.this, R.anim.layout_anim));
-            //取消环形进度条提示
+            
+            //Hide round progress bar on the ActionBar.
             setProgressBarIndeterminateVisibility(false);
         }
     }
@@ -180,6 +216,7 @@ public class MainActivity extends Activity
     private void init()
     {
         tv_line_top = (MyTextView) findViewById(R.id.tv_line_top);
+        tv_primer = (MyTextView) findViewById(R.id.tv_primer);
         tv_build = (MyTextView) findViewById(R.id.tv_build);
         tv_display = (MyTextView) findViewById(R.id.tv_display);
         tv_telephony = (MyTextView) findViewById(R.id.tv_telephony);
@@ -195,6 +232,9 @@ public class MainActivity extends Activity
 
     private void loadData()
     {
+        //Init Map for Primer Module
+        map_primer = new HashMap<String, String>();
+        
         sb_line = getDotsLine();
         sb_build = getBuildInfo();
         sb_display = getDisplayInfo();
@@ -206,11 +246,15 @@ public class MainActivity extends Activity
         sb_root = getRootInfo();
         sb_time = getTimeInfo();
         sb_about = getAboutInfo();
+        
+        //Load data for Primer Module at last, because it is from the others above.
+        sb_primer = getPrimerInfo();
     }
 
     private void fillData()
     {
         tv_line_top.setText(sb_line);
+        tv_primer.setText(sb_primer);
         tv_build.setText(sb_build);
         tv_display.setText(sb_display);
         tv_telephony.setText(sb_telephony);
@@ -224,77 +268,81 @@ public class MainActivity extends Activity
         tv_line_bottom.setText(sb_line);
     }
     
+    /**
+     * Build Module
+     */
+    @TargetApi(9)
     private StringBuilder getBuildInfo()
     {
+        String unknown = Build.UNKNOWN;
+        String model = Build.MODEL.equals(unknown) ? "" : Build.MODEL;
+        String brand = Build.BRAND.equals(unknown) ? "" : Build.BRAND;
+        String release = Build.VERSION.RELEASE;
+        String manufacturer = Build.MANUFACTURER.equals(unknown) ? "" : Build.MANUFACTURER;
+        
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.os.Build.");
         stringBuilder.append(L1).append("ID: ").append(Build.ID);
         stringBuilder.append(L1).append("DISPLAY: ").append(Build.DISPLAY);
         stringBuilder.append(L1).append("VERSION.");
-        stringBuilder.append(L2).append("RELEASE: ").append(Build.VERSION.RELEASE);
-        stringBuilder.append(L2).append("SDK_INT: ").append(Build.VERSION.SDK_INT);
+        stringBuilder.append(L2).append("RELEASE: ").append(release);
+        stringBuilder.append(L2).append("SDK_INT: ").append(SDK);
         stringBuilder.append(SPACE).append(ConstUtil.getSDKIntStr(Build.VERSION.SDK_INT));
         stringBuilder.append(SPACE).append(ConstUtil.getSDKIntTimeStr(Build.VERSION.SDK_INT));
         stringBuilder.append(L2).append("INCREMENTAL: ").append(Build.VERSION.INCREMENTAL);
-        stringBuilder.append(L1).append("MODEL: ").append(Build.MODEL);
-        stringBuilder.append(L1).append("BRAND: ").append(Build.BRAND);
-        stringBuilder.append(L1).append("MANUFACTURER: ");
-        if (!Build.MANUFACTURER.equals(Build.UNKNOWN))
-        {
-            stringBuilder.append(Build.MANUFACTURER);
-        }
-        stringBuilder.append(L1).append("PRODUCT: ").append(Build.PRODUCT);
-        stringBuilder.append(L1).append("DEVICE: ").append(Build.DEVICE);
-        stringBuilder.append(L1).append("BOARD: ");
-        if (!Build.BOARD.equals(Build.UNKNOWN))
-        {
-            stringBuilder.append(Build.BOARD);
-        }
-        stringBuilder.append(L1).append("HARDWARE: ").append(Build.HARDWARE);
+        stringBuilder.append(L1).append("MODEL: ").append(model);
+        stringBuilder.append(L1).append("BRAND: ").append(brand);
+        stringBuilder.append(L1).append("MANUFACTURER: ").append(manufacturer);
+        stringBuilder.append(L1).append("PRODUCT: ").append(Build.PRODUCT.equals(unknown)
+            ? "" : Build.PRODUCT);
+        stringBuilder.append(L1).append("DEVICE: ").append(Build.DEVICE.equals(unknown)
+            ? "" : Build.DEVICE);
+        stringBuilder.append(L1).append("BOARD: ").append(Build.BOARD.equals(unknown)
+            ? "" : Build.BOARD);
+        stringBuilder.append(L1).append("HARDWARE: ").append(Build.HARDWARE.equals(unknown)
+            ? "" : Build.HARDWARE);
         if (SDK >= 9)
         {
-            stringBuilder.append(L1).append("SERIAL: ");
-            //获取序列号方法一
-            if (!Build.SERIAL.equals(Build.UNKNOWN))
-            {
-                stringBuilder.append(Build.SERIAL);
-            }
-            //获取序列号方法二
-            /*try
-            {
-                Class<?> c =Class.forName("android.os.SystemProperties");
-                Method get =c.getMethod("get", String.class);
-                stringBuilder.append((String)get.invoke(c, "ro.serialno"));
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }*/
+            stringBuilder.append(L1).append("SERIAL: ").append(Build.SERIAL.equals(unknown)
+                ? "" : Build.SERIAL);
         }
         stringBuilder.append(L1).append("TIME: ").append(Build.TIME);
         stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(Build.TIME, "yyyy-MM-dd"));
-        //获取内核版本
-        /*String os_name = System.getProperty("os.name");
+        
+        stringBuilder.append(L0).append("android.provider.Settings.Secure.");
+        stringBuilder.append(L1).append("get(ANDROID_ID): ").append(Settings.Secure
+            .getString(getContentResolver(), Settings.Secure.ANDROID_ID));
+        
+        //String os_name = System.getProperty("os.name");
         String os_version = System.getProperty("os.version");
-        String os_arch = System.getProperty("os.arch");
+        //String os_arch = System.getProperty("os.arch");
+        String vm_version = System.getProperty("java.vm.version");
+        
         stringBuilder.append(L0).append("java.lang.System.");
-        stringBuilder.append(L1).append("getProperty(\"os.name\"): ");
+        /*stringBuilder.append(L1).append("getProperty(\"os.name\"): ");
         if (os_name != null)
         {
             stringBuilder.append(System.getProperty("os.name"));
-        }
+        }*/
         stringBuilder.append(L1).append("getProperty(\"os.version\"): ");
         if (os_version != null)
         {
             stringBuilder.append(System.getProperty("os.version"));
         }
-        stringBuilder.append(L1).append("getProperty(\"os.arch\"): ");
+        /*stringBuilder.append(L1).append("getProperty(\"os.arch\"): ");
         if (os_arch != null)
         {
             stringBuilder.append(System.getProperty("os.arch"));
         }*/
-        //获取基带版本
-        /*String baseband = "";
+        stringBuilder.append(L1).append("getProperty(\"java.vm.version\"): ");
+        if (vm_version != null)
+        {
+            stringBuilder.append(System.getProperty("java.vm.version"));
+        }
+        
+        //Get baseband.
+        /*stringBuilder.append(L0).append("android.os.SystemProperties.");
+        stringBuilder.append(L1).append("get(\"gsm.version.baseband\"): ");
         try
         {
             Class c = Class.forName("android.os.SystemProperties");
@@ -302,50 +350,61 @@ public class MainActivity extends Activity
             Method m = c.getMethod("get", new Class[] { String.class, String.class });
             Object result = m.invoke(invoker, new Object[] { "gsm.version.baseband",
                 "no message" });
-            baseband = (String)result;
+            stringBuilder.append(result);
         }
         catch (Exception e)
         {
             e.printStackTrace();
+        }*/
+        
+        //Add data for Primer Module
+        map_primer.put("model", model);
+        if (brand.equals(manufacturer))
+        {
+            map_primer.put("brand", brand);
         }
-        stringBuilder.append(L0).append("android.os.SystemProperties.");
-        stringBuilder.append(L1).append("get(\"gsm.version.baseband\"): ").append(baseband);*/
+        else
+        {
+            map_primer.put("brand", String.format("%1$s (%2$s)", brand,
+                "".equals(manufacturer) ? UNKNOWN : manufacturer));
+        }
+        map_primer.put("version", "Android " + release);
         
         return stringBuilder;
     }
-
+    
+    /**
+     * Display Module
+     */
+    @SuppressLint("NewApi")
     private StringBuilder getDisplayInfo()
     {
-        //WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        //Display display = windowManager.getDefaultDisplay();
         Display display = getWindowManager().getDefaultDisplay();
-        //DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        //Another way to get Display.
+        /*WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();*/
+        
         DisplayMetrics displayMetrics = new DisplayMetrics();
         display.getMetrics(displayMetrics);
-        Configuration configuration = getResources().getConfiguration();
+        //Another way to get DisplayMetrics.
+        //DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         
-        int width = -1;//动态改变
-        int height = -1;//动态改变
+        //The values of width and height will be exchanged when device is rotating.
+        int width = -1;
+        int height = -1;
+        
         int rotation = display.getRotation();
+        
         float density = displayMetrics.density;
         int density_dpi = displayMetrics.densityDpi;
         int width_pixels = displayMetrics.widthPixels;
         int height_pixels = displayMetrics.heightPixels;
         float xdpi = displayMetrics.xdpi;
         float ydpi = displayMetrics.ydpi;
-        int orientation = configuration.orientation;
-        int sl_size_mask = configuration.screenLayout
-            & Configuration.SCREENLAYOUT_SIZE_MASK;
-        //int sl_long_mask = configuration.screenLayout
-        //    & Configuration.SCREENLAYOUT_LONG_MASK;
-        Locale locale = configuration.locale;
-        /*int status_bar_height = ExtraUtil.getStatusBarHeight(this);
-        int navigation_bar_height = ExtraUtil.getNavigationBarHeight(this);
-        int action_bar_height = ExtraUtil.getActionBarHeight(this);*/
         
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.view.Display.");
-        //真实分辨率
+        //Get real physical resolution.
         if (SDK >= 17)
         {
             Point point = new Point();
@@ -410,6 +469,13 @@ public class MainActivity extends Activity
         stringBuilder.append(L1).append("ydpi: ").append(displayMetrics.ydpi);
         stringBuilder.append(SPACE).append(UnitUtil.convertInch(height / ydpi));
         
+        Configuration configuration = getResources().getConfiguration();
+
+        int orientation = configuration.orientation;
+        int sl_size_mask = configuration.screenLayout
+            & Configuration.SCREENLAYOUT_SIZE_MASK;
+        Locale locale = configuration.locale;
+        
         stringBuilder.append(L0).append("android.content.res.Configuration.");
         if (SDK >= 13)
         {
@@ -422,45 +488,8 @@ public class MainActivity extends Activity
         stringBuilder.append(L1).append("screenLayout & 15: ").append(sl_size_mask);
         stringBuilder.append(SPACE).append(ConstUtil.getSLSizeMaskStr(sl_size_mask));
         stringBuilder.append(SPACE).append(ConstUtil.getDeviceTypeStr(sl_size_mask));
-        //stringBuilder.append(L1).append("screenLayout & 48: ").append(sl_long_mask);
-        //stringBuilder.append(SPACE).append(ConstUtil.getSLLongMaskStr(sl_long_mask));
         stringBuilder.append(L1).append("locale: ").append(locale);
         stringBuilder.append(SPACE).append(ConstUtil.getLocale(locale));
-        //通过返回“Mobile”判断为手机，否则为平板
-        /*stringBuilder.append(L0).append("WebView.");
-        stringBuilder.append(L1).append(".getSettings().");
-        stringBuilder.append(L2).append(".getUserAgentString(): ").append((new WebView(this))
-            .getSettings().getUserAgentString());*/
-        
-        /*stringBuilder.append(L0).append("status_bar_height: ");
-        if (status_bar_height > 0)
-        {
-            stringBuilder.append(status_bar_height);
-            //标准：25dp
-            stringBuilder.append(SPACE).append(UnitUtil.convertDp(status_bar_height / density));
-        }
-        if (SDK >= 11)
-        {
-            stringBuilder.append(L0).append("action_bar_height: ");
-            if (action_bar_height > 0)
-            {
-                stringBuilder.append(action_bar_height);
-                //标准：48dp
-                stringBuilder.append(SPACE).append(UnitUtil.convertDp(action_bar_height / density));
-            }
-            stringBuilder.append(L0).append("navigation_bar_height: ");
-            if (navigation_bar_height > 0)
-            {
-                stringBuilder.append(navigation_bar_height);
-                //标准：48dp
-                stringBuilder.append(SPACE).append(UnitUtil
-                    .convertDp(navigation_bar_height / density));
-            }
-        }
-        else
-        {
-            
-        }*/
         
         stringBuilder.append(L0).append("Extra:");
         stringBuilder.append(L1).append("Width-height Ratio: ").append(ExtraUtil
@@ -468,26 +497,20 @@ public class MainActivity extends Activity
         stringBuilder.append(SPACE).append(ConstUtil.getResolutionFormat(width, height));
         stringBuilder.append(L1).append("Diagonal Size: ").append(UnitUtil.convertInch(Math
             .sqrt(Math.pow(height / ydpi, 2) + Math.pow(width / xdpi, 2))));
-        //stringBuilder.append(SPACE).append(UnitUtil.convertInch(Math.sqrt(Math
-        //    .pow((double)height / density_dpi, 2) + Math.pow((double)width / density_dpi, 2))));
-        //屏幕休眠时间
-        /*try
-        {
-            float result = Settings.System.getInt(getContentResolver(),
-                Settings.System.SCREEN_OFF_TIMEOUT);
-            System.out.println(result);
-        }
-        catch (Settings.SettingNotFoundException e)
-        {
-            e.printStackTrace();
-        }*/
+        
+        //Add data for Primer Module
+        map_primer.put("resolution", width + "x" + height);
         
         return stringBuilder;
     }
     
+    /**
+     * Telephony Module
+     */
     private StringBuilder getTelephonyInfo()
     {
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        
         int phone_type = telephonyManager.getPhoneType();
         int sim_state = telephonyManager.getSimState();
         String sim_operator = telephonyManager.getSimOperator();
@@ -504,7 +527,8 @@ public class MainActivity extends Activity
         if (!TextUtils.isEmpty(device_id))
         {
             stringBuilder.append(device_id);
-            stringBuilder.append(SPACE).append(ConstUtil.getDeviceIdType(phone_type));
+            stringBuilder.append(SPACE).append(ConstUtil
+                .getDeviceIdType(phone_type, device_id.length()));
         }
         stringBuilder.append(L1).append("getSimState(): ").append(sim_state);
         stringBuilder.append(SPACE).append(ConstUtil.getSimStateStr(sim_state));
@@ -526,33 +550,117 @@ public class MainActivity extends Activity
         stringBuilder.append(L1).append("getNetworkType(): ").append(network_type);
         stringBuilder.append(SPACE).append(ConstUtil.getNetworkTypeStr(network_type));
         
-        String android_id = Settings.Secure.getString(getContentResolver(),
-            Settings.Secure.ANDROID_ID);
-        stringBuilder.append(L0).append("android.provider.Settings.Secure.");
-        stringBuilder.append(L1).append("get(ANDROID_ID): ").append(android_id);
+        //Add data for Primer Module
+        map_primer.put("imei", TextUtils.isEmpty(device_id) ? UNKNOWN : device_id);
+        map_primer.put("imsi", TextUtils.isEmpty(subscriber_id) ? UNKNOWN : subscriber_id);
         
         return stringBuilder;
     }
     
+    /**
+     * CPU Module
+     */
     private StringBuilder getCPUInfo()
     {
+        String text = ExtraUtil.readFile("/proc/cpuinfo");
+
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append(ExtraUtil.getCPUName());
-        stringBuilder.append(L0).append(ExtraUtil.getCPUFreq(true));
-        stringBuilder.append(L0).append(ExtraUtil.getCPUFreq(false));
-        stringBuilder.append(L0).append(ExtraUtil.getCPUCores());
+        stringBuilder.append(L).append("/proc/cpuinfo");
+        //There is not a string “Processor” in few devices.
+        if (text.contains("model name"))
+        {
+            stringBuilder.append(L1).append("model name: ");
+            int index = text.indexOf("model name");
+            stringBuilder.append(text.substring(index + 13, text.indexOf("\n", index)));
+        }
+        else
+        {
+            stringBuilder.append(L1).append("Processor: ");
+            if (text.contains("Processor"))
+            {
+                int index = text.indexOf("Processor");
+                stringBuilder.append(text.substring(index + 12, text.indexOf("\n", index)));
+            }
+        }
+        
+        //There is not a string “Hardware” in few devices.
+        if (text.contains("vendor_id"))
+        {
+            stringBuilder.append(L1).append("vendor_id: ");
+            int index = text.indexOf("vendor_id");
+            stringBuilder.append(text.substring(index + 12, text.indexOf("\n", index)));
+        }
+        else
+        {
+            stringBuilder.append(L1).append("Hardware: ");
+            if (text.contains("Hardware"))
+            {
+                int index = text.indexOf("Hardware");
+                stringBuilder.append(text.substring(index + 11, text.indexOf("\n", index)));
+            }
+        }
+        
+        final String CPU_PATH = "/sys/devices/system/cpu/";
+        final String CPU0_PATH = CPU_PATH + "cpu0/cpufreq/";
+        final String CPUINFO_MIN_FREQ = "cpuinfo_min_freq";
+        final String CPUINFO_MAX_FREQ = "cpuinfo_max_freq";
+        final String SCALING_GOVERNOR = "scaling_governor";
+        
+        int cores = ExtraUtil.getCPUCores();
+        int min_freq = ExtraUtil.convertInt(ExtraUtil
+            .readFile(CPU0_PATH + CPUINFO_MIN_FREQ));
+        int max_freq = ExtraUtil.convertInt(ExtraUtil
+            .readFile(CPU0_PATH + CPUINFO_MAX_FREQ));
+        String governor = ExtraUtil.readFile(CPU0_PATH + SCALING_GOVERNOR).trim();
+        
+        stringBuilder.append(L0).append(CPU_PATH);
+        stringBuilder.append(L1).append("cpu[0-9]/  ").append(cores);
+        stringBuilder.append(L1).append("cpu0/cpufreq/");
+        stringBuilder.append(L2).append(CPUINFO_MIN_FREQ).append(": ");
+        if (min_freq != -1)
+        {
+            stringBuilder.append(min_freq);
+            stringBuilder.append(SPACE).append(UnitUtil.convertFreq(min_freq));
+        }
+        stringBuilder.append(L2).append(CPUINFO_MAX_FREQ).append(": ");
+        if (max_freq != -1)
+        {
+            stringBuilder.append(max_freq);
+            stringBuilder.append(SPACE).append(UnitUtil.convertFreq(max_freq));
+        }
+        stringBuilder.append(L2).append(SCALING_GOVERNOR).append(": ");
+        stringBuilder.append(governor);
+        
+        //Add data for Primer Module
+        if (min_freq == -1 && max_freq == -1)
+        {
+            map_primer.put("cpu", String.format("%1$s (%2$dx)", UNKNOWN, cores));
+        }
+        else
+        {
+            map_primer.put("cpu", String.format("%1$s-%2$s (%3$dx)",
+                (min_freq == -1 ? UNKNOWN : UnitUtil.convertFreq(min_freq)),
+                (max_freq == -1 ? UNKNOWN : UnitUtil.convertFreq(max_freq)), cores));
+        }
         
         return stringBuilder;
 	}
     
+    /**
+     * Memory Module
+     */
+    @SuppressLint("NewApi")
     private StringBuilder getMemoryInfo()
     {
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        int gles_version = activityManager.getDeviceConfigurationInfo().reqGlEsVersion;
         ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
-        int mem_class = activityManager.getMemoryClass();//MB
-        long threshold = memoryInfo.threshold;//Byte
+        
+        int gles_version = activityManager.getDeviceConfigurationInfo().reqGlEsVersion;
+        int mem_class = activityManager.getMemoryClass();//Unit: MB
+        long threshold = memoryInfo.threshold;//Unit: byte
+        long total_mem;
+        long avail_mem = memoryInfo.availMem;//Unit: byte
         
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.app.ActivityManager.");
@@ -564,7 +672,7 @@ public class MainActivity extends Activity
         stringBuilder.append(SPACE).append(UnitUtil.convertMemory(mem_class * 1024 * 1024));
         if (SDK >= 11)
         {
-            int large_mem_class = activityManager.getLargeMemoryClass();//MB
+            int large_mem_class = activityManager.getLargeMemoryClass();//Unit: MB
             stringBuilder.append(L1).append("getLargeMemoryClass(): ").append(large_mem_class);
             stringBuilder.append(SPACE).append(UnitUtil
                 .convertMemory(large_mem_class * 1024 * 1024));
@@ -574,18 +682,32 @@ public class MainActivity extends Activity
         stringBuilder.append(SPACE).append(UnitUtil.convertMemory(threshold));
         if (SDK >= 16)
         {
-            long total_mem = memoryInfo.totalMem;//Byte
+            total_mem = memoryInfo.totalMem;//Unit: byte
             stringBuilder.append(L2).append("totalMem: ").append(total_mem);
             stringBuilder.append(SPACE).append(UnitUtil.convertMemory(total_mem));
+            stringBuilder.append(L2).append("availMem: ").append(avail_mem);
+            stringBuilder.append(SPACE).append(UnitUtil.convertMemory(avail_mem));
+            stringBuilder.append(SPACE).append(UnitUtil.convertPercent(total_mem, avail_mem));
         }
         else
         {
-            stringBuilder.append(L0).append(ExtraUtil.getTotalRAM());
+            total_mem = ExtraUtil.getTotalRAM() * 1024;//Unit: byte
+            stringBuilder.append(L2).append("availMem: ").append(avail_mem);
+            stringBuilder.append(SPACE).append(UnitUtil.convertMemory(avail_mem));
+            stringBuilder.append(L0).append("/proc/meminfo");
+            stringBuilder.append(L1).append("MemTotal: ");
+            if (total_mem != -1)
+            {
+                stringBuilder.append(total_mem / 1024);
+                stringBuilder.append(SPACE).append(UnitUtil.convertMemory(total_mem));
+            }
         }
         
-        stringBuilder.append(L0).append("android.os.Environment.");
+        String state = Environment.getExternalStorageState();
         File dir = Environment.getRootDirectory();
         long[] usage = ExtraUtil.getStorageUsage(dir);
+        
+        stringBuilder.append(L0).append("android.os.Environment.");
         stringBuilder.append(L1).append("getRootDirectory(): ").append(ExtraUtil.getPathRuled(dir));
         stringBuilder.append(L2).append("Total Size: ").append(usage[0]);
         stringBuilder.append(SPACE).append(UnitUtil.convertMemory(usage[0]));
@@ -600,7 +722,6 @@ public class MainActivity extends Activity
         stringBuilder.append(L2).append("Available Size: ").append(usage[1]);
         stringBuilder.append(SPACE).append(UnitUtil.convertMemory(usage[1]));
         stringBuilder.append(SPACE).append(UnitUtil.convertPercent(usage));
-        String state = Environment.getExternalStorageState();
         stringBuilder.append(L1).append("getExternalStorageState(): ").append(state);
         stringBuilder.append(SPACE).append(ConstUtil.getExternalStorageState(state));
         if (SDK >= 9)
@@ -627,63 +748,63 @@ public class MainActivity extends Activity
             stringBuilder.append(L2).append("Total Size: ");
             stringBuilder.append(L2).append("Available Size: ");
         }
-        //通过反射获取存储器列表
+        
+        //Get all available storage by reflecting.
         if (SDK >= 9)
         {
             stringBuilder.append(L0).append("android.os.storage.StorageManager.");
-            stringBuilder.append(L1).append("getVolumePaths().");
+            stringBuilder.append(L1).append("getVolumePaths():");
             StorageManager storageManager = (StorageManager)
                 getSystemService(STORAGE_SERVICE);
             try
             {
-                Method method = storageManager.getClass().getMethod("getVolumePaths");
-                String[] paths = (String[]) method.invoke(storageManager);
-                File temp_file;
-                for (String path : paths)
+                Method method = storageManager.getClass().getDeclaredMethod("getVolumePaths");
+                method.setAccessible(true);
+                Object object = method.invoke(storageManager);
+                if (object != null && object instanceof String[])
                 {
-                    temp_file = new File(path);
-                    stringBuilder.append(L2).append(ExtraUtil.getPathRuled(path));
-                    stringBuilder.append(SPACE).append(temp_file.exists()
-                                                       && temp_file.canRead());
+                    String[] paths = (String[])object;
+                    File temp_file;
+                    for (String path : paths)
+                    {
+                        temp_file = new File(path);
+                        stringBuilder.append(L2).append(ExtraUtil.getPathRuled(path));
+                        stringBuilder.append(SPACE).append(temp_file.exists()
+                            && temp_file.canRead());
+                    }
                 }
             }
-            catch (NoSuchMethodException e)
-            {
-                e.printStackTrace();
-            }
-            catch (IllegalArgumentException e)
-            {
-                e.printStackTrace();
-            }
-            catch (IllegalAccessException e)
-            {
-                e.printStackTrace();
-            }
-            catch (InvocationTargetException e)
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
         
+        //Add data for Primer Module
+        map_primer.put("ram", total_mem == -1 ? UNKNOWN : UnitUtil.convertMemory(total_mem));
+        
         return stringBuilder;
 	}
     
+    /**
+     * Package Module
+     */
     private StringBuilder getPackageInfo()
     {
         PackageManager packageManager = getPackageManager();
-
+        List<String> features = new ArrayList<String>();
+        
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.content.pm.PackageManager.");
         stringBuilder.append(L1).append("getSystemAvailableFeatures():");
 
-        List<String> features = new ArrayList<String>();
-        String temp;
+        String temp_str;
         for (FeatureInfo featureInfo : packageManager.getSystemAvailableFeatures())
         {
-            temp = featureInfo.name;
-            if (temp != null)
+            temp_str = featureInfo.name;
+            if (temp_str != null)
             {
-                features.add(temp);
+                features.add(temp_str);
             }
         }
         Collections.sort(features);
@@ -692,10 +813,53 @@ public class MainActivity extends Activity
             stringBuilder.append(L2).append(feature);
             stringBuilder.append(SPACE).append(ConstUtil.getFeature(feature));
         }
-
+        
+        /*String[] libraries = packageManager.getSystemSharedLibraryNames();
+        Arrays.sort(libraries);
+        stringBuilder.append(L1).append("getSystemSharedLibraryNames():");
+        for (String library : libraries)
+        {
+            stringBuilder.append(L2).append(library);
+        }*/
+        
+        //Add data for Primer Module
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_GSM))
+        {
+            if (packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_CDMA))
+            {
+                map_primer.put("phone_type", "GSM/CDMA");
+            }
+            else
+            {
+                map_primer.put("phone_type", "GSM");
+            }
+        }
+        else if (packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_CDMA))
+        {
+            map_primer.put("phone_type", "CDMA");
+        }
+        else
+        {
+            //It's probably that the device doesn't has a telephony radio
+            //with data communication support.
+            map_primer.put("phone_type", UNKNOWN);
+        }
+        map_primer.put("gyroscope", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE) ? "Yes" : "No");//API 9
+        map_primer.put("nfc", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_NFC) ? "Yes" : "No");//API 9
+        map_primer.put("otg", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_USB_HOST) ? "Yes" : "No");//API 12
+        map_primer.put("heart_rate", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_SENSOR_HEART_RATE) ? "Yes" : "No");//API 20
+        
         return stringBuilder;
 	}
-
+    
+    /**
+     * Sensor Module
+     */
+    @TargetApi(21)
     private StringBuilder getSensorInfo()
     {
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -703,44 +867,63 @@ public class MainActivity extends Activity
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.hardware.SensorManager.");
         stringBuilder.append(L1).append("getSensorList(Sensor.TYPE_ALL):");
-
+        
+        Sensor temp_sensor;
         for (int i = 1; i <= 21; ++ i)
         {
-            if (sensorManager.getDefaultSensor(i) != null)
+            temp_sensor = sensorManager.getDefaultSensor(i);
+            if (temp_sensor != null)
             {
                 stringBuilder.append(L2).append(i);
                 stringBuilder.append(SPACE).append(ConstUtil.getSensorTypeStr(i));
+                if (SDK >= 21)
+                {
+                    stringBuilder.append(SPACE).append(temp_sensor.isWakeUpSensor());
+                }
             }
         }
-
+        
         return stringBuilder;
 	}
-
+    
+    /**
+     * Superuser Module
+     */
     private StringBuilder getRootInfo()
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("SuperSu:");
-        
         final String[] SU_PATHS = { "/system/bin/su", "/system/xbin/su",
             "/system/sbin/su", "/sbin/su", "/vendor/bin/su" };
+        
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(L).append("Superuser:");
+        
+        boolean rooted = false;
         for (String path : SU_PATHS)
         {
             if ((new File(path)).exists())
             {
+                rooted = true;
                 stringBuilder.append(L1).append(path);
                 stringBuilder.append(SPACE).append("true");
             }
         }
+        
+        //Add data for Primer Module
+        map_primer.put("root", rooted ? "Yes" : "No");
 
         return stringBuilder;
     }
     
+    /**
+     * Security Module
+     */
     /*private StringBuilder getSecurityInfo()
     {
+        Provider[] providers = Security.getProviders();
+        
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("java.secirity.Security.");
         stringBuilder.append(L1).append("getProviders():");
-        Provider[] providers = Security.getProviders();
         for (Provider provider : providers)
         {
             stringBuilder.append(L2).append(provider.getName());
@@ -761,14 +944,17 @@ public class MainActivity extends Activity
         return stringBuilder;
     }*/
     
+    /**
+     * Time Module
+     */
     private StringBuilder getTimeInfo()
     {
-        //当前时间
-        long current_time = System.currentTimeMillis();
-        //开机时间
-        long elapsed_realtime = SystemClock.elapsedRealtime();
-        //唤醒时间
-        long uptime_millis = SystemClock.uptimeMillis();
+        //The current time in milliseconds since January 1, 1970 00:00:00.0 UTC.
+        long current_time = System.currentTimeMillis();//Unit: ms
+        //Milliseconds since boot, including time spent in sleep.
+        long elapsed_realtime = SystemClock.elapsedRealtime();//Unit: ms
+        //Milliseconds since boot, not counting time spent in deep sleep.
+        long uptime_millis = SystemClock.uptimeMillis();//Unit: ms
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("java.lang.System.");
@@ -784,39 +970,85 @@ public class MainActivity extends Activity
         return stringBuilder;
     }
     
+    /**
+     * About Module
+     */
     private StringBuilder getAboutInfo()
     {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("About:");
         stringBuilder.append(L1).append(ExtraUtil.getVerInfo(this));
-        stringBuilder.append(L1).append("Typeface: Monaco.ttf");
-        stringBuilder.append(L1).append("Developer: By_syk");
+        stringBuilder.append(L1).append("Typeface: ").append("Monaco.ttf");
+        stringBuilder.append(L1).append("Developer: ").append("By_syk");
         stringBuilder.append(L1).append(getString(R.string.copyright));
 
         return stringBuilder;
     }
+    
     /**
-     * 标尺线（宽度为100字符）
+     * Primer Module
+     */
+    private StringBuilder getPrimerInfo()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Primer:");
+        stringBuilder.append(L1).append("Device Model:         ").append(map_primer.get("model"));
+        stringBuilder.append(L1).append("Brand & Manufacturer: ").append(map_primer.get("brand"));
+        stringBuilder.append(L1).append("System Version:       ").append(map_primer.get("version"));
+        stringBuilder.append(L1).append("Screen Resolution:    ").append(map_primer.get("resolution"));
+        if (!map_primer.get("phone_type").equals(UNKNOWN))
+        {
+            stringBuilder.append(L1).append("Phone Type:           ").append(map_primer.get("phone_type"));
+            stringBuilder.append(L1).append("IMEI/MEID/ESN:        ").append(map_primer.get("imei"));
+            stringBuilder.append(L1).append("IMSI:                 ").append(map_primer.get("imsi"));
+        }
+        stringBuilder.append(L1).append("CPU Clock Speed:      ").append(map_primer.get("cpu"));
+        stringBuilder.append(L1).append("Total RAM:            ").append(map_primer.get("ram"));
+        if (SDK >= 9)
+        {
+            stringBuilder.append(L1).append("Gyroscope Sensor:     ").append(map_primer.get("gyroscope"));
+            stringBuilder.append(L1).append("NFC:                  ").append(map_primer.get("nfc"));
+        }
+        if (SDK >= 12)
+        {
+            stringBuilder.append(L1).append("OTG (USB Host):       ").append(map_primer.get("otg"));
+        }
+        if (SDK >= 20)
+        {
+            stringBuilder.append(L1).append("Heart Rate Monitor:   ").append(map_primer.get("heart_rate"));
+        }
+        stringBuilder.append(L1).append("Root Access:          ").append(map_primer.get("root"));
+        
+        return stringBuilder;
+    }
+    
+    /**
+     * Create Line on the top and the bottom.
+     * 100 characters in total.
      */
     private StringBuilder getDotsLine()
     {
-        //final String LAUNCH_TIMES = String.valueOf(sharedPreferences.getInt("launch_times", 1));
-
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < 10; ++ i)
         {
             stringBuilder.append(i).append("+++++++++");
         }
-        //stringBuilder.replace(stringBuilder.length() - LAUNCH_TIMES.length(),
-        //    stringBuilder.length(), LAUNCH_TIMES);
+        
+        //Just have fun.
+        String hex_launch_times = "H" + Integer.toHexString(sharedPreferences
+            .getInt("launch_times", 1)).toUpperCase();
+        stringBuilder.replace(stringBuilder.length() - hex_launch_times.length(),
+            stringBuilder.length(), hex_launch_times);
         
         return stringBuilder;
     }
+    
     /**
-     * Share the Page
-     * 弹出对话框询问是否将“Telephony”信息加入文本中
+     * Dialog: Share the Page
+     * Ask user whether to add “Telephony Module” to the sharing text file or not.
+     * @param TO_DEVELOPER Whether or not to "Share the Page" to developer.
      */
-    private void shareTextDialog()
+    private void shareTextDialog(final boolean TO_DEVELOPER)
     {
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_file, null);
         ((TextView) viewGroup.findViewById(R.id.tv_file)).setText(sb_telephony);
@@ -829,7 +1061,7 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(DialogInterface p1, int p2)
                 {
-                    shareText(true);
+                    shareText(true, TO_DEVELOPER);
                 }
             })
             .setNegativeButton(R.string.dia_neg_no, new DialogInterface.OnClickListener()
@@ -837,16 +1069,18 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(DialogInterface p1, int p2)
                 {
-                    shareText(false);
+                    shareText(false, TO_DEVELOPER);
                 }
             })
             .create();
         alertDialog.show();
     }
+    
     /**
-     * 分享文本
+     * Create the sharing text file.
+     * @param to_developer Whether or not to "Share the Page" to developer.
      */
-    private void shareText(boolean with_telephony)
+    private void shareText(boolean with_telephony, boolean to_developer)
     {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(sb_line);
@@ -864,53 +1098,64 @@ public class MainActivity extends Activity
         stringBuilder.append(L0).append(L0).append(L_N).append(sb_time);
         stringBuilder.append(L0).append(L0).append(L_N).append(sb_about);
         stringBuilder.append(L0).append(L_N).append(sb_line);
-        //文件名：设备信息__附加信息__应用信息.info.txt
+        
+        //File name: Device Info__Extra Info__OSBuild Info.info.txt
         final String FILE_NAME = with_telephony ? "%1$s__wT__%2$s.info.txt" : "%1$s__%2$s.info.txt";
-        String device = String.format("%1$s_%2$s", Build.MODEL, SDK);
+        String device = String.format("%1$s_%2$s_%3$s", Build.BRAND, Build.MODEL, SDK);
         String app = ExtraUtil.getVerInfo(this);
         String file_target_name = String.format(FILE_NAME, device, app);
         final File FILE_TARGET = new File(getExternalCacheDir(), file_target_name);
 
         if (ExtraUtil.saveFile(FILE_TARGET, stringBuilder.toString().trim()))
         {
-            share(FILE_TARGET);
+            share(FILE_TARGET, to_developer);
         }
     }
+    
     /**
-     * 发送指定文件
+     * Send the certain file via Intent.
+     * @param to_developer Whether or not to "Share the Page" to developer.
      */
-    private void share(File file)
+    private void share(File file, boolean to_developer)
     {
-        Uri uri = Uri.fromFile(file);
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra("subject", file.getName());
-        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        // If true, it's from Donate dialog and send to developer.
+        if (to_developer)
+        {
+            intent.putExtra(Intent.EXTRA_EMAIL,
+                new String[] { getString(R.string.my_email) });
+        }
+        //The "subject" is the name of the sending file.
+        intent.putExtra(Intent.EXTRA_SUBJECT, file.getName());
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
         intent.setType("*/*");
         startActivity(Intent.createChooser(intent,
             getString(R.string.share_via)));
     }
+    
     /**
-     * Share OSBuild
-     * 分享本程序
+     * Share the app, OSBuild.
      */
     private void shareApp()
     {
         File file = ExtraUtil.pickUpMyPackage(this);
         if (file != null)
         {
-            share(file);
+            share(file, false);
         }
     }
+    
     /**
-     * Constant Reference
-     * 相关常量列表对话框
+     * Dialog: Constant Reference
+     * List modules to view its constant used in the page.
      */
     private void constDialog()
     {
         final String[] CONST_FILES = { "Build Module", "Display Module",
-            "Telephony Module", "Memory Module", "Package Module", "Sensor Module" };
+            "Telephony Module", "CPU Module", "Memory Module",
+            "Package Module", "Sensor Module" };
         final int[] CONST_FILES_ID = { R.raw.build, R.raw.display,
-            R.raw.tel, R.raw.mem, R.raw.pkg, R.raw.sensor };
+            R.raw.tel, R.raw.cpu, R.raw.mem, R.raw.pkg, R.raw.sensor };
         
         AlertDialog alertDialog = new AlertDialog.Builder(this)
             .setTitle(R.string.dia_title_const)
@@ -926,10 +1171,12 @@ public class MainActivity extends Activity
             .create();
         alertDialog.show();
     }
+    
     /**
-     * 显示指定程序内置文件内容对话框
-     * @param file_id 文本文件资源ID
-     * @param title 对话框标题（文件名）
+     * Dialog
+     * Show the content of certain text file.
+     * @param file_id The id of target text file.
+     * @param title The title of the dialog.
      */
     private void showTextFileDialog(int file_id, String title)
     {
@@ -945,38 +1192,33 @@ public class MainActivity extends Activity
             .create();
         alertDialog.show();
     }
+    
     /**
-     * View System Files
-     * 显示支持读取的系统文件列表对话框
-     * （包括一些需要ROOT权限的文件）
+     * Dialog: View System Files
+     * List some system text files to view its content.
+     * Some may require root permission.
      */
     private void sysFilesDialog()
     {
         final ArrayList<String> LIST_TITLE = new ArrayList<>();
         final ArrayList<String> LIST_PATH = new ArrayList<>();
-        //WiFi密码
+        //About WiFi passwords.
         LIST_TITLE.add("wpa_supplicant.conf");
         LIST_PATH.add("/data/misc/wifi/wpa_supplicant.conf");
-        //开机时间（仅MTK）
+        //About time of booting. (Only for MTK)
         String boot_proc = "/proc/bootprof";
         if ((new File(boot_proc).exists()))
         {
             LIST_TITLE.add("bootprof");
             LIST_PATH.add("/proc/bootprof");
         }
-        //CPU
+        //About CPU.
         LIST_TITLE.add("cpuinfo");
         LIST_PATH.add("/proc/cpuinfo");
-        //Memory
+        //About Memory.
         LIST_TITLE.add("meminfo");
         LIST_PATH.add("/proc/meminfo");
-        //内核版本
-        /*LIST_TITLE.add("version");
-        LIST_PATH.add("/proc/version");*/
-        //CPU可用频率
-        /*LIST_TITLE.add("scaling_available_frequencies");
-        LIST_PATH.add("/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies");*/
-        //系统信息
+        //About build.
         LIST_TITLE.add("build.prop");
         LIST_PATH.add("/system/build.prop");
         
@@ -995,20 +1237,26 @@ public class MainActivity extends Activity
             .create();
         alertDialog.show();
     }
+    
     /**
-     * 弹出对话框询问是否继续读取需ROOT权限的文件
-     * 不需要ROOT权限则跳过
+     * Dialog: Warning
+     * Ask user whether to read text file which requires root permission or not.
+     * If the file doesn's require root permission or user has hidden the dialog before,
+     * skip over the dialog.
      */
     private void askSUDialog(final String FILE_STR)
     {
         File file = new File(FILE_STR);
-        if (file.canRead())//不需要ROOT权限
+        if (file.canRead())
         {
+            //Does not require root permission.
             showTextFileDialog(FILE_STR, false);
             return;
         }
         else if (sharedPreferences.getBoolean("not_show_su", false))
         {
+            //Requires require root permission.
+            //User has hidden the asking dialog before, so just continue.
             showTextFileDialog(FILE_STR, true);
             return;
         }
@@ -1043,24 +1291,26 @@ public class MainActivity extends Activity
             .create();
         alertDialog.show();
     }
+    
     /**
-     * 显示指定（系统）文件内容对话框
-     * @param file_str 文件路径
-     * @param need_su 是否需要ROOT权限
+     * Dialog
+     * Show the content of certain text file.
+     * @param file_str The path of target text file.
+     * @param need_su Requires root permission or not.
      */
     private void showTextFileDialog(String file_str, boolean need_su)
     {
         File file = new File(file_str);
         StringBuilder stringBuilder = new StringBuilder(file_str);
-        //文件最后修改时间
-        //stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(file.lastModified()));
         stringBuilder.append("\n\n");
-        if (need_su)//需要ROOT权限
+        if (need_su)
         {
-            stringBuilder.append(ExtraUtil.readFileRoot(this, file));
+            //Requires require root permission.
+            stringBuilder.append(ExtraUtil.readFileRoot(file));
         }
-        else//不需要ROOT权限
+        else
         {
+            //Does not require require root permission.
             stringBuilder.append(ExtraUtil.readFile(file));
         }
         
@@ -1074,27 +1324,28 @@ public class MainActivity extends Activity
             .create();
         alertDialog.show();
     }
+    
     /**
-     * System Settings
-     * 快捷系统设置列表对话框
+     * Dialog: System Settings
+     * List some system settings.
      */
     private void sysSettingsDialog()
     {
         final ArrayList<String> LIST_TITLE = new ArrayList<>();
         final ArrayList<String> LIST_PKG = new ArrayList<>();
         final ArrayList<String> LIST_CLASS = new ArrayList<>();
-        //开发者选项
+        //Developement Options
         LIST_TITLE.add("Development");
         LIST_PKG.add("com.android.settings");
         LIST_CLASS.add("com.android.settings.DevelopmentSettings");
-        //硬件检测（仅MIUI）
+        //Hardware Test (Only MIUI)
         if (Build.MANUFACTURER.equals("Xiaomi"))
         {
             LIST_TITLE.add("MIUI Cit");
             LIST_PKG.add("com.miui.cit");
             LIST_CLASS.add("com.miui.cit.CitLauncherActivity");
         }
-        //测试
+        //Test
         LIST_TITLE.add("Testing");
         LIST_PKG.add("com.android.settings");
         LIST_CLASS.add("com.android.settings.TestingSettings");
@@ -1115,9 +1366,9 @@ public class MainActivity extends Activity
         alertDialog.show();
     }
     /**
-     * 通过Intent启动指定Activity
-     * @param package_name 包名
-     * @param class_name 类名
+     * Launch certain Activity via Intent.
+     * @param package_name Package name
+     * @param class_name Class name
      */
     private void gotoSysSettings(String package_name, String class_name)
     {
@@ -1135,10 +1386,11 @@ public class MainActivity extends Activity
         }
     }
     /**
-     * Donate
-     * 捐赠对话框（询问是否反馈一份设备信息给开发者）
-     * 项目开源链接置于此对话框
+     * Dialog: Donate
+     * Request user to "Share the Page" to me by E-mail.
+     * And the neutral button points to the url of this project on GitHub.
      */
+    @TargetApi(11)
     private void donateDialog()
     {
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text, null);
@@ -1152,7 +1404,8 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(DialogInterface p1, int p2)
                 {
-                    if (SDK >= 11)
+                    //Strategy 1: Just copy developer's E-mail.
+                    /*if (SDK >= 11)
                     {
                         ClipboardManager clipboardManager = (ClipboardManager)
                             getSystemService(CLIPBOARD_SERVICE);
@@ -1165,7 +1418,9 @@ public class MainActivity extends Activity
                             getSystemService(CLIPBOARD_SERVICE);
                         clipboardManager.setText(getString(R.string.my_email));
                     }
-                    Toast.makeText(MainActivity.this, R.string.copied, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.copied, Toast.LENGTH_SHORT).show();*/
+                    //Strategy 2: Link to "Share the Page" directly.
+                    shareTextDialog(true);
                 }
             })
             .setNeutralButton(R.string.dia_neu_github, new DialogInterface.OnClickListener()
@@ -1174,7 +1429,7 @@ public class MainActivity extends Activity
                 public void onClick(DialogInterface p1, int p2)
                 {
                     Intent intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/by-syk/OSBuild"));
+                        Uri.parse(getString(R.string.program_github)));
                     startActivity(intent);
                 }
             })
@@ -1183,22 +1438,13 @@ public class MainActivity extends Activity
         alertDialog.show();
     }
     /**
-     * 启动程序时弹出对话框显示描述信息，帮助用户了解程序用途。
+     * Dialog: What's OSBuild?
+     * Show description about OSBuild.
      */
-    private void aboutDialog()
+    private void appDescDialog()
     {
-        String text = "";
-        try
-        {
-            text = ExtraUtil.readFile(getAssets().open("desc.txt"));
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text_ask, null);
-        ((MyTextView) viewGroup.findViewById(R.id.tv_desc)).setText(text);
+        ((MyTextView) viewGroup.findViewById(R.id.tv_desc)).setText(R.string.app_desc);
         
         ((CheckBox) viewGroup.findViewById(R.id.cb_not_show))
             .setOnCheckedChangeListener(new OnCheckedChangeListener()
@@ -1218,7 +1464,17 @@ public class MainActivity extends Activity
             .create();
         alertDialog.show();
     }
-
+    
+    /**
+     * Menu:
+     *     Share...
+     *         Share the Page
+     *         Share OSBuild
+     *     Constant Reference
+     *     View System Files
+     *     System Settings
+     *     Donate
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -1232,7 +1488,7 @@ public class MainActivity extends Activity
         switch (item.getItemId())
         {
             case R.id.action_sub_share_text:
-                shareTextDialog();
+                shareTextDialog(false);
                 return true;
             case R.id.action_sub_share_app:
                 shareApp();

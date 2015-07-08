@@ -4,19 +4,14 @@
         android:title="@string/action_share"
         android:icon="@mipmap/ic_menu_share"
         android:showAsAction="always">
-
         <menu>
-
             <item
                 android:id="@+id/action_sub_share_text"
                 android:title="@string/action_sub_share_text"/>
-
             <item
                 android:id="@+id/action_sub_share_app"
                 android:title="@string/action_sub_share_app"/>
-
         </menu>
-
     </item>
 
     <item

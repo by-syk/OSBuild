@@ -23,25 +23,23 @@ import java.util.Locale;
 import java.text.DecimalFormat;
 import java.io.PrintWriter;
 
+/**
+ * @author By_syk
+ */
 public class ExtraUtil
 {
-    //private static String L = "";
-    private static String L0 = "\n";
-    private static String L1 = "\n   ";
-    private static String L2 = "\n      ";
-    //private static String L3 = "\n         ";
-    private static String SPACE = "  ";
     /**
-     * @param format: y year
-     *              M month in the year
-     *              d day
-     *              h hours(12)
-     *              H hours(24)
-     *              m minute
-     *              s second
-     *              S millisecond
-     *              E weekday
-     *              D days in the year
+     * @param format:
+     *     y year
+     *     M month in the year
+     *     d day
+     *     h hours(12)
+     *     H hours(24)
+     *     m minute
+     *     s second
+     *     S millisecond
+     *     E weekday
+     *     D days in the year
      */
     public static String convertMillisTime(long time_millis, String format)
     {
@@ -67,71 +65,18 @@ public class ExtraUtil
         return convertMillisTime(time_millis, "yyyy-MM-dd HH:mm:ss");
     }
     
+    /*public static String convertMillisTime(String format)
+    {
+        return convertMillisTime(System.currentTimeMillis(), format);
+    }*/
+    
     /*public static String getCurTime()
     {
         return convertMillisTime(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss");
     }*/
+    
     /**
-     * 获取状态栏高度（px）
-     */
-    /*public static int getStatusBarHeight(Context context)
-    {
-        Class<?> c;
-        Object obj;
-        Field field;
-        int x;
-        int result = -1;
-        try
-        {
-            c = Class.forName("com.android.internal.R$dimen");
-            obj = c.newInstance();
-            field = c.getField("status_bar_height");
-            x = Integer.parseInt(field.get(obj).toString());
-            result = context.getResources().getDimensionPixelSize(x);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return result;
-    }*/
-    /**
-     * 获取ActionBar高度（px）
-     */
-    /*public static int getActionBarHeight(Context context)
-    {
-        TypedValue typedValue = new TypedValue();
-        int result = -1;
-        if (context.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true))
-        {
-            result = TypedValue.complexToDimensionPixelSize(typedValue.data,
-                context.getResources().getDisplayMetrics());
-        }
-
-        return result;
-    }*/
-    /**
-     * 获取导航栏高度（px）
-     */
-    /*public static int getNavigationBarHeight(Context context)
-    {
-        int result = -1;
-        try
-        {
-            Resources resources = context.getResources();
-            int x = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-            result = resources.getDimensionPixelSize(x);
-        }
-        catch (Resources.NotFoundException e)
-        {
-            e.printStackTrace();
-        }
-
-        return result;
-    }*/
-    /**
-     * 获取本应用安装包的路径，/data/app目录下。
+     * Get the apk path of OSBuild, always located in /data/app/.
      */
     public static File pickUpMyPackage(Context context)
     {
@@ -149,7 +94,7 @@ public class ExtraUtil
         File file_s = new File(apk_path);
         File file_t = new File(context.getExternalCacheDir(),
             getVerInfo(context) + ".apk");
-        //已提取则不提取
+        //If the same file exists, just return it.
         if (file_s.exists() && file_t.exists() && file_s.length() == file_t.length())
         {
             return file_t;
@@ -158,8 +103,9 @@ public class ExtraUtil
         
         return file_t.exists() ? file_t : null;
     }
+    
     /**
-     * 高效文件复制方法（通过文件通道）
+     * Effective way to copy files by file channel.
      */
     public static void fileChannelCopy(File source, File target)
     {
@@ -171,9 +117,9 @@ public class ExtraUtil
         {
             fis = new FileInputStream(source);
             fos = new FileOutputStream(target);
-            fc_in = fis.getChannel();//得到对应的文件通道
-            fc_out = fos.getChannel();//得到对应的文件通道
-            fc_in.transferTo(0, fc_in.size(), fc_out);//连接两个通道，并且从in通道读取，然后写入out通道
+            fc_in = fis.getChannel();
+            fc_out = fos.getChannel();
+            fc_in.transferTo(0, fc_in.size(), fc_out);
         }
         catch (IOException e)
         {
@@ -220,6 +166,9 @@ public class ExtraUtil
         }
     }
     
+    /**
+     * Read text file from its InputStream.
+     */
     public static String readFile(InputStream is)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -238,7 +187,10 @@ public class ExtraUtil
         }
         return baos.toString();
     }
-
+    
+    /**
+     * Read certain text file.
+     */
     public static String readFile(File file)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -272,18 +224,26 @@ public class ExtraUtil
         return baos.toString();
     }
     
+    /**
+     * Read certain text file.
+     * @param file_str The path of reading text file.
+     */
     public static String readFile(String file_str)
     {
         return readFile(new File(file_str));
     }
     
-    public static boolean saveFile(File path, String text)
+    /**
+     * Save text to certain file.
+     * @param target_file The file to load the text.
+     */
+    public static boolean saveFile(File target_file, String text)
     {
         boolean result = false;
         FileOutputStream fos = null;
         try
         {
-            fos = new FileOutputStream(path);
+            fos = new FileOutputStream(target_file);
             fos.write(text.getBytes());
             result = true;
         }
@@ -306,8 +266,9 @@ public class ExtraUtil
         }
         return result;
     }
+    
     /**
-     * @return 版本信息（如：OSBuild_v1.0(150309)）
+     * @return Version info of this app, like OSBuild_v1.0(150309).
      */
     public static String getVerInfo(Context context)
     {
@@ -328,10 +289,13 @@ public class ExtraUtil
 
         return String.format("%1$s_v%2$s(%3$d)", app_name, ver_name, ver_code);
     }
+    
     /**
-     * 获取CPU最大、最小频率
+     * Get max, min CPU frequency.
+     * Read "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq",
+     * "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq"
      */
-    public static String getCPUFreq(boolean max)
+    /*public static String getCPUFreq(boolean max)
     {
         final String[] ARGS_MAX = { "/system/bin/cat",
             "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq" };
@@ -380,75 +344,36 @@ public class ExtraUtil
         }
 
         return stringBuilder.toString();
-    }
+    }*/
+    
     /**
-     * 获取CPU信息（Processor、Hardware）
+     * Get RAM size by this method if API level < 16.
+     * Read "/proc/meminfo".
      */
-    public static String getCPUName()
+    public static long getTotalRAM()
     {
-        String text = readFile("/proc/cpuinfo");
+        long result = -1;//Unit: byte
         
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("/proc/cpuinfo");
-        //少数机型会使用“model name”而不是“Processor”，如魅蓝Note
-        if (text.contains("model name"))
-        {
-            int index = text.indexOf("model name");
-            stringBuilder.append(L1).append("model name: ");
-            stringBuilder.append(text.substring(index + 13, text.indexOf("\n", index)));
-        }
-        else if (text.contains("Processor"))
-        {
-            int index = text.indexOf("Processor");
-            stringBuilder.append(L1).append("Processor: ");
-            stringBuilder.append(text.substring(index + 12, text.indexOf("\n", index)));
-        }
-        else
-        {
-            stringBuilder.append(L1).append("Processor: ");
-        }
-        
-        if (text.contains("Hardware"))
-        {
-            int index = text.indexOf("Hardware");
-            stringBuilder.append(L1).append("Hardware: ");
-            stringBuilder.append(text.substring(index + 11, text.indexOf("\n", index)));
-        }
-        else
-        {
-            stringBuilder.append(L1).append("Hardware: ");
-        }
-        
-        return stringBuilder.toString();
-    }
-    /**
-     * 获取RAM大小
-     */
-    public static String getTotalRAM()
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("/proc/meminfo");
-        stringBuilder.append(L1).append("MemTotal: ");
-
         String text = readFile("/proc/meminfo");
         if ("".equals(text))
         {
-            return stringBuilder.toString();
+            return result;
         }
+        
         Pattern pattern = Pattern.compile("[^0-9]");   
         Matcher matcher = pattern.matcher(text.substring(0, text.indexOf("\n")));   
         String temp = matcher.replaceAll("").trim();
         if (!"".equals(temp))
         {
-            int size = Integer.parseInt(temp);//KB
-            stringBuilder.append(size).append(SPACE)
-                .append(UnitUtil.convertMemory(size * 1024));
+            result = convertInt(temp);//Unit: KB
         }
-        
-        return stringBuilder.toString();
+
+        return result;
     }
+    
     /**
-     * 化简宽高比（整数比）
+     * Simplify the width-length ratio.
+     * The value is integer to integer.
      */
     public static String getWHRatioInt(int width, int height)
     {
@@ -461,31 +386,32 @@ public class ExtraUtil
             p1 = p2;
             p2 = temp;
         }
+        
         return String.format("%1$d:%2$d", width / p1, height / p1);
     }
+    
     /**
-     * 化简宽高比（比值）
+     * Simplify the width-length ratio.
+     * The value is a double value.
      */
     /*public static String getWHRatio(int width, int height)
     {
-        //四舍五入保留三位小数
+        //Rounding-off method. Remain 3 decimal number.
         DecimalFormat decimalFormat = new DecimalFormat("#0.000");
+        
         return decimalFormat.format((double)width / height);
     }*/
+    
     /**
-     * 获取CPU核心数
-     * 读取系统目录“/sys/devices/system/cpu/”下类似“/cpu0”文件夹的数量
+     * Get CPU cores.
+     * Read “/sys/devices/system/cpu/cpu[0-9]"
      */
-    public static String getCPUCores()
+    public static int getCPUCores()
     {
-        //获取CPU核心数 方法1
-        int cores_runtime = Runtime.getRuntime().availableProcessors();
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("java.lang.Runtime.");
-        stringBuilder.append(L1).append("getRuntime().");
-        stringBuilder.append(L2).append("availableProcessors(): ");
-        stringBuilder.append(cores_runtime);
-        //获取CPU核心数 方法2
+        //Strategy 1.
+        //int cores_runtime = Runtime.getRuntime().availableProcessors();
+        
+        //Strategy 2.
         int cores = 1;
         class CpuFilter implements FileFilter
         {
@@ -505,21 +431,13 @@ public class ExtraUtil
         {
             e.printStackTrace();
         }
-        if (cores != cores_runtime)
-        {
-            stringBuilder.append(L0).append("/sys/devices/system/cpu/");
-            for (int i = 0; i < cores; ++ i)
-            {
-                stringBuilder.append(L1).append("cpu" + i + "/");
-                stringBuilder.append(SPACE).append("true");
-            }
-        }
-        
-        return stringBuilder.toString();
+
+        return cores;
     }
+    
     /**
-     * 获取根目录存储情况（RootDirectory，DataDirectory，ExternalStorageDirectory）
-     * @return 数组[总大小、可用大小]，单位：Byte
+     * Get storage info (RootDirectory, DataDirectory, ExternalStorageDirectory, etc.).
+     * @return array like [total, available]. Unit: byte
      */
     public static long[] getStorageUsage(File storage)
     {
@@ -529,7 +447,7 @@ public class ExtraUtil
             return result;
         }
         StatFs statFs = new StatFs(storage.getPath());
-        long block_size;//Byte
+        long block_size;//Unit: byte
         long block_count;
         long avail_blocks;
         if (Build.VERSION.SDK_INT >= 18)
@@ -544,12 +462,16 @@ public class ExtraUtil
             block_count = statFs.getBlockCount();
             avail_blocks = statFs.getAvailableBlocks();
         }
-        result[0] = block_size * block_count;//Byte
-        result[1] = block_size * avail_blocks;//Byte
+        result[0] = block_size * block_count;//Unit: byte
+        result[1] = block_size * avail_blocks;//Unit: byte
         return result;
     }
     
-    public static String readFileRoot(Context context, File source_file)
+    /**
+     * Read file which requires root permission.
+     * Method 1: Copy it to external storage and then read it.
+     */
+    /*public static String readFileRoot(Context context, File source_file)
     {
         if (source_file == null)
         {
@@ -559,9 +481,9 @@ public class ExtraUtil
             source_file.getName());
         String script = String.format("cp %1$s %2$s",
             source_file, target_file);
-        
+
         Process process = null;
-        PrintWriter printWriter = null;
+        PrintWriter printWriter;
         try
         {
             process = Runtime.getRuntime().exec("su");
@@ -570,7 +492,64 @@ public class ExtraUtil
             printWriter.flush();
             printWriter.println("exit");
             printWriter.flush();
-            //等待执行
+            
+            //Causes the calling thread to wait for the native process
+            //associated with this object to finish executing.
+            process.waitFor();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if (process != null)
+            {
+                process.destroy();
+            }
+        }
+
+        if (target_file.exists())
+        {
+            return readFile(target_file);
+        }
+        return "";
+    }*/
+    
+    /**
+     * Read file which requires root permission.
+     * Method 2: Read it by command "cat" directly.
+     */
+    public static String readFileRoot(File source_file)
+    {
+        if (source_file == null)
+        {
+            return "";
+        }
+        String result = "";
+        String script = "cat " + source_file;
+        
+        Process process = null;
+        PrintWriter printWriter;
+        try
+        {
+            //Execute command.
+            process = Runtime.getRuntime().exec("su");
+            printWriter = new PrintWriter(process.getOutputStream());
+            printWriter.println(script);
+            printWriter.flush();
+            printWriter.println("exit");
+            printWriter.flush();
+            
+            //Read file.
+            result = readFile(process.getInputStream());
+            
+            //Causes the calling thread to wait for the native process
+            //associated with this object to finish executing.
             process.waitFor();
         }
         catch (IOException e)
@@ -589,14 +568,13 @@ public class ExtraUtil
             }
         }
         
-        if (target_file.exists())
-        {
-            return readFile(target_file);
-        }
-        return "";
+        return result;
     }
+    
     /**
-     * 规范文件路径名（目录 - /x/x/，文件 - /x/x）
+     * Format file name.
+     * If it's a directory, modify it like "/x/x/";
+     * else modify it like "/x/x".
      */
     public static String getPathRuled(File file)
     {
@@ -611,6 +589,12 @@ public class ExtraUtil
         return file.getPath();
     }
     
+    /**
+     * Format file name.
+     * If it's a directory, modify it like "/x/x/";
+     * else modify it like "/x/x".
+     * @param file_str The file path.
+     */
     public static String getPathRuled(String file_str)
     {
         if (file_str == null)
@@ -618,5 +602,23 @@ public class ExtraUtil
             return "";
         }
         return getPathRuled(new File(file_str));
+    }
+    
+    /**
+     * Convert integer wraped in string to int safely.
+     */
+    public static int convertInt(String text)
+    {
+        int result = -1;
+        text = text.trim();
+        try
+        {
+            result = Integer.parseInt(text);
+        }
+        catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
