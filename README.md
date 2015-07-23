@@ -44,14 +44,14 @@ android.os.Environment.
       Total Size: 13394399232  12.47GB
       Available Size: 869711872  829.42MB  6%
    getExternalStorageState(): mounted  MEDIA_MOUNTED
-   isExternalStorageRemovable(): false
+   isExternalStorageRemovable(): FALSE
    getExternalStorageDirectory(): /storage/emulated/0/
       Total Size: 13341970432  12.43GB
       Available Size: 817283072  779.42MB  6%
 android.os.storage.StorageManager.
    getVolumePaths():
-      /storage/emulated/0/  true
-      /storage/usbotg/  false
+      /storage/emulated/0/  TRUE
+      /storage/usbotg/  FALSE
 ```
 
 ### Donate
@@ -75,5 +75,7 @@ Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base
 
 [OSBuild_v1.2.7(150708).apk](/Other/OSBuild_v1.2.7(150708).apk)
 
+[OSBuild_v1.3.0(150723).apk](/Other/OSBuild_v1.3.0(150723).apk)
+
 ### Screenshots
-![screenshot1.png](/Other/screenshot.png)
+![screenshot.png](/Other/screenshot.png)
