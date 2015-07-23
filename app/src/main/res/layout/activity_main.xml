@@ -1,110 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_parent"
     android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
-	<HorizontalScrollView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-		<LinearLayout
-			android:id="@+id/ll_info"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:padding="@dimen/padding_page">
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_line_top"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/space_block_top"/>
-
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_primer"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				style="@style/TextSel"/>
-            
-            <com.by_syk.osbuild.widget.MyTextView
-                android:id="@+id/tv_build"
+            <LinearLayout
+                android:id="@+id/ll_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                android:orientation="vertical"
+                android:padding="@dimen/padding_page">
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_display"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_line_top"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/space_block_top"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_telephony"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="36dp"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_primer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_cpu"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_build"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_memory"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_package"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_telephony"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="36dp"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_sensor"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_cpu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_root"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_memory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_time"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_package"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_about"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block"
-				style="@style/TextSel"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_sensor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_line_bottom"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/space_block_bottom"/>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_root"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-		</LinearLayout>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-	</HorizontalScrollView>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_about"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    style="@style/TextSel"/>
 
-</ScrollView>
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/tv_line_bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block_bottom"/>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </ScrollView>
+
+</RelativeLayout>

@@ -1,3 +1,7 @@
+/**
+ * @author By_syk
+ */
+
 package com.by_syk.osbuild.util;
 
 import android.os.Build;
@@ -12,9 +16,6 @@ import android.os.Environment;
 import android.annotation.TargetApi;
 import android.text.TextUtils;
 
-/**
- * @author By_syk
- */
 public class ConstUtil
 {
     //Android Version
@@ -75,6 +76,10 @@ public class ConstUtil
                 return "LOLLIPOP";//Android 5.0
             case Build.VERSION_CODES.LOLLIPOP_MR1://22
                 return "LOLLIPOP_MR1";
+            //Magic version number for a current development build,
+            //which has not yet turned into an official release.
+            case Build.VERSION_CODES.CUR_DEVELOPMENT://1000
+                return "CUR_DEVELOPMENT";
             default:
                 return UNKNOWN;
         }
@@ -309,13 +314,13 @@ public class ConstUtil
                 switch (mcc)
                 {
                     default:
-                        return "Hong Kong ?";
+                        return "Hong Kong";
                 }
             case 455:
                 switch (mcc)
                 {
                     default:
-                        return "Macao ?";
+                        return "Macao";
                 }
             case 460:
                 switch (mnc)
@@ -342,7 +347,7 @@ public class ConstUtil
                 switch (mcc)
                 {
                     default:
-                        return "Taiwan ?";
+                        return "Taiwan";
                 }
             default:
                 return UNKNOWN;
@@ -360,47 +365,31 @@ public class ConstUtil
             return UNKNOWN;
         }
         
-        if (state.equals(Environment.MEDIA_BAD_REMOVAL))//bad_removal
+        switch (state)
         {
-            return "MEDIA_BAD_REMOVAL";
+            case Environment.MEDIA_BAD_REMOVAL://bad_removal
+                return "MEDIA_BAD_REMOVAL";
+            case Environment.MEDIA_CHECKING://checking
+                return "MEDIA_CHECKING";
+            case Environment.MEDIA_MOUNTED://mounted
+                return "MEDIA_MOUNTED";
+            case Environment.MEDIA_MOUNTED_READ_ONLY://mounted_read_only
+                return "MEDIA_MOUNTED_READ_ONLY";
+            case Environment.MEDIA_NOFS://nofs
+                return "MEDIA_NOFS";
+            case Environment.MEDIA_REMOVED://removed
+                return "MEDIA_REMOVED";
+            case Environment.MEDIA_SHARED://shared
+                return "MEDIA_SHARED";
+            case Environment.MEDIA_UNKNOWN://unknown
+                return "MEDIA_UNKNOWN";
+            case Environment.MEDIA_UNMOUNTABLE://unmountable
+                return "MEDIA_UNMOUNTABLE";
+            case Environment.MEDIA_UNMOUNTED://unmounted
+                return "MEDIA_UNMOUNTED";
+            default:
+                return UNKNOWN;
         }
-        else if (state.equals(Environment.MEDIA_CHECKING))//checking
-        {
-            return "MEDIA_CHECKING";
-        }
-        else if (state.equals(Environment.MEDIA_MOUNTED))//mounted
-        {
-            return "MEDIA_MOUNTED";
-        }
-        else if (state.equals(Environment.MEDIA_MOUNTED_READ_ONLY))//mounted_read_only
-        {
-            return "MEDIA_MOUNTED_READ_ONLY";
-        }
-        else if (state.equals(Environment.MEDIA_NOFS))//nofs
-        {
-            return "MEDIA_NOFS";
-        }
-        else if (state.equals(Environment.MEDIA_REMOVED))//removed
-        {
-            return "MEDIA_REMOVED";
-        }
-        else if (state.equals(Environment.MEDIA_SHARED))//shared
-        {
-            return "MEDIA_SHARED";
-        }
-        else if (state.equals(Environment.MEDIA_UNKNOWN))//unknown
-        {
-            return "MEDIA_UNKNOWN";
-        }
-        else if (state.equals(Environment.MEDIA_UNMOUNTABLE))//unmountable
-        {
-            return "MEDIA_UNMOUNTABLE";
-        }
-        else if (state.equals(Environment.MEDIA_UNMOUNTED))//unmounted
-        {
-            return "MEDIA_UNMOUNTED";
-        }
-        return UNKNOWN;
     }
     
     /**
@@ -577,289 +566,154 @@ public class ConstUtil
      */
     public static String getFeature(String feature)
     {
-        
         if (TextUtils.isEmpty(feature))
         {
             return UNKNOWN;
         }
         
-        if (feature.equals(PackageManager.FEATURE_APP_WIDGETS))//android.software.app_widgets
+        switch (feature)
         {
-            return "FEATURE_APP_WIDGETS";
+            case PackageManager.FEATURE_APP_WIDGETS://android.software.app_widgets
+                return "FEATURE_APP_WIDGETS";
+            case PackageManager.FEATURE_AUDIO_LOW_LATENCY://android.hardware.audio.low_latency
+                return "FEATURE_AUDIO_LOW_LATENCY";
+            case PackageManager.FEATURE_AUDIO_OUTPUT://android.hardware.audio.output
+                return "FEATURE_AUDIO_OUTPUT";
+            case PackageManager.FEATURE_BACKUP://android.software.backup
+                return "FEATURE_BACKUP";
+            case PackageManager.FEATURE_BLUETOOTH://android.hardware.bluetooth
+                return "FEATURE_BLUETOOTH";
+            case PackageManager.FEATURE_BLUETOOTH_LE://android.hardware.bluetooth_le
+                return "FEATURE_BLUETOOTH_LE";
+            case PackageManager.FEATURE_CAMERA://android.hardware.camera
+                return "FEATURE_CAMERA";
+            case PackageManager.FEATURE_CAMERA_ANY://android.hardware.camera.any
+                return "FEATURE_CAMERA_ANY";
+            case PackageManager.FEATURE_CAMERA_AUTOFOCUS://android.hardware.camera.autofocus
+                return "FEATURE_CAMERA_AUTOFOCUS";
+            case PackageManager.FEATURE_CAMERA_CAPABILITY_MANUAL_POST_PROCESSING://android.hardware.camera.capability.manual_post_processing
+                return "FEATURE_CAMERA_CAPABILITY_MANUAL_POST_PROCESSING";
+            case PackageManager.FEATURE_CAMERA_CAPABILITY_MANUAL_SENSOR://android.hardware.camera.capability.manual_sensor
+                return "FEATURE_CAMERA_CAPABILITY_MANUAL_SENSOR";
+            case PackageManager.FEATURE_CAMERA_CAPABILITY_RAW://android.hardware.camera.capability.raw
+                return "FEATURE_CAMERA_CAPABILITY_RAW";
+            case PackageManager.FEATURE_CAMERA_EXTERNAL://android.hardware.camera.external
+                return "FEATURE_CAMERA_EXTERNAL";
+            case PackageManager.FEATURE_CAMERA_FLASH://android.hardware.camera.flash
+                return "FEATURE_CAMERA_FLASH";
+            case PackageManager.FEATURE_CAMERA_FRONT://android.hardware.camera.front
+                return "FEATURE_CAMERA_FRONT";
+            case PackageManager.FEATURE_CAMERA_LEVEL_FULL://android.hardware.camera.level.full
+                return "FEATURE_CAMERA_LEVEL_FULL";
+            case PackageManager.FEATURE_CONNECTION_SERVICE://android.software.connectionservice
+                return "FEATURE_CONNECTION_SERVICE";
+            case PackageManager.FEATURE_CONSUMER_IR://android.hardware.consumerir
+                return "FEATURE_CONSUMER_IR";
+            case PackageManager.FEATURE_DEVICE_ADMIN://android.software.device_admin
+                return "FEATURE_DEVICE_ADMIN";
+            case PackageManager.FEATURE_FAKETOUCH://android.hardware.faketouch
+                return "FEATURE_FAKETOUCH";
+            case PackageManager.FEATURE_FAKETOUCH_MULTITOUCH_DISTINCT://android.hardware.faketouch.multitouch.distinct
+                return "FEATURE_FAKETOUCH_MULTITOUCH_DISTINCT";
+            case PackageManager.FEATURE_FAKETOUCH_MULTITOUCH_JAZZHAND://android.hardware.faketouch.multitouch.jazzhand
+                return "FEATURE_FAKETOUCH_MULTITOUCH_JAZZHAND";
+            case PackageManager.FEATURE_GAMEPAD://android.hardware.gamepad
+                return "FEATURE_GAMEPAD";
+            case PackageManager.FEATURE_HOME_SCREEN://android.software.home_screen
+                return "FEATURE_HOME_SCREEN";
+            case PackageManager.FEATURE_INPUT_METHODS://android.software.input_methods
+                return "FEATURE_INPUT_METHODS";
+            case PackageManager.FEATURE_LEANBACK://android.software.leanback
+                return "FEATURE_LEANBACK";
+            case PackageManager.FEATURE_LIVE_TV://android.software.live_tv
+                return "FEATURE_LIVE_TV";
+            case PackageManager.FEATURE_LIVE_WALLPAPER://android.software.live_wallpaper
+                return "FEATURE_LIVE_WALLPAPER";
+            case PackageManager.FEATURE_LOCATION://android.hardware.location
+                return "FEATURE_LOCATION";
+            case PackageManager.FEATURE_LOCATION_GPS://android.hardware.location.gps
+                return "FEATURE_LOCATION_GPS";
+            case PackageManager.FEATURE_LOCATION_NETWORK://android.hardware.location.network
+                return "FEATURE_LOCATION_NETWORK";
+            case PackageManager.FEATURE_MANAGED_USERS://android.software.managed_users
+                return "FEATURE_MANAGED_USERS";
+            case PackageManager.FEATURE_MICROPHONE://android.hardware.microphone
+                return "FEATURE_MICROPHONE";
+            case PackageManager.FEATURE_NFC://android.hardware.nfc
+                return "FEATURE_NFC";
+            case PackageManager.FEATURE_NFC_HOST_CARD_EMULATION://android.hardware.nfc.hce
+                return "FEATURE_NFC_HOST_CARD_EMULATION";
+            case PackageManager.FEATURE_OPENGLES_EXTENSION_PACK://android.hardware.opengles.aep
+                return "FEATURE_OPENGLES_EXTENSION_PACK";
+            case PackageManager.FEATURE_PRINTING://android.software.print
+                return "FEATURE_PRINTING";
+            case PackageManager.FEATURE_SCREEN_LANDSCAPE://android.hardware.screen.landscape
+                return "FEATURE_SCREEN_LANDSCAPE";
+            case PackageManager.FEATURE_SCREEN_PORTRAIT://android.hardware.screen.portrait
+                return "FEATURE_SCREEN_PORTRAIT";
+            case PackageManager.FEATURE_SECURELY_REMOVES_USERS://android.software.securely_removes_users
+                return "FEATURE_SECURELY_REMOVES_USERS";
+            case PackageManager.FEATURE_SENSOR_ACCELEROMETER://android.hardware.sensor.accelerometer
+                return "FEATURE_SENSOR_ACCELEROMETER";
+            case PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE://android.hardware.sensor.ambient_temperature
+                return "FEATURE_SENSOR_AMBIENT_TEMPERATURE";
+            case PackageManager.FEATURE_SENSOR_BAROMETER://android.hardware.sensor.barometer
+                return "FEATURE_SENSOR_BAROMETER";
+            case PackageManager.FEATURE_SENSOR_COMPASS://android.hardware.sensor.compass
+                return "FEATURE_SENSOR_COMPASS";
+            case PackageManager.FEATURE_SENSOR_GYROSCOPE://android.hardware.sensor.gyroscope
+                return "FEATURE_SENSOR_GYROSCOPE";
+            case PackageManager.FEATURE_SENSOR_HEART_RATE://android.hardware.sensor.heartrate
+                return "FEATURE_SENSOR_HEART_RATE";
+            case PackageManager.FEATURE_SENSOR_HEART_RATE_ECG://android.hardware.sensor.heartrate.ecg
+                return "FEATURE_SENSOR_HEART_RATE_ECG";
+            case PackageManager.FEATURE_SENSOR_LIGHT://android.hardware.sensor.light
+                return "FEATURE_SENSOR_LIGHT";
+            case PackageManager.FEATURE_SENSOR_PROXIMITY://android.hardware.sensor.proximity
+                return "FEATURE_SENSOR_PROXIMITY";
+            case PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY://android.hardware.sensor.relative_humidity
+                return "FEATURE_SENSOR_RELATIVE_HUMIDITY";
+            case PackageManager.FEATURE_SENSOR_STEP_COUNTER://android.hardware.sensor.stepcounter
+                return "FEATURE_SENSOR_STEP_COUNTER";
+            case PackageManager.FEATURE_SENSOR_STEP_DETECTOR://android.hardware.sensor.stepdetector
+                return "FEATURE_SENSOR_STEP_DETECTOR";
+            case PackageManager.FEATURE_SIP://android.software.sip
+                return "FEATURE_SIP";
+            case PackageManager.FEATURE_SIP_VOIP://android.software.sip.voip
+                return "FEATURE_SIP_VOIP";
+            case PackageManager.FEATURE_TELEPHONY://android.hardware.telephony
+                return "FEATURE_TELEPHONY";
+            case PackageManager.FEATURE_TELEPHONY_CDMA://android.hardware.telephony.cdma
+                return "FEATURE_TELEPHONY_CDMA";
+            case PackageManager.FEATURE_TELEPHONY_GSM://android.hardware.telephony.gsm
+                return "FEATURE_TELEPHONY_GSM";
+            case PackageManager.FEATURE_TELEVISION://android.hardware.type.television
+                return "FEATURE_TELEVISION";
+            case PackageManager.FEATURE_TOUCHSCREEN://android.hardware.touchscreen
+                return "FEATURE_TOUCHSCREEN";
+            case PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH://android.hardware.touchscreen.multitouch
+                return "FEATURE_TOUCHSCREEN_MULTITOUCH";
+            case PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT://android.hardware.touchscreen.multitouch.distinct
+                return "FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT";
+            case PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND://android.hardware.touchscreen.multitouch.jazzhand
+                return "FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND";
+            case PackageManager.FEATURE_USB_ACCESSORY://android.hardware.usb.accessory
+                return "FEATURE_USB_ACCESSORY";
+            case PackageManager.FEATURE_USB_HOST://android.hardware.usb.host
+                return "FEATURE_USB_HOST";
+            case PackageManager.FEATURE_VERIFIED_BOOT://android.software.verified_boot
+                return "FEATURE_VERIFIED_BOOT";
+            case PackageManager.FEATURE_WATCH://android.hardware.type.watch
+                return "FEATURE_WATCH";
+            case PackageManager.FEATURE_WEBVIEW://android.software.webview
+                return "FEATURE_WEBVIEW";
+            case PackageManager.FEATURE_WIFI://android.hardware.wifi
+                return "FEATURE_WIFI";
+            case PackageManager.FEATURE_WIFI_DIRECT://android.hardware.wifi.direct
+               return "FEATURE_WIFI_DIRECT";
+            default:
+                return UNKNOWN;
         }
-        else if (feature.equals(PackageManager.FEATURE_AUDIO_LOW_LATENCY))
-        {//android.hardware.audio.low_latency
-            return "FEATURE_AUDIO_LOW_LATENCY";
-        }
-        else if (feature.equals(PackageManager.FEATURE_AUDIO_OUTPUT))//android.hardware.audio.output
-        {
-            return "FEATURE_AUDIO_OUTPUT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_BACKUP))//android.software.backup
-        {
-            return "FEATURE_BACKUP";
-        }
-        else if (feature.equals(PackageManager.FEATURE_BLUETOOTH))//android.hardware.bluetooth
-        {
-            return "FEATURE_BLUETOOTH";
-        }
-        else if (feature.equals(PackageManager.FEATURE_BLUETOOTH_LE))//android.hardware.bluetooth_le
-        {
-            return "FEATURE_BLUETOOTH_LE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA))//android.hardware.camera
-        {
-            return "FEATURE_CAMERA";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_ANY))//android.hardware.camera.any
-        {
-            return "FEATURE_CAMERA_ANY";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_AUTOFOCUS))
-        {//android.hardware.camera.autofocus
-            return "FEATURE_CAMERA_AUTOFOCUS";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_CAPABILITY_MANUAL_POST_PROCESSING))
-        {//android.hardware.camera.capability.manual_post_processing
-            return "FEATURE_CAMERA_CAPABILITY_MANUAL_POST_PROCESSING";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_CAPABILITY_MANUAL_SENSOR))
-        {//android.hardware.camera.capability.manual_sensor
-            return "FEATURE_CAMERA_CAPABILITY_MANUAL_SENSOR";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_CAPABILITY_RAW))
-        {//android.hardware.camera.capability.raw
-            return "FEATURE_CAMERA_CAPABILITY_RAW";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_EXTERNAL))
-        {//android.hardware.camera.external
-            return "FEATURE_CAMERA_EXTERNAL";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_FLASH))//android.hardware.camera.flash
-        {
-            return "FEATURE_CAMERA_FLASH";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_FRONT))//android.hardware.camera.front
-        {
-            return "FEATURE_CAMERA_FRONT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CAMERA_LEVEL_FULL))
-        {//android.hardware.camera.level.full
-            return "FEATURE_CAMERA_LEVEL_FULL";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CONNECTION_SERVICE))
-        {//android.software.connectionservice
-            return "FEATURE_CONNECTION_SERVICE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_CONSUMER_IR))//android.hardware.consumerir
-        {
-            return "FEATURE_CONSUMER_IR";
-        }
-        else if (feature.equals(PackageManager.FEATURE_DEVICE_ADMIN))//android.software.device_admin
-        {
-            return "FEATURE_DEVICE_ADMIN";
-        }
-        else if (feature.equals(PackageManager.FEATURE_FAKETOUCH))//android.hardware.faketouch
-        {
-            return "FEATURE_FAKETOUCH";
-        }
-        else if (feature.equals(PackageManager.FEATURE_FAKETOUCH_MULTITOUCH_DISTINCT))
-        {//android.hardware.faketouch.multitouch.distinct
-            return "FEATURE_FAKETOUCH_MULTITOUCH_DISTINCT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_FAKETOUCH_MULTITOUCH_JAZZHAND))
-        {//android.hardware.faketouch.multitouch.jazzhand
-            return "FEATURE_FAKETOUCH_MULTITOUCH_JAZZHAND";
-        }
-        else if (feature.equals(PackageManager.FEATURE_GAMEPAD))//android.hardware.gamepad
-        {
-            return "FEATURE_GAMEPAD";
-        }
-        else if (feature.equals(PackageManager.FEATURE_HOME_SCREEN))//android.software.home_screen
-        {
-            return "FEATURE_HOME_SCREEN";
-        }
-        else if (feature.equals(PackageManager.FEATURE_INPUT_METHODS))//android.software.input_methods
-        {
-            return "FEATURE_INPUT_METHODS";
-        }
-        else if (feature.equals(PackageManager.FEATURE_LEANBACK))//android.software.leanback
-        {
-            return "FEATURE_LEANBACK";
-        }
-        else if (feature.equals(PackageManager.FEATURE_LIVE_TV))//android.software.live_tv
-        {
-            return "FEATURE_LIVE_TV";
-        }
-        else if (feature.equals(PackageManager.FEATURE_LIVE_WALLPAPER))//android.software.live_wallpaper
-        {
-            return "FEATURE_LIVE_WALLPAPER";
-        }
-        else if (feature.equals(PackageManager.FEATURE_LOCATION))//android.hardware.location
-        {
-            return "FEATURE_LOCATION";
-        }
-        else if (feature.equals(PackageManager.FEATURE_LOCATION_GPS))//android.hardware.location.gps
-        {
-            return "FEATURE_LOCATION_GPS";
-        }
-        else if (feature.equals(PackageManager.FEATURE_LOCATION_NETWORK))
-        {//android.hardware.location.network
-            return "FEATURE_LOCATION_NETWORK";
-        }
-        else if (feature.equals(PackageManager.FEATURE_MANAGED_USERS))//android.software.managed_users
-        {
-            return "FEATURE_MANAGED_USERS";
-        }
-        else if (feature.equals(PackageManager.FEATURE_MICROPHONE))//android.hardware.microphone
-        {
-            return "FEATURE_MICROPHONE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_NFC))//android.hardware.nfc
-        {
-            return "FEATURE_NFC";
-        }
-        else if (feature.equals(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION))
-        {//android.hardware.nfc.hce
-            return "FEATURE_NFC_HOST_CARD_EMULATION";
-        }
-        else if (feature.equals(PackageManager.FEATURE_OPENGLES_EXTENSION_PACK))
-        {//android.hardware.opengles.aep
-            return "FEATURE_OPENGLES_EXTENSION_PACK";
-        }
-        else if (feature.equals(PackageManager.FEATURE_PRINTING))//android.software.print
-        {
-            return "FEATURE_PRINTING";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SCREEN_LANDSCAPE))
-        {//android.hardware.screen.landscape
-            return "FEATURE_SCREEN_LANDSCAPE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SCREEN_PORTRAIT))
-        {//android.hardware.screen.portrait
-            return "FEATURE_SCREEN_PORTRAIT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SECURELY_REMOVES_USERS))
-        {//android.software.securely_removes_users
-            return "FEATURE_SECURELY_REMOVES_USERS";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_ACCELEROMETER))
-        {//android.hardware.sensor.accelerometer
-            return "FEATURE_SENSOR_ACCELEROMETER";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_AMBIENT_TEMPERATURE))
-        {//android.hardware.sensor.ambient_temperature
-            return "FEATURE_SENSOR_AMBIENT_TEMPERATURE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_BAROMETER))
-        {//android.hardware.sensor.barometer
-            return "FEATURE_SENSOR_BAROMETER";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_COMPASS))
-        {//android.hardware.sensor.compass
-            return "FEATURE_SENSOR_COMPASS";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_GYROSCOPE))
-        {//android.hardware.sensor.gyroscope
-            return "FEATURE_SENSOR_GYROSCOPE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_HEART_RATE))
-        {//android.hardware.sensor.heartrate
-            return "FEATURE_SENSOR_HEART_RATE";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_HEART_RATE_ECG))
-        {//android.hardware.sensor.heartrate.ecg
-            return "FEATURE_SENSOR_HEART_RATE_ECG";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_LIGHT))//android.hardware.sensor.light
-        {
-            return "FEATURE_SENSOR_LIGHT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_PROXIMITY))
-        {//android.hardware.sensor.proximity
-            return "FEATURE_SENSOR_PROXIMITY";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_RELATIVE_HUMIDITY))
-        {//android.hardware.sensor.relative_humidity
-            return "FEATURE_SENSOR_RELATIVE_HUMIDITY";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_STEP_COUNTER))
-        {//android.hardware.sensor.stepcounter
-            return "FEATURE_SENSOR_STEP_COUNTER";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SENSOR_STEP_DETECTOR))
-        {//android.hardware.sensor.stepdetector
-            return "FEATURE_SENSOR_STEP_DETECTOR";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SIP))//android.software.sip
-        {
-            return "FEATURE_SIP";
-        }
-        else if (feature.equals(PackageManager.FEATURE_SIP_VOIP))//android.software.sip.voip
-        {
-            return "FEATURE_SIP_VOIP";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TELEPHONY))//android.hardware.telephony
-        {
-            return "FEATURE_TELEPHONY";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TELEPHONY_CDMA))//android.hardware.telephony.cdma
-        {
-            return "FEATURE_TELEPHONY_CDMA";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TELEPHONY_GSM))//android.hardware.telephony.gsm
-        {
-            return "FEATURE_TELEPHONY_GSM";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TELEVISION))//android.hardware.type.television
-        {
-            return "FEATURE_TELEVISION";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TOUCHSCREEN))//android.hardware.touchscreen
-        {
-            return "FEATURE_TOUCHSCREEN";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH))
-        {//android.hardware.touchscreen.multitouch
-            return "FEATURE_TOUCHSCREEN_MULTITOUCH";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT))
-        {//android.hardware.touchscreen.multitouch.distinct
-            return "FEATURE_TOUCHSCREEN_MULTITOUCH_DISTINCT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND))
-        {//android.hardware.touchscreen.multitouch.jazzhand
-            return "FEATURE_TOUCHSCREEN_MULTITOUCH_JAZZHAND";//API 19
-        }
-        else if (feature.equals(PackageManager.FEATURE_USB_ACCESSORY))//android.hardware.usb.accessory
-        {
-            return "FEATURE_USB_ACCESSORY";
-        }
-        else if (feature.equals(PackageManager.FEATURE_USB_HOST))//android.hardware.usb.host
-        {
-            return "FEATURE_USB_HOST";
-        }
-        else if (feature.equals(PackageManager.FEATURE_VERIFIED_BOOT))//android.software.verified_boot
-        {
-            return "FEATURE_VERIFIED_BOOT";
-        }
-        else if (feature.equals(PackageManager.FEATURE_WATCH))//android.hardware.type.watch
-        {
-            return "FEATURE_WATCH";
-        }
-        else if (feature.equals(PackageManager.FEATURE_WEBVIEW))//android.software.webview
-        {
-            return "FEATURE_WEBVIEW";
-        }
-        else if (feature.equals(PackageManager.FEATURE_WIFI))//android.hardware.wifi
-        {
-            return "FEATURE_WIFI";
-        }
-        else if (feature.equals(PackageManager.FEATURE_WIFI_DIRECT))//android.hardware.wifi.direct
-        {
-            return "FEATURE_WIFI_DIRECT";
-        }
-        return UNKNOWN;
     }
     
     /**
@@ -1034,7 +888,7 @@ public class ConstUtil
             //EVDO revision A (3G)
             case TelephonyManager.NETWORK_TYPE_EVDO_A://6
                 return "NETWORK_TYPE_EVDO_A";
-            //1xRTT, also CDMA2000 1x (3G)
+            //1xRTT, also CDMA2000 1x (2.5G/2.75G)
             case TelephonyManager.NETWORK_TYPE_1xRTT://7
                 return "NETWORK_TYPE_1xRTT";
             //HSDPA, also W-CDMA R5 (3.5G)
@@ -1061,8 +915,35 @@ public class ConstUtil
             //HSPA+, also W-CDMA R7 (3.75G)
             case TelephonyManager.NETWORK_TYPE_HSPAP://15
                 return "NETWORK_TYPE_HSPAP";
+            //GSM (2G)
+            //This is marked with "@hide".
+            case 16://TelephonyManager.NETWORK_TYPE_GSM
+                return "NETWORK_TYPE_GSM";
+            //TD-SCDMA (3G)
+            //This is marked with "@hide".
+            case 17://TelephonyManager.NETWORK_TYPE_TD_SCDMA
+                return "NETWORK_TYPE_TD_SCDMA";
             default:
                 return UNKNOWN;
+        }
+    }
+    
+    /**
+     * @return An explicit MIME data type.
+     */
+    public static String getMIMEType(String file_name)
+    {
+        if (file_name.endsWith(".txt") || file_name.endsWith(".info"))
+        {
+            return "text/plain";
+        }
+        else if (file_name.endsWith(".apk"))
+        {
+            return "application/vnd.android.package-archive";
+        }
+        else
+        {
+            return "*/*";
         }
     }
 }

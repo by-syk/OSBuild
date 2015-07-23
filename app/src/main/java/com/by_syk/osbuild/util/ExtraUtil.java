@@ -1,3 +1,7 @@
+/**
+ * @author By_syk
+ */
+
 package com.by_syk.osbuild.util;
 
 import com.by_syk.osbuild.R;
@@ -20,12 +24,9 @@ import java.io.FileFilter;
 import android.os.StatFs;
 import android.os.Build;
 import java.util.Locale;
-import java.text.DecimalFormat;
 import java.io.PrintWriter;
+import java.util.List;
 
-/**
- * @author By_syk
- */
 public class ExtraUtil
 {
     /**
@@ -91,16 +92,90 @@ public class ExtraUtil
         {
             e.printStackTrace();
         }
+        
+        if ("".equals(apk_path))
+        {
+            return null;
+        }
         File file_s = new File(apk_path);
         File file_t = new File(context.getExternalCacheDir(),
             getVerInfo(context) + ".apk");
         //If the same file exists, just return it.
-        if (file_s.exists() && file_t.exists() && file_s.length() == file_t.length())
+        if (file_t.exists() && file_s.length() == file_t.length())
         {
             return file_t;
         }
         fileChannelCopy(file_s, file_t);
         
+        return file_t.exists() ? file_t : null;
+    }
+    
+    /**
+     * @param name App name or package name.
+     */
+    public static File pickUpPackage(Context context, String name)
+    {
+        if ("".equals(name))
+        {
+            return null;
+        }
+        
+        String apk_path = "";
+        String package_name = "";
+        
+        //Search by package name.
+        if (name.contains("."))
+        {
+            try
+            {
+                PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(name, 0);
+                apk_path = packageInfo.applicationInfo.publicSourceDir;
+                package_name = name;
+            }
+            catch (PackageManager.NameNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        //Search by app name.
+        if ("".equals(apk_path))
+        {
+            List<PackageInfo> packages = context.getPackageManager()
+                .getInstalledPackages(0);
+            if (packages == null)
+            {
+                return null;
+            }
+            String temp_app_name;
+            for (PackageInfo packageInfo : packages)
+            {
+                temp_app_name = packageInfo.applicationInfo
+                    .loadLabel(context.getPackageManager()).toString();
+                if (temp_app_name.equalsIgnoreCase(name))
+                {
+                    apk_path = packageInfo.applicationInfo.publicSourceDir;
+                    package_name = packageInfo.packageName;
+                    break;
+                }
+            }
+        }
+        
+        if ("".equals(apk_path))
+        {
+            return null;
+        }
+        //Toast.makeText(context, apk_path, Toast.LENGTH_SHORT).show();
+        File file_s = new File(apk_path);
+        File file_t = new File(context.getExternalCacheDir(),
+            package_name + ".apk");
+        //If the same file exists, just return it.
+        if (file_t.exists() && file_s.length() == file_t.length())
+        {
+            return file_t;
+        }
+        fileChannelCopy(file_s, file_t);
+
         return file_t.exists() ? file_t : null;
     }
     

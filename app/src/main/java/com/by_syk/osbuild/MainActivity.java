@@ -1,9 +1,27 @@
+/**
+ * There are 11 modules:
+ *     Primer Module
+ *     Build Module
+ *     Display Module
+ *     Telephony Module
+ *     CPU Module
+ *     Memory Module
+ *     Package Module
+ *     Sensor Module
+ *     Superuser Module
+ *     Time Module
+ *     About Module
+ * @author By_syk
+ */
+
 package com.by_syk.osbuild;
 
 import com.by_syk.osbuild.util.ExtraUtil;
 import com.by_syk.osbuild.util.ConstUtil;
 import com.by_syk.osbuild.util.UnitUtil;
 import com.by_syk.osbuild.widget.MyTextView;
+import com.by_syk.osbuild.kube.Kube;
+import com.by_syk.osbuild.compass.Compass;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -52,22 +70,19 @@ import java.util.HashMap;
 import android.hardware.Sensor;
 import android.annotation.TargetApi;
 import android.annotation.SuppressLint;
+import android.opengl.GLSurfaceView;
+import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import android.widget.RelativeLayout;
+import android.widget.EditText;
+import android.view.View.OnLongClickListener;
+import android.view.View;
+import android.widget.Toast;
+import android.view.SubMenu;
+import android.hardware.ConsumerIrManager;
+import android.nfc.NfcManager;
+import android.nfc.NfcAdapter;
 
-/**
- * There are 11 modules:
- *     Primer Module
- *     Build Module
- *     Display Module
- *     Telephony Module
- *     CPU Module
- *     Memory Module
- *     Package Module
- *     Sensor Module
- *     Superuser Module
- *     Time Module
- *     About Module
- * @author By_syk
- */
 public class MainActivity extends Activity
 {
     SharedPreferences sharedPreferences;
@@ -112,10 +127,62 @@ public class MainActivity extends Activity
     //final String L3 = "\n         ";
     final String L_N = "\n";
     final String SPACE = "  ";
-    final String UNKNOWN = "Unknown";
+    
+    final String TRUE = "TRUE";
+    final String FALSE = "FALSE";
+    final String ON = "ON";
+    final String OFF = "OFF";
+    final String YES = "Yes";//For Primer Module
+    final String NO = "No";//For Primer Module
+    final String UNKNOWN = "Unknown";//For Primer Module
     
     //Mark the status of current Activity, running or not.
     boolean isRunning = true;
+    
+    GLSurfaceView gLSurfaceView = null;
+    GLSurfaceView.Renderer glsvRenderer = new GLSurfaceView.Renderer()
+    {
+        @Override
+        public void onSurfaceCreated(GL10 p1, EGLConfig p2)
+        {
+            //Get GPU info and save them.
+            sharedPreferences.edit()
+                .putString("gl_renderer", p1.glGetString(GL10.GL_RENDERER))
+                .putString("gl_vendor", p1.glGetString(GL10.GL_VENDOR))
+                .putString("gl_version", p1.glGetString(GL10.GL_VERSION))
+                .commit();
+            
+            //Remove useless view.
+            runOnUiThread(new Runnable()
+            {
+                @TargetApi(11)
+                @Override
+                public void run()
+                {
+                    //((RelativeLayout)findViewById(R.id.rl_parent))
+                    //    .removeView(gLSurfaceView);
+                    if (SDK >= 11)
+                    {
+                        recreate();
+                    }
+                    else
+                    {
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onSurfaceChanged(GL10 p1, int p2, int p3)
+        {}
+
+        @Override
+        public void onDrawFrame(GL10 p1)
+        {}
+    };
     
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -148,6 +215,9 @@ public class MainActivity extends Activity
         isRunning = false;
     }
     
+    /**
+     * Count and log times of launching.
+     */
     private void stats()
     {
         sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
@@ -163,16 +233,20 @@ public class MainActivity extends Activity
                     //Check if the app is running to avoid crashing.
                     if (isRunning)
                     {
+                        //Intent intent = new Intent(MainActivity.this, Kube.class);
+                        //startActivity(intent);
                         appDescDialog();
                     }
                 }
             }, 2000);
         }
         
-        int launch_times = sharedPreferences.getInt("launch_times", 0);
+        //Log how many times the app was launched.
+        //Count from 0. Because launcing the app firstly will be counted twice.
+        int launch_times = sharedPreferences.getInt("launch_times", -1);
         sharedPreferences.edit().putInt("launch_times", launch_times + 1).commit();
     }
-
+    
     private class LoadDataTask extends AsyncTask<String, Integer, String>
     {
         @Override
@@ -181,7 +255,14 @@ public class MainActivity extends Activity
             super.onPreExecute();
             
             //Show round progress bar on the ActionBar.
+            //Notice that, it doesn't work on Android 5.0 and above.
+            //From the development team:
+            //"...this is currently working as intended as the progress bar features are not supported
+            //on Material action bars. This should throw an exception if you try to use them."
             setProgressBarIndeterminateVisibility(true);
+            
+            //Get and save GPU info.
+            prepareGPUInfo();
             
             //Initialize text views.
             init();
@@ -213,6 +294,19 @@ public class MainActivity extends Activity
         }
     }
 
+    /**
+     * Get and save GPU info.
+     */
+    private void prepareGPUInfo()
+    {
+        if (!sharedPreferences.contains("gl_renderer"))
+        {
+            gLSurfaceView = new GLSurfaceView(this);
+            gLSurfaceView.setRenderer(glsvRenderer);
+            ((RelativeLayout)findViewById(R.id.rl_parent)).addView(gLSurfaceView);
+        }
+    }
+
     private void init()
     {
         tv_line_top = (MyTextView) findViewById(R.id.tv_line_top);
@@ -233,7 +327,7 @@ public class MainActivity extends Activity
     private void loadData()
     {
         //Init Map for Primer Module
-        map_primer = new HashMap<String, String>();
+        map_primer = new HashMap<>();
         
         sb_line = getDotsLine();
         sb_build = getBuildInfo();
@@ -271,7 +365,7 @@ public class MainActivity extends Activity
     /**
      * Build Module
      */
-    @TargetApi(9)
+    @SuppressLint("NewApi")
     private StringBuilder getBuildInfo()
     {
         String unknown = Build.UNKNOWN;
@@ -301,6 +395,14 @@ public class MainActivity extends Activity
             ? "" : Build.BOARD);
         stringBuilder.append(L1).append("HARDWARE: ").append(Build.HARDWARE.equals(unknown)
             ? "" : Build.HARDWARE);
+        if (SDK >= 21)
+        {
+            stringBuilder.append(L1).append("SUPPORTED_ABIS:");
+            for (String supported_abi : Build.SUPPORTED_ABIS)
+            {
+                stringBuilder.append(" ").append(supported_abi);
+            }
+        }
         if (SDK >= 9)
         {
             stringBuilder.append(L1).append("SERIAL: ").append(Build.SERIAL.equals(unknown)
@@ -631,6 +733,18 @@ public class MainActivity extends Activity
         stringBuilder.append(L2).append(SCALING_GOVERNOR).append(": ");
         stringBuilder.append(governor);
         
+        //GPU
+        if (sharedPreferences.contains("gl_renderer"))
+        {
+            stringBuilder.append(L0).append("javax.microedition.khronos.opengles.GL10.");
+            stringBuilder.append(L1).append("glGetString(GL_RENDERER): ")
+                .append(sharedPreferences.getString("gl_renderer", ""));
+            stringBuilder.append(L1).append("glGetString(GL_VENDOR): ")
+                .append(sharedPreferences.getString("gl_vendor", ""));
+            /*stringBuilder.append(L1).append("glGetString(GL_VERSION): ")
+                .append(sharedPreferences.getString("gl_version", ""));*/
+        }
+        
         //Add data for Primer Module
         if (min_freq == -1 && max_freq == -1)
         {
@@ -727,7 +841,7 @@ public class MainActivity extends Activity
         if (SDK >= 9)
         {
             stringBuilder.append(L1).append("isExternalStorageRemovable(): ").append(Environment
-                .isExternalStorageRemovable());
+                .isExternalStorageRemovable() ? TRUE : FALSE);
         }
         stringBuilder.append(L1).append("getExternalStorageDirectory(): ");
         if (state.equals(Environment.MEDIA_MOUNTED))
@@ -769,8 +883,8 @@ public class MainActivity extends Activity
                     {
                         temp_file = new File(path);
                         stringBuilder.append(L2).append(ExtraUtil.getPathRuled(path));
-                        stringBuilder.append(SPACE).append(temp_file.exists()
-                            && temp_file.canRead());
+                        stringBuilder.append(SPACE).append(temp_file.exists() && temp_file.canRead()
+                            && temp_file.list().length > 0 ? TRUE : FALSE);
                     }
                 }
             }
@@ -789,10 +903,11 @@ public class MainActivity extends Activity
     /**
      * Package Module
      */
+    @TargetApi(19)
     private StringBuilder getPackageInfo()
     {
         PackageManager packageManager = getPackageManager();
-        List<String> features = new ArrayList<String>();
+        List<String> features = new ArrayList<>();
         
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(L).append("android.content.pm.PackageManager.");
@@ -844,14 +959,31 @@ public class MainActivity extends Activity
             //with data communication support.
             map_primer.put("phone_type", UNKNOWN);
         }
-        map_primer.put("gyroscope", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE) ? "Yes" : "No");//API 9
-        map_primer.put("nfc", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_NFC) ? "Yes" : "No");//API 9
+        map_primer.put("gyro1", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE) ? YES : NO);//API 9
+        
+        map_primer.put("nfc1", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_NFC) ? YES : NO);//API 9
+        if (SDK >= 10)
+        {
+            NfcManager nfcManager = (NfcManager) getSystemService(NFC_SERVICE);
+            NfcAdapter nfcAdapter = nfcManager.getDefaultAdapter();
+            map_primer.put("nfc2", nfcAdapter != null && nfcAdapter.isEnabled() ? YES : NO);
+        }
+        
         map_primer.put("otg", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_USB_HOST) ? "Yes" : "No");//API 12
-        map_primer.put("heart_rate", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_SENSOR_HEART_RATE) ? "Yes" : "No");//API 20
+            .hasSystemFeature(PackageManager.FEATURE_USB_HOST) ? YES : NO);//API 12
+        
+        map_primer.put("ir1", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_CONSUMER_IR) ? YES : NO);//API 19
+        if (SDK >= 19)
+        {
+            ConsumerIrManager consumerIrManager = (ConsumerIrManager) getSystemService(CONSUMER_IR_SERVICE);
+            map_primer.put("ir2", consumerIrManager.hasIrEmitter() ? YES : NO);
+        }
+        
+        map_primer.put("heart_rate1", packageManager
+            .hasSystemFeature(PackageManager.FEATURE_SENSOR_HEART_RATE) ? YES : NO);//API 20
         
         return stringBuilder;
 	}
@@ -878,10 +1010,17 @@ public class MainActivity extends Activity
                 stringBuilder.append(SPACE).append(ConstUtil.getSensorTypeStr(i));
                 if (SDK >= 21)
                 {
-                    stringBuilder.append(SPACE).append(temp_sensor.isWakeUpSensor());
+                    stringBuilder.append(SPACE).append(temp_sensor
+                        .isWakeUpSensor() ? ON : OFF);
                 }
             }
         }
+        
+        //Add data for Primer Module
+        map_primer.put("gyro2", sensorManager
+            .getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null ? YES : NO);//API 3
+        map_primer.put("heart_rate2", sensorManager
+            .getDefaultSensor(Sensor.TYPE_HEART_RATE) != null ? YES : NO);//API 20
         
         return stringBuilder;
 	}
@@ -904,12 +1043,12 @@ public class MainActivity extends Activity
             {
                 rooted = true;
                 stringBuilder.append(L1).append(path);
-                stringBuilder.append(SPACE).append("true");
+                stringBuilder.append(SPACE).append(TRUE);
             }
         }
         
         //Add data for Primer Module
-        map_primer.put("root", rooted ? "Yes" : "No");
+        map_primer.put("root", rooted ? YES : NO);
 
         return stringBuilder;
     }
@@ -991,33 +1130,79 @@ public class MainActivity extends Activity
     private StringBuilder getPrimerInfo()
     {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Primer:");
-        stringBuilder.append(L1).append("Device Model:         ").append(map_primer.get("model"));
-        stringBuilder.append(L1).append("Brand & Manufacturer: ").append(map_primer.get("brand"));
-        stringBuilder.append(L1).append("System Version:       ").append(map_primer.get("version"));
-        stringBuilder.append(L1).append("Screen Resolution:    ").append(map_primer.get("resolution"));
+        
+        stringBuilder.append(getString(R.string.module_primer));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_model));
+        stringBuilder.append(map_primer.get("model"));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_brand));
+        stringBuilder.append(map_primer.get("brand"));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_version));
+        stringBuilder.append(map_primer.get("version"));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_resolution));
+        stringBuilder.append(map_primer.get("resolution"));
+        
         if (!map_primer.get("phone_type").equals(UNKNOWN))
         {
-            stringBuilder.append(L1).append("Phone Type:           ").append(map_primer.get("phone_type"));
-            stringBuilder.append(L1).append("IMEI/MEID/ESN:        ").append(map_primer.get("imei"));
-            stringBuilder.append(L1).append("IMSI:                 ").append(map_primer.get("imsi"));
+            stringBuilder.append(L1).append(getString(R.string.primer_phone_type));
+            stringBuilder.append(map_primer.get("phone_type"));
+            
+            stringBuilder.append(L1).append(getString(R.string.primer_imei));
+            stringBuilder.append(map_primer.get("imei"));
+            
+            stringBuilder.append(L1).append(getString(R.string.primer_imsi));
+            stringBuilder.append(map_primer.get("imsi"));
         }
-        stringBuilder.append(L1).append("CPU Clock Speed:      ").append(map_primer.get("cpu"));
-        stringBuilder.append(L1).append("Total RAM:            ").append(map_primer.get("ram"));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_cpu));
+        stringBuilder.append(map_primer.get("cpu"));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_ram));
+        stringBuilder.append(map_primer.get("ram"));
+        
         if (SDK >= 9)
         {
-            stringBuilder.append(L1).append("Gyroscope Sensor:     ").append(map_primer.get("gyroscope"));
-            stringBuilder.append(L1).append("NFC:                  ").append(map_primer.get("nfc"));
+            stringBuilder.append(L1).append(getString(R.string.primer_gyro));
+            stringBuilder.append(map_primer.get("gyro1").equals(map_primer.get("gyro2"))
+                ? map_primer.get("gyro1") : NO);
+            
+            stringBuilder.append(L1).append(getString(R.string.primer_nfc));
+            if (SDK >= 10)
+            {
+                stringBuilder.append(map_primer.get("nfc1"));
+            }
+            else
+            {
+                stringBuilder.append(map_primer.get("nfc1").equals(map_primer.get("nfc2"))
+                    ? map_primer.get("nfc1") : NO);
+            }
         }
+        
         if (SDK >= 12)
         {
-            stringBuilder.append(L1).append("OTG (USB Host):       ").append(map_primer.get("otg"));
+            stringBuilder.append(L1).append(getString(R.string.primer_otg));
+            stringBuilder.append(map_primer.get("otg"));
         }
+        
+        if (SDK >= 19)
+        {
+            stringBuilder.append(L1).append(getString(R.string.primer_ir));
+            stringBuilder.append(map_primer.get("ir1").equals(map_primer.get("ir2"))
+                ? map_primer.get("ir1") : NO);
+        }
+        
         if (SDK >= 20)
         {
-            stringBuilder.append(L1).append("Heart Rate Monitor:   ").append(map_primer.get("heart_rate"));
+            stringBuilder.append(L1).append(getString(R.string.primer_heart_rate));
+            stringBuilder.append(map_primer.get("heart_rate1").equals(map_primer.get("heart_rate2"))
+                ? map_primer.get("heart_rate1") : NO);
         }
-        stringBuilder.append(L1).append("Root Access:          ").append(map_primer.get("root"));
+        
+        stringBuilder.append(L1).append(getString(R.string.primer_root));
+        stringBuilder.append(map_primer.get("root"));
         
         return stringBuilder;
     }
@@ -1128,7 +1313,7 @@ public class MainActivity extends Activity
         //The "subject" is the name of the sending file.
         intent.putExtra(Intent.EXTRA_SUBJECT, file.getName());
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-        intent.setType("*/*");
+        intent.setType(ConstUtil.getMIMEType(file.getName()));
         startActivity(Intent.createChooser(intent,
             getString(R.string.share_via)));
     }
@@ -1136,7 +1321,7 @@ public class MainActivity extends Activity
     /**
      * Share the app, OSBuild.
      */
-    private void shareApp()
+    private void shareThisApp()
     {
         File file = ExtraUtil.pickUpMyPackage(this);
         if (file != null)
@@ -1151,9 +1336,7 @@ public class MainActivity extends Activity
      */
     private void constDialog()
     {
-        final String[] CONST_FILES = { "Build Module", "Display Module",
-            "Telephony Module", "CPU Module", "Memory Module",
-            "Package Module", "Sensor Module" };
+        final String[] CONST_FILES = getResources().getStringArray(R.array.modules);
         final int[] CONST_FILES_ID = { R.raw.build, R.raw.display,
             R.raw.tel, R.raw.cpu, R.raw.mem, R.raw.pkg, R.raw.sensor };
         
@@ -1335,20 +1518,22 @@ public class MainActivity extends Activity
         final ArrayList<String> LIST_PKG = new ArrayList<>();
         final ArrayList<String> LIST_CLASS = new ArrayList<>();
         //Developement Options
-        LIST_TITLE.add("Development");
+        LIST_TITLE.add(getString(R.string.sys_settings_development));
         LIST_PKG.add("com.android.settings");
         LIST_CLASS.add("com.android.settings.DevelopmentSettings");
         //Hardware Test (Only MIUI)
         if (Build.MANUFACTURER.equals("Xiaomi"))
         {
-            LIST_TITLE.add("MIUI Cit");
+            LIST_TITLE.add(getString(R.string.sys_settings_miui_cit));
             LIST_PKG.add("com.miui.cit");
             LIST_CLASS.add("com.miui.cit.CitLauncherActivity");
         }
         //Test
-        LIST_TITLE.add("Testing");
+        LIST_TITLE.add(getString(R.string.sys_settings_testing));
         LIST_PKG.add("com.android.settings");
         LIST_CLASS.add("com.android.settings.TestingSettings");
+        
+        //"com.android.settings.DeviceInfoSettings"
         
         AlertDialog alertDialog = new AlertDialog.Builder(this)
             .setTitle(R.string.dia_title_sys_settings)
@@ -1385,6 +1570,43 @@ public class MainActivity extends Activity
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Dialog: Share Installed App
+     * Share certain installed app.
+     */
+    private void shareAppDialog()
+    {
+        ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_share_app, null);
+        final EditText ET_APP_NAME = (EditText) viewGroup.findViewById(R.id.et_app_name);
+        ((TextView)viewGroup.findViewById(R.id.tv_share_app_steps)).setText(String
+            .format(getString(R.string.share_app_steps), getExternalCacheDir() + "/"));
+        
+        AlertDialog alertDialog = new AlertDialog.Builder(this)
+            .setTitle(R.string.dia_title_share_app)
+            .setView(viewGroup)
+            .setPositiveButton(R.string.dia_pos_ok, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface p1, int p2)
+                {
+                    String text = ET_APP_NAME.getText().toString();
+                    File file = ExtraUtil.pickUpPackage(MainActivity.this, text);
+                    if (file != null)
+                    {
+                        share(file, false);
+                    }
+                    else
+                    {
+                        shareAppDialog();
+                    }
+                }
+            })
+            .setNegativeButton(R.string.dia_neg_cancel, null)
+            .create();
+        alertDialog.show();
+    }
+    
     /**
      * Dialog: Donate
      * Request user to "Share the Page" to me by E-mail.
@@ -1396,7 +1618,7 @@ public class MainActivity extends Activity
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text, null);
         ((TextView) viewGroup.findViewById(R.id.tv_text)).setText(R.string.donate_desc);
         
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
+        final AlertDialog ALERTDIAOLG = new AlertDialog.Builder(this)
             .setTitle(R.string.dia_title_donate)
             .setView(viewGroup)
             .setPositiveButton(R.string.dia_pos_ok, new DialogInterface.OnClickListener()
@@ -1428,15 +1650,43 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(DialogInterface p1, int p2)
                 {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(getString(R.string.program_github)));
-                    startActivity(intent);
+                    try
+                    {
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(getString(R.string.program_github)));
+                        startActivity(intent);
+                    }
+                    catch (ActivityNotFoundException e)
+                    {
+                        //There's no any browers.
+                        e.printStackTrace();
+                    }
                 }
             })
             .setNegativeButton(R.string.dia_neg_cancel, null)
             .create();
-        alertDialog.show();
+        ALERTDIAOLG.show();
+        
+        if (sharedPreferences.getBoolean("more_menu", false))
+        {
+            return;
+        }
+        ALERTDIAOLG.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setOnLongClickListener(new OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View p1)
+            {
+                sharedPreferences.edit()
+                    .putBoolean("more_menu", true).commit();
+                Toast.makeText(MainActivity.this, R.string.show_more_menu,
+                    Toast.LENGTH_LONG).show();
+                ALERTDIAOLG.dismiss();
+                return true;
+            }
+        });
     }
+    
     /**
      * Dialog: What's OSBuild?
      * Show description about OSBuild.
@@ -1465,20 +1715,48 @@ public class MainActivity extends Activity
         alertDialog.show();
     }
     
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+    }
+    
     /**
      * Menu:
-     *     Share...
+     *     Share
      *         Share the Page
      *         Share OSBuild
      *     Constant Reference
      *     View System Files
      *     System Settings
+     *     Small Tools
+     *         Share Installed App
+     *         Rotation Vector
+     *         Compass
+     *         ASCII Chart
+     *         White Paper
+     *         Kube
      *     Donate
      */
+    @TargetApi(9)
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        
+        if (sharedPreferences.getBoolean("more_menu", false))
+        {
+            menu.getItem(4).setVisible(true);
+            
+            SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+            
+            SubMenu subMenu = menu.getItem(4).getSubMenu();
+            subMenu.getItem(1).setVisible(SDK >= 9
+                && sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR) != null);
+            subMenu.getItem(2).setVisible(sensorManager
+                .getDefaultSensor(Sensor.TYPE_ORIENTATION) != null);
+        }
+        
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -1487,21 +1765,45 @@ public class MainActivity extends Activity
     {
         switch (item.getItemId())
         {
+            //Share
             case R.id.action_sub_share_text:
                 shareTextDialog(false);
                 return true;
             case R.id.action_sub_share_app:
-                shareApp();
+                shareThisApp();
                 return true;
+            //Constant Reference
             case R.id.action_const:
                 constDialog();
                 return true;
+            //View System Files
             case R.id.action_sys_files:
                 sysFilesDialog();
                 return true;
+            //System Settings
             case R.id.action_sys_settings:
                 sysSettingsDialog();
                 return true;
+            //Small Tools
+            case R.id.action_sub_tools_app:
+                shareAppDialog();
+                return true;
+            case R.id.action_sub_tools_rotation:
+                item.setIntent(new Intent(this, RotationVector.class));
+                return super.onOptionsItemSelected(item);
+            case R.id.action_sub_tools_compass:
+                item.setIntent(new Intent(this, Compass.class));
+                return super.onOptionsItemSelected(item);
+            case R.id.action_sub_tools_ascii:
+                showTextFileDialog(R.raw.ascii, getString(R.string.dia_title_ascii));
+                return true;
+            case R.id.action_sub_tools_white:
+                item.setIntent(new Intent(this, WhitePaper.class));
+                return super.onOptionsItemSelected(item);
+            case R.id.action_sub_tools_kube:
+                item.setIntent(new Intent(this, Kube.class));
+                return super.onOptionsItemSelected(item);
+            //Donate
             case R.id.action_donate:
                 donateDialog();
                 return true;

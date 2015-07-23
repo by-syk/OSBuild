@@ -1,25 +1,43 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.by_syk.osbuild">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
+    
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
-
+        
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="fullSensor">
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
+        
+        <activity
+            android:name=".RotationVector"
+            android:screenOrientation="nosensor"/>
+        
+        <activity
+            android:name=".compass.Compass"
+            android:screenOrientation="nosensor"/>
+        
+        <activity
+            android:name=".WhitePaper"
+            android:theme="@style/AppTheme_Fullscreen"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+            
+        <activity
+            android:name=".kube.Kube"
+            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize"/>
+        
     </application>
 
 </manifest>

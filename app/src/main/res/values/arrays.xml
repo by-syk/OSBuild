@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string-array name="modules">
+        <item>Build Module</item>
+        <item>Display Module</item>
+        <item>Telephony Module</item>
+        <item>CPU Module</item>
+        <item>Memory Module</item>
+        <item>Package Module</item>
+        <item>Sensor Module</item>
+    </string-array>
+    
+</resources>

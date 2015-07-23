@@ -23,6 +23,7 @@ android.os.Build.
          20  KITKAT_WATCH  4.4W  ?  null  20
          21  LOLLIPOP  5.0  ?  11.6%  21
          22  LOLLIPOP_MR1  ?  ?  0.8%  ?
+         1000  CUR_DEVELOPMENT  null  null  null  null
 
 [Statistics: Data collected from Google Play during a 7-day period ending on June 1, 2015.]
 (From: Docs of API 22, https://developer.android.com/reference)

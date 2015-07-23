@@ -1,11 +1,15 @@
 /sys/devices/system/cpu/
    cpu0/cpufreq/
-      scaling_governor: Value
-         conservative
-         hotplug
-         interactive
-         ondemand
-         performance
-         powersave
-         smartass
-         userspace
+      scaling_governor: Value  (Statistics)
+         ondemand  51.7%
+         interactive  21.3%
+         hotplug  15.2%
+         pegasusq  5.2%
+         hybird  2.4%
+         k3hotplug  1.4%
+         performance  0.9%
+         pwrctrl_hotplug  0.9%
+         conservative  0.5%
+         april  0.5%
+         
+[Statistics: Not officially. Data collected from about 200 devices on Testin by developer on July 10, 2015.]

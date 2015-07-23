@@ -17,8 +17,8 @@ android.telephony.TelephonyManager.
       4  SIM_STATE_NETWORK_LOCKED  1
       5  SIM_STATE_READY  1
    getSimOperator(): Value  Sim Operator
-      454xx  Hong Kong xxx
-      455xx  Macao xxx
+      454xx  Hong Kong
+      455xx  Macao
       46000  China Mobile
       46001  China Unicom
       46002  China Mobile
@@ -27,7 +27,7 @@ android.telephony.TelephonyManager.
       46006  China Unicom
       46007  China Mobile
       46020  China Tietong
-      466xx  Taiwan xxx
+      466xx  Taiwan
    getNetworkType(): Value  Name  (API Level)
       0  NETWORK_TYPE_UNKNOWN  1
       1  NETWORK_TYPE_GPRS  1
@@ -45,5 +45,7 @@ android.telephony.TelephonyManager.
       13  NETWORK_TYPE_LTE  11
       14  NETWORK_TYPE_EHRPD  11
       15  NETWORK_TYPE_HSPAP  13
+      16  NETWORK_TYPE_GSM  ?
+      17  NETWORK_TYPE_TD_SCDMA  ?
 
 (From: Docs of API 22, https://developer.android.com/reference, partly)

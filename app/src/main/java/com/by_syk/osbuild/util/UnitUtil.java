@@ -1,10 +1,11 @@
+/**
+ * @author By_syk
+ */
+
 package com.by_syk.osbuild.util;
 
 import java.text.DecimalFormat;
 
-/**
- * @author By_syk
- */
 public class UnitUtil
 {
     private static String UNKNOWN = "";

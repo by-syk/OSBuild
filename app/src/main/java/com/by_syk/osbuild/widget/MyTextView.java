@@ -1,3 +1,7 @@
+/**
+ * @author By_syk
+ */
+
 package com.by_syk.osbuild.widget;
 
 import android.content.Context;
@@ -5,9 +9,6 @@ import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-/**
- * @author By_syk
- */
 public class MyTextView extends TextView
 {
     public MyTextView(Context context)

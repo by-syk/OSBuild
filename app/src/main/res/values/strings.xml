@@ -13,7 +13,8 @@
     <string name="dia_title_donate">Donate</string>
     <string name="dia_title_about">What\'s OSBuild?</string>
     <string name="dia_title_warning">Warning</string>
-    <string name="dia_title_theme">Switch Theme</string>
+    <string name="dia_title_share_app">Share Installed App</string>
+    <string name="dia_title_ascii">ASCII Chart</string>
     <string name="dia_pos_ok">OK</string>
     <string name="dia_pos_continue">Continue</string>
     <string name="dia_neg_cancel">Cancel</string>
@@ -25,10 +26,15 @@
 + It\'s NOT a problem with OSBuild if you see nothing then. You should make sure that your device has been rooted and you have authorized OSBuild's request for root permission.
 + OSBuild just do what should do with root permission."
     </string>
-    
+    <string name="hint_enter_app_name">App name or package name</string>
+    <string name="share_app_steps">Steps: Copy the found apk file to \"%s\" and then share it.</string>
+    <string name="show_more_menu">Menu \"Small Tools\" has been added! Reboot to see.</string>
     <string name="share_via">Share via...</string>
     <!--<string name="copied">Developer\'s E-mail address has been copied.</string>-->
     <string name="not_show">Don\'t show again.</string>
+    <string name="sys_settings_development">Development</string>
+    <string name="sys_settings_miui_cit">MIUI Cit</string>
+    <string name="sys_settings_testing">Testing</string>
     
     <string name="action_share">Share...</string>
     <string name="action_sub_share_text">Share the Page</string>
@@ -36,6 +42,13 @@
     <string name="action_const">Constant Reference</string>
     <string name="action_sys_files">View System Files</string>
     <string name="action_sys_settings">System Settings</string>
+    <string name="action_tools">Small Tools...</string>
+    <string name="action_sub_tools_app">Share Installed App</string>
+    <string name="action_sub_tools_rotation">Rotation Vector</string>
+    <string name="action_sub_tools_compass">Compass</string>
+    <string name="action_sub_tools_ascii">ASCII Chart</string>
+    <string name="action_sub_tools_white">White Paper</string>
+    <string name="action_sub_tools_kube">Kube</string>
     <string name="action_donate">Donate</string>
     
     <string name="app_desc">"OSBuild - FOR ANDROID DEVELOPERS
@@ -64,5 +77,22 @@ etc.
 \nJust \"Share the Page\" to me by E-mail. As you can see, only some hardware info about the device (NO PRIVACY).
 \nI'm making the effort to finish my project, DAD (Database of Android Devices). If you find OSBuild useful, please help me a lot. Thank you."
     </string>
+    
+    <string name="module_primer">Primer:</string>
+    <string name="primer_model">"Device Model:         "</string>
+    <string name="primer_brand">"Brand \u0026 Manufacturer: "</string>
+    <string name="primer_version">"OS Version:           "</string>
+    <string name="primer_resolution">"Screen Resolution:    "</string>
+    <string name="primer_phone_type">"Phone Type:           "</string>
+    <string name="primer_imei">"IMEI/MEID/ESN:        "</string>
+    <string name="primer_imsi">"IMSI:                 "</string>
+    <string name="primer_cpu">"CPU Clock Speed:      "</string>
+    <string name="primer_ram">"Total RAM:            "</string>
+    <string name="primer_gyro">"Gyroscope Sensor:     "</string>
+    <string name="primer_nfc">"NFC:                  "</string>
+    <string name="primer_otg">"OTG (USB Host):       "</string>
+    <string name="primer_ir">"IR Transmitter:       "</string>
+    <string name="primer_heart_rate">"Heart Rate Monitor:   "</string>
+    <string name="primer_root">"Root Access:          "</string>
     
 </resources>

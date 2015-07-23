@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme_Fullscreen" parent="@android:style/Theme.NoTitleBar.Fullscreen"/>
+        
+    <style name="Text">
+        <item name="android:lineSpacingExtra">@dimen/space_line</item>
+        <item name="android:lineSpacingMultiplier">1</item>
+    </style>
+
+</resources>

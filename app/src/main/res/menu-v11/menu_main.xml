@@ -31,6 +31,32 @@
         android:showAsAction="never"/>
     
     <item
+        android:title="@string/action_tools"
+        android:showAsAction="never"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@+id/action_sub_tools_app"
+                android:title="@string/action_sub_tools_app"/>
+            <item
+                android:id="@+id/action_sub_tools_rotation"
+                android:title="@string/action_sub_tools_rotation"/>
+            <item
+                android:id="@+id/action_sub_tools_compass"
+                android:title="@string/action_sub_tools_compass"/>
+            <item
+                android:id="@+id/action_sub_tools_ascii"
+                android:title="@string/action_sub_tools_ascii"/>
+            <item
+                android:id="@+id/action_sub_tools_white"
+                android:title="@string/action_sub_tools_white"/>
+            <item
+                android:id="@+id/action_sub_tools_kube"
+                android:title="@string/action_sub_tools_kube"/>
+        </menu>
+    </item>
+    
+    <item
         android:id="@+id/action_donate"
         android:title="@string/action_donate"
         android:showAsAction="never"/>

@@ -1,3 +1,43 @@
+v1.3.0.nightly 2015-07-23
+
+
+v1.3.0.nightly 2015-07-22
+Check "Heart Rate Monitor" more accurately in Primer Module.
+Add "/values-zh-rCN/" but hide in release version.
+
+v1.3.0.nightly 2015-07-21
+Add sub memus "ASCII Chart" in menu "Small Tools".
+Add the line "IR Transmitter" in Primer Module.
+Check "NFC" more accurately in Primer Module.
+
+v1.3.0.nightly 2015-07-20
+Add new constants "NETWORK_TYPE_GSM", "NETWORK_TYPE_TD_SCDMA" (@hide) to the line "getNetworkType" in Telephony Module.
+Launch firstly to get GPU info and show it.
+Add sub memus "Compass" in menu "Small Tools".
+Fix lost "CUR_DEVELOPMENT" issue after the line "SDK_INT" in Build Module.
+
+v1.3.0.nightly 2015-07-16
+Add sub menu "Rotation Vector" in menu "Small Tools".
+
+v1.3.0.nightly 2015-07-15
+Add the line "SUPPORTED_ABIS" in Build Module. (API 21)
+Add sub memus "White Paper", "Kube" in menu "Small Tools".
+
+v1.3.0.nightly 2015-07-14
+Remove the line "glGetString(GL_VERSION)" in CPU Module.
+Check "Gyroscope Sensor" more accurately in Primer Module.
+Check the node StorageManager more accurately in Memory Module.
+Add the menu "Small Tools" and "Share Installed App" as a sub menu.
+Do not rotate by "fullSensor".
+Fix the crash BUG of visiting GitHub.
+
+v1.2.9.nightly 2015-07-10
+Add stats to menu option CPU Module.
+Share more accurately.
+
+v1.2.8.nightly 2015-07-09
+Add the node "GL10" in CPU Module.
+
 v1.2.7.nightly 2015-07-08
 Rename "Device Brand" to "Brand & Manufacturer" in Primer Module.
 Move description of OSBuild from "/assets/desc.txt" to "strings.xml".
