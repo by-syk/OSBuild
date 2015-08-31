@@ -27,7 +27,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * etc.
 
 ### Example
-There is a slice of data which OSBuild got from my Android phone:
+There is a slice of data which **OSBuild** got from my Android phone:
 ```
 /proc/cpuinfo
    Processor: ARMv7 Processor rev 1 (v7l)
@@ -54,12 +54,12 @@ Not financially.
 
 Just **Share the Page** to me by E-mail or any other available way. As you can see, only some hardware info about the device (**NO PRIVACY**).
 
-Each received file helps me expand the OSBuild - DAD (Database of Android Devices).
+Each received file helps me expand the **OSBuild** - **DAD (Database of Android Devices)**.
 
-I've spent plenty of time programming. If you find OSBuild useful, please help me a lot. Thank you.
+I've spent plenty of time programming. If you find **OSBuild** useful, please help me a lot. Thank you.
 
 ### Besides...
-Maybe OSBuild could help you with smartphone reviews.
+Maybe **OSBuild** could help you with smartphone reviews.
 
 Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base/tools/download-appxplore-and-learn-more-about-your-apps/).
 
