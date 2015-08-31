@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:showAsAction="always">
+        <menu>
+            <group
+                android:id="@+id/action_group_charset"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_sub_charset_utf8"
+                    android:title="@string/action_sub_charset_utf8"/>
+                <item
+                    android:id="@+id/action_sub_charset_gbk"
+                    android:title="@string/action_sub_charset_gbk"/>
+                <item
+                    android:id="@+id/action_sub_charset_user"
+                    android:title="@string/action_sub_charset_user"/>
+            </group>
+        </menu>
+    </item>
+    
+</menu>

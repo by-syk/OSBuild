@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <drawable name="white_paper">#ffffffff</drawable>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="red500">#f44336</color>
+    <color name="red700">#d32f2f</color>
     
 </resources>

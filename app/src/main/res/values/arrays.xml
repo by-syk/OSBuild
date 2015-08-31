@@ -9,6 +9,42 @@
         <item>Memory Module</item>
         <item>Package Module</item>
         <item>Sensor Module</item>
+        <item>App Module</item>
+    </string-array>
+    
+    <string-array name="primer_all">
+        <item>"Device Model:         "</item>
+        <item>"Brand \u0026 Manufacturer: "</item>
+        <item>"OS Version:           "</item>
+        <item>"Screen Resolution:    "</item>
+        <item>"Phone Type:           "</item>
+        <item>"IMEI/MEID/ESN:        "</item>
+        <item>"IMSI:                 "</item>
+        <item>"CPU Clock Speed:      "</item>
+        <item>"Total RAM:            "</item>
+        <item>"Gyroscope Sensor:     "</item>
+        <item>"NFC:                  "</item>
+        <item>"OTG (USB Host):       "</item>
+        <item>"IR Transmitter:       "</item>
+        <item>"Step Counter:         "</item>
+        <item>"Heart Rate Monitor:   "</item>
+        <item>"Dual SIM:             "</item>
+        <item>"World Phone:          "</item>
+        <item>"Hi-Fi:                "</item>
+        <item>"Fingerprint ID:       "</item>
+        <item>"Root Access:          "</item>
+    </string-array>
+    
+    <string-array name="primer_absentees">
+        <item>Light Sensor</item>
+        <item>Telephony Radio</item>
+        <item>Camera (Back)</item>
+        <item>Flash Lamp</item>
+        <item>Bluetooth</item>
+        <item>WiFi</item>
+        <item>GPS</item>
+        <item>Camera (Front)</item>
+        <item>BLE (Bluetooth Smart)</item>
     </string-array>
     
 </resources>

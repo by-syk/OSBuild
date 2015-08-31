@@ -10,11 +10,10 @@
 		android:layout_height="wrap_content">
 
 		<com.by_syk.osbuild.widget.MyTextView
-			android:id="@+id/tv_text"
+			android:id="@+id/mtv_text"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			style="@style/TextSel"
-			android:padding="@dimen/padding_page"/>
+			android:textIsSelectable="true"/>
 
 	</ScrollView>
 

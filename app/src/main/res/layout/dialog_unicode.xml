@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:layout_width="match_parent"
+	android:padding="@dimen/padding_dialog"
+	android:orientation="vertical">
+
+	<com.by_syk.osbuild.widget.MyTextView
+		android:id="@+id/mtv_unicode_result"
+        android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_gravity="center_horizontal"
+		android:textIsSelectable="true"/>
+
+	<EditText
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:id="@+id/et_chars"
+		android:inputType="text"
+		android:imeOptions="actionDone"
+		android:selectAllOnFocus="true"
+		android:layout_marginTop="@dimen/span_vertical_dialog"/>
+
+</LinearLayout>
+

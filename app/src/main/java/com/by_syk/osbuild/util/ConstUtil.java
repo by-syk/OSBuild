@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.annotation.TargetApi;
 import android.text.TextUtils;
+import android.content.pm.ConfigurationInfo;
 
 public class ConstUtil
 {
@@ -26,7 +27,7 @@ public class ConstUtil
     /**
      * The user-visible SDK version of the framework;
      * its possible values are defined in Build.VERSION_CODES.
-     * @param sdk_int SDK_INT
+     * @param sdk_int "SDK_INT"
      */
     public static String getSDKIntStr(int sdk_int)
     {
@@ -76,6 +77,8 @@ public class ConstUtil
                 return "LOLLIPOP";//Android 5.0
             case Build.VERSION_CODES.LOLLIPOP_MR1://22
                 return "LOLLIPOP_MR1";
+            case Build.VERSION_CODES.M://23
+                return "M";
             //Magic version number for a current development build,
             //which has not yet turned into an official release.
             case Build.VERSION_CODES.CUR_DEVELOPMENT://1000
@@ -86,10 +89,10 @@ public class ConstUtil
     }
     
     /**
-     * @param sdk_int SDK_INT
+     * @param sdk_int "SDK_INT"
      * @return The date Google release the given Android version.
      */
-    public static String getSDKIntTimeStr(int sdk_int)
+    public static String getSDKIntDateStr(int sdk_int)
     {
         switch (sdk_int)
         {
@@ -133,9 +136,13 @@ public class ConstUtil
                 return "2013-10";//Android 4.4
             case Build.VERSION_CODES.KITKAT_WATCH://20
                 return UNKNOWN;//Android 4.4W
-            case Build.VERSION_CODES.LOLLIPOP:
+            case Build.VERSION_CODES.LOLLIPOP://21
                 return UNKNOWN;//Android 5.0
-            case Build.VERSION_CODES.LOLLIPOP_MR1:
+            case Build.VERSION_CODES.LOLLIPOP_MR1://22
+                return UNKNOWN;
+            case Build.VERSION_CODES.M://23
+                return UNKNOWN;
+            case Build.VERSION_CODES.CUR_DEVELOPMENT://1000
                 return UNKNOWN;
             default:
                 return UNKNOWN;
@@ -144,7 +151,7 @@ public class ConstUtil
     
     /**
      * The screen density expressed as dots-per-inch.
-     * @param density_dpi densityDpi
+     * @param density_dpi "densityDpi"
      */
     public static String getDensityDPIStr(int density_dpi)
     {
@@ -153,7 +160,9 @@ public class ConstUtil
             case DisplayMetrics.DENSITY_LOW://120
                 return "DENSITY_LOW";
             case DisplayMetrics.DENSITY_MEDIUM://160
-                return "DENSITY_MEDIUM";//also "DENSITY_DEFAULT"
+                return "DENSITY_MEDIUM/DENSITY_DEFAULT";
+            //case DisplayMetrics.DENSITY_DEFAULT://160
+            //    return "DENSITY_DEFAULT";
             case DisplayMetrics.DENSITY_TV://213
                 return "DENSITY_TV";
             case DisplayMetrics.DENSITY_HIGH://240
@@ -162,8 +171,12 @@ public class ConstUtil
                 return "DENSITY_280";
             case DisplayMetrics.DENSITY_XHIGH://320
                 return "DENSITY_XHIGH";
+            case DisplayMetrics.DENSITY_360://360
+                return "DENSITY_360";
             case DisplayMetrics.DENSITY_400://400
                 return "DENSITY_400";
+            case DisplayMetrics.DENSITY_420://420
+                return "DENSITY_420";
             case DisplayMetrics.DENSITY_XXHIGH://480
                 return "DENSITY_XXHDPI";
             case DisplayMetrics.DENSITY_560://560
@@ -177,8 +190,9 @@ public class ConstUtil
     
     /**
      * Overall orientation of the screen.
-     * @param orientation orientation
+     * @param orientation "orientation"
      */
+    @SuppressWarnings("deprecation")
     public static String getOrientationStr(int orientation)
     {
         switch (orientation)
@@ -196,6 +210,7 @@ public class ConstUtil
         }
     }
     
+    @SuppressWarnings("deprecation")
     public static String getSensorTypeStr(int type)
     {
         switch (type)
@@ -272,8 +287,8 @@ public class ConstUtil
     
     /**
      * Returns the rotation of the screen from its "natural" orientation.
-     * Anticlockwise
-     * @param rotation getRotation()
+     * Notice: ANTICLOCKWISE
+     * @param rotation "getRotation()"
      */
     public static String getRotationStr(int rotation)
     {
@@ -296,7 +311,8 @@ public class ConstUtil
     /**
      * Returns the MCC+MNC (mobile country code + mobile network code) of the provider of the SIM.
      * 5 or 6 decimal digits.
-     * @param sim_operator getSimOperator()
+     * Notice: Only SIM operators in China are supported currently.
+     * @param sim_operator "getSimOperator()"
      */
     public static String getSimOperator(String sim_operator)
     {
@@ -305,8 +321,8 @@ public class ConstUtil
             return UNKNOWN;
         }
         
-        int mcc = ExtraUtil.convertInt(sim_operator.substring(0, 3));
-        int mnc = ExtraUtil.convertInt(sim_operator.substring(3));
+        int mcc = UnitUtil.toIntSafely(sim_operator.substring(0, 3));
+        int mnc = UnitUtil.toIntSafely(sim_operator.substring(3));
         
         switch (mcc)
         {
@@ -356,7 +372,7 @@ public class ConstUtil
     
     /**
      * Returns the current state of the storage device that provides the given path.
-     * @param state getExternalStorageState()
+     * @param state "getExternalStorageState()"
      */
     public static String getExternalStorageState(String state)
     {
@@ -371,6 +387,8 @@ public class ConstUtil
                 return "MEDIA_BAD_REMOVAL";
             case Environment.MEDIA_CHECKING://checking
                 return "MEDIA_CHECKING";
+            case Environment.MEDIA_EJECTING://ejecting
+                return "MEDIA_EJECTING";
             case Environment.MEDIA_MOUNTED://mounted
                 return "MEDIA_MOUNTED";
             case Environment.MEDIA_MOUNTED_READ_ONLY://mounted_read_only
@@ -395,7 +413,7 @@ public class ConstUtil
     /**
      * Returns a constant indicating the device phone type.
      * This indicates the type of radio used to transmit voice calls.
-     * @param phone_type getPhoneType()
+     * @param phone_type "getPhoneType()"
      */
     public static String getPhoneTypeStr(int phone_type)
     {
@@ -415,7 +433,7 @@ public class ConstUtil
     }
     
     /**
-     * @param phone_type getPhoneType()
+     * @param phone_type "getPhoneType()"
      * @param id_length Length of device id string.
      * @return The date Google release the given Android version.
      */
@@ -438,7 +456,7 @@ public class ConstUtil
     
     /**
      * Returns a constant indicating the state of the default SIM card.
-     * @param sim_state getSimState()
+     * @param sim_state "getSimState()"
      */
     public static String getSimStateStr(int sim_state)
     {
@@ -463,7 +481,7 @@ public class ConstUtil
     
     /**
      * Current user preference for the locale, corresponding to locale resource qualifier.
-     * @param locale locale
+     * @param locale "locale"
      */
     @TargetApi(9)
     public static String getLocale(Locale locale)
@@ -538,7 +556,7 @@ public class ConstUtil
         }
         else if (locale.equals(Locale.SIMPLIFIED_CHINESE))//zh_CN
         {
-            return "SIMPLIFIED_CHINESE CHINA PRC";
+            return "SIMPLIFIED_CHINESE/CHINA/PRC";
         }
         /*else if (locale.equals(Locale.CHINA))//zh_CN
         {
@@ -548,13 +566,13 @@ public class ConstUtil
         {
             return "PRC";
         }*/
-        else if (locale.equals(Locale.TAIWAN))//zh_TW
+        else if (locale.equals(Locale.TRADITIONAL_CHINESE))//zh_TW
         {
-            return "TAIWAN TRADITIONAL_CHINESE";
+            return "TRADITIONAL_CHINESE/TAIWAN";
         }
-        /*else if (locale.equals(Locale.TRADITIONAL_CHINESE))//zh_TW
+        /*else if (locale.equals(Locale.TAIWAN))//zh_TW
         {
-            return "TRADITIONAL_CHINESE";
+            return "TRADITIONAL_TAIWAN";
         }*/
         return UNKNOWN;
     }
@@ -562,8 +580,9 @@ public class ConstUtil
     /**
      * A single feature that can be requested by an application.
      * This corresponds to information collected from the AndroidManifest.xml's tag.
-     * @param feature FeatureInfo
+     * @param feature "FeatureInfo"
      */
+    @SuppressWarnings("deprecation")
     public static String getFeature(String feature)
     {
         if (TextUtils.isEmpty(feature))
@@ -579,6 +598,10 @@ public class ConstUtil
                 return "FEATURE_AUDIO_LOW_LATENCY";
             case PackageManager.FEATURE_AUDIO_OUTPUT://android.hardware.audio.output
                 return "FEATURE_AUDIO_OUTPUT";
+            case PackageManager.FEATURE_AUDIO_PRO://android.hardware.audio.pro
+                return "FEATURE_AUDIO_PRO";//API 23
+            case PackageManager.FEATURE_AUTOMOTIVE://android.hardware.type.automotive
+                return "FEATURE_AUTOMOTIVE";//API 23
             case PackageManager.FEATURE_BACKUP://android.software.backup
                 return "FEATURE_BACKUP";
             case PackageManager.FEATURE_BLUETOOTH://android.hardware.bluetooth
@@ -617,8 +640,12 @@ public class ConstUtil
                 return "FEATURE_FAKETOUCH_MULTITOUCH_DISTINCT";
             case PackageManager.FEATURE_FAKETOUCH_MULTITOUCH_JAZZHAND://android.hardware.faketouch.multitouch.jazzhand
                 return "FEATURE_FAKETOUCH_MULTITOUCH_JAZZHAND";
+            case PackageManager.FEATURE_FINGERPRINT://android.hardware.fingerprint
+                return "FEATURE_FINGERPRINT";//API 23
             case PackageManager.FEATURE_GAMEPAD://android.hardware.gamepad
                 return "FEATURE_GAMEPAD";
+            case PackageManager.FEATURE_HIFI_SENSORS://android.hardware.sensor.hifi_sensors
+                return "FEATURE_HIFI_SENSORS";//API 23
             case PackageManager.FEATURE_HOME_SCREEN://android.software.home_screen
                 return "FEATURE_HOME_SCREEN";
             case PackageManager.FEATURE_INPUT_METHODS://android.software.input_methods
@@ -639,6 +666,8 @@ public class ConstUtil
                 return "FEATURE_MANAGED_USERS";
             case PackageManager.FEATURE_MICROPHONE://android.hardware.microphone
                 return "FEATURE_MICROPHONE";
+            case PackageManager.FEATURE_MIDI://android.software.midi
+                return "FEATURE_MIDI";//API 23
             case PackageManager.FEATURE_NFC://android.hardware.nfc
                 return "FEATURE_NFC";
             case PackageManager.FEATURE_NFC_HOST_CARD_EMULATION://android.hardware.nfc.hce
@@ -723,8 +752,10 @@ public class ConstUtil
      */
     public static String getResolutionFormat(int width, int height)
     {
-        int pixels = width * height;//总像素数
-        int min = width <= height ? width : height;//短边像素数
+        //Total pixels
+        int pixels = width * height;
+        //Pixels of the short side
+        int min = width <= height ? width : height;
         switch (pixels)
         {
             /*
@@ -808,7 +839,7 @@ public class ConstUtil
     
     /**
      * Constant for screenLayout: bits that encode the size.
-     * @param sl_size_mask screenLayout & SCREENLAYOUT_SIZE_MASK
+     * @param sl_size_mask "screenLayout & SCREENLAYOUT_SIZE_MASK"
      */
     public static String getSLSizeMaskStr(int sl_size_mask)
     {
@@ -831,7 +862,7 @@ public class ConstUtil
     
     /**
      * Constant for screenLayout: bits that encode the size.
-     * @param sl_size_mask screenLayout & SCREENLAYOUT_SIZE_MASK
+     * @param sl_size_mask "screenLayout & SCREENLAYOUT_SIZE_MASK"
      * @return Device type by screen size, "Handset" or "Tablet".
      */
     public static String getDeviceTypeStr(int sl_size_mask)
@@ -852,17 +883,23 @@ public class ConstUtil
     /**
      * The GLES version used by an application.
      * The upper order 16 bits represent the major version and the lower order 16 bits the minor version.
-     * @param gles_version reqGlEsVersion
-     * @return readable version of OpenGL ES, like 0x00030000 - 3.0
+     * @param gles_version "reqGlEsVersion"
+     * @return Readable version of OpenGL ES, like 0x00030000 - 3.0
      */
     public static String getGlEsVersion(int gles_version)
     {
-        return String.format("%1$d.%2$d", gles_version >> 16, gles_version & 0x00001111);
+        switch (gles_version)
+        {
+            case ConfigurationInfo.GL_ES_VERSION_UNDEFINED://0
+                return "GL_ES_VERSION_UNDEFINED";
+            default:
+                return String.format("%1$d.%2$d", gles_version >> 16, gles_version & 0x00001111);
+        }
     }
     
     /**
      * The NETWORK_TYPE_xxxx for current data connection.
-     * @param network_type getNetworkType()
+     * @param network_type "getNetworkType()"
      */
     public static String getNetworkTypeStr(int network_type)
     {
@@ -933,7 +970,7 @@ public class ConstUtil
      */
     public static String getMIMEType(String file_name)
     {
-        if (file_name.endsWith(".txt") || file_name.endsWith(".info"))
+        if (file_name.endsWith(".txt"))
         {
             return "text/plain";
         }
@@ -944,6 +981,36 @@ public class ConstUtil
         else
         {
             return "*/*";
+        }
+    }
+    
+    /**
+     * The current width of the available screen space, in dp units.
+     * @param screen_width_dp "screenWidthDp"
+     */
+    public static String getScreenWidthDpStr(int screen_width_dp)
+    {
+        switch (screen_width_dp)
+        {
+            case Configuration.SCREEN_WIDTH_DP_UNDEFINED://0
+                return "SCREEN_WIDTH_DP_UNDEFINED";
+            default:
+                return UNKNOWN;
+        }
+    }
+    
+    /**
+     * The current height of the available screen space, in dp units.
+     * @param screen_height_dp "screenHeightDp"
+     */
+    public static String getScreenHeightDpStr(int screen_height_dp)
+    {
+        switch (screen_height_dp)
+        {
+            case Configuration.SCREEN_HEIGHT_DP_UNDEFINED://0
+                return "SCREEN_HEIGHT_DP_UNDEFINED";
+            default:
+                return UNKNOWN;
         }
     }
 }

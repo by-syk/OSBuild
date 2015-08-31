@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="ContentDescription"
+	android:id="@+id/rl_parent"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<ScrollView
+		android:id="@+id/sv_container"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<HorizontalScrollView
+			android:id="@+id/hsv_container"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+			<LinearLayout
+				android:id="@+id/ll_info"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="vertical">
+
+				<com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_primer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_line_top"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block_half"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_build"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block_half"
+                    android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_display"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_telephony"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="36dp"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_cpu"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_memory"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_package"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_sensor"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_superuser"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_time"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_about"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block"
+					android:textIsSelectable="true"/>
+
+				<com.by_syk.osbuild.widget.MyTextView
+					android:id="@+id/mtv_line_bottom"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/space_block_half"/>
+
+			</LinearLayout>
+
+		</HorizontalScrollView>
+
+	</ScrollView>
+
+	<ImageButton
+		android:id="@+id/fab_top"
+		android:src="@drawable/ic_fab_top"
+		android:tint="@color/white"
+		android:elevation="@dimen/elevation_low"
+		android:background="@drawable/oval_ripple"
+		android:stateListAnimator="@anim/button_elevation"
+		android:layout_width="@dimen/fab_diameter"
+		android:layout_height="@dimen/fab_diameter"
+		android:layout_marginBottom="@dimen/fab_margin"
+		android:layout_marginEnd="@dimen/fab_margin"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentBottom="true"
+		android:onClick="myClick"/>
+
+</RelativeLayout>
+

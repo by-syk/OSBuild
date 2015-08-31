@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content"
+	android:layout_width="match_parent"
+	android:padding="@dimen/padding_dialog"
+    android:focusable="true"
+	android:focusableInTouchMode="true">
+
+	<EditText
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:id="@+id/et_text"
+		android:inputType="text"
+        android:selectAllOnFocus="true"
+		android:imeOptions="actionDone"/>
+
+</RelativeLayout>
+

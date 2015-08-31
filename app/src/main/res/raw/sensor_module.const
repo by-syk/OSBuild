@@ -1,0 +1,26 @@
+android.hardware.SensorManager.
+   getSensorList(TYPE_ALL): Value  Name  _  _  (API Level)
+      -1  TYPE_ALL  _  _  3
+      1  TYPE_ACCELEROMETER  _  _  3
+      2  TYPE_MAGNETIC_FIELD  _  _  3
+      3  TYPE_ORIENTATION  _  _  3 8
+      4  TYPE_GYROSCOPE  _  _  3
+      5  TYPE_LIGHT  _  _  3
+      6  TYPE_PRESSURE  _  _  3
+      7  TYPE_TEMPERATURE  _  _  3 14
+      8  TYPE_PROXIMITY  _  _  3
+      9  TYPE_GRAVITY  _  _  9
+      10  TYPE_LINEAR_ACCELERATION  _  _  9
+      11  TYPE_ROTATION_VECTOR  _  _  9
+      12  TYPE_RELATIVE_HUMIDITY  _  _  14
+      13  TYPE_AMBIENT_TEMPERATURE  _  _  14
+      14  TYPE_MAGNETIC_FIELD_UNCALIBRATED  _  _  18
+      15  TYPE_GAME_ROTATION_VECTOR  _  _  18
+      16  TYPE_GYROSCOPE_UNCALIBRATED  _  _  18
+      17  TYPE_SIGNIFICANT_MOTION  _  _  18
+      18  TYPE_STEP_DETECTOR  _  _  19
+      19  TYPE_STEP_COUNTER  _  _  19
+      20  TYPE_GEOMAGNETIC_ROTATION_VECTOR  _  _  19
+      21  TYPE_HEART_RATE  _  _  20
+
+(From: API docs of level 23, https://developer.android.com/reference)

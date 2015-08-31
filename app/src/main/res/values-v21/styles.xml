@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="@android:style/Theme.Material"/>
+    <style name="AppTheme" parent="@android:style/Theme.Material">
+        <item name="android:colorPrimary">@color/red500</item>
+        <item name="android:colorPrimaryDark">@color/red700</item>
+        <item name="android:colorAccent">@color/red500</item>
+        <item name="android:navigationBarColor">@color/red500</item>
+        <!--<item name="android:colorControlNormal"></item>-->
+        <!--<item name="android:colorControlHighlight"></item>-->
+        <!--<item name="android:textColorPrimary"></item>-->
+        <!--<item name="android:windowBackground"></item>-->
+    </style>
+    
+    <style name="AppTheme_Wide" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">@color/red500</item>
+        <item name="android:colorPrimaryDark">@color/red700</item>
+        <item name="android:colorAccent">@color/red500</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    
+    <style name="AppTheme_Fullscreen" parent="@android:style/Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:colorPrimary">@color/red500</item>
+        <item name="android:colorPrimaryDark">@color/red700</item>
+        <item name="android:colorAccent">@color/red500</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    
+    <style name="AlertDialogStyle" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorPrimary">@color/red500</item>
+        <item name="android:colorPrimaryDark">@color/red700</item>
+        <item name="android:colorAccent">@color/red500</item>
+    </style>
     
 </resources>

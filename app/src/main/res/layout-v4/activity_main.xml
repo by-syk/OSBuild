@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_parent"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/sv_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <HorizontalScrollView
+            android:id="@+id/hsv_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/ll_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_primer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_line_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block_half"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_build"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block_half"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_display"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_telephony"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="36dp"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_cpu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_memory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_package"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_sensor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_superuser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_about"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block"
+                    android:textIsSelectable="true"/>
+
+                <com.by_syk.osbuild.widget.MyTextView
+                    android:id="@+id/mtv_line_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_block_half"/>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </ScrollView>
+
+</RelativeLayout>

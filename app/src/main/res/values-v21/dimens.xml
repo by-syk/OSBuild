@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="fab_diameter">56dp</dimen>
+    <dimen name="fab_diameter_mini">40dp</dimen>
+    <dimen name="elevation_low">1dp</dimen>
+    <dimen name="elevation_high">4dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+</resources>

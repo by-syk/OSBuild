@@ -11,14 +11,14 @@
 
 		<HorizontalScrollView
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+			android:layout_height="wrap_content"
+            android:scrollbars="none">
 
 			<com.by_syk.osbuild.widget.MyTextView
-				android:id="@+id/tv_file"
+				android:id="@+id/mtv_file"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				style="@style/TextSel"
-				android:padding="@dimen/padding_page"/>
+				android:textIsSelectable="true"/>
 
 		</HorizontalScrollView>
 

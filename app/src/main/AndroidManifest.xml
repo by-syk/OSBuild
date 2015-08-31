@@ -1,19 +1,22 @@
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.by_syk.osbuild">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.by_syk.osbuild"
+    android:installLocation="auto">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     
     <application
-        android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="true">
         
+        <!-- API 12-: android:configChanges="orientation"
+             API 13+: android:configChanges="orientation|screenSize" -->
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -22,21 +25,24 @@
         </activity>
         
         <activity
-            android:name=".RotationVector"
-            android:screenOrientation="nosensor"/>
+            android:name=".ReaderActivity"
+            android:label="@string/activity_reader"
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+            <intent-filter
+                android:icon="@mipmap/ic_launcher"
+                android:label="@string/filter_reader">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+        </activity>
         
         <activity
-            android:name=".compass.Compass"
-            android:screenOrientation="nosensor"/>
-        
-        <activity
-            android:name=".WhitePaper"
+            android:name=".WhitePaperActivity"
             android:theme="@style/AppTheme_Fullscreen"
+            android:launchMode="singleTop"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
-            
-        <activity
-            android:name=".kube.Kube"
-            android:configChanges="keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize"/>
         
     </application>
 

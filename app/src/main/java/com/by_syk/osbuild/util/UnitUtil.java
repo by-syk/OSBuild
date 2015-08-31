@@ -14,7 +14,7 @@ public class UnitUtil
      * About CPU frequency.
      * @param freq Unit: Hz
      */
-    public static String convertFreq(int freq)
+    public static String toFreq(int freq)
     {
         if (freq >= 1000 * 1000)
         {
@@ -34,7 +34,7 @@ public class UnitUtil
      * About file size.
      * @param size Unit: byte
      */
-    public static String convertMemory(long size)
+    public static String toMemory(long size)
     {
         if (size >= 1024 * 1024 * 1024)
         {
@@ -57,20 +57,22 @@ public class UnitUtil
     /**
      * Process dp value.
      */
-    public static String convertDp(double size)
+    public static String toDp(double size)
     {
         //Rounding-off method. Remain 1 decimal number.
         DecimalFormat decimalFormat = new DecimalFormat("#0.0dp");
+        
         return decimalFormat.format(size);
     }
     
     /**
      * Process inch value.
      */
-    public static String convertInch(double size)
+    public static String toInch(double size)
     {
         //Rounding-off method. Remain 2 decimal number.
         DecimalFormat decimalFormat = new DecimalFormat("#0.00\"");
+        
         return decimalFormat.format(size);
     }
     
@@ -78,24 +80,24 @@ public class UnitUtil
      * Convert to percentage and drop out decimal number.
      * @param usage Array like [total, available]
      */
-    public static String convertPercent(long[] usage)
+    public static String toPercent(long[] usage)
     {
-        return convertPercent(usage[0], usage[1]);
+        return toPercent(usage[0], usage[1]);
     }
     
     /**
      * Convert to percentage and drop out decimal number.
      */
-    public static String convertPercent(long total, long avail)
+    public static String toPercent(long total, long avail)
     {
-        return convertPercent(total, avail, 0);
+        return toPercent(total, avail, 0);
     }
     
     /**
      * Convert to percentage.
      * @param precision How many decimal number to remain.
      */
-    public static String convertPercent(long total, long avail, int precision)
+    public static String toPercent(long total, long avail, int precision)
     {
         if (total <= 0)
         {
@@ -107,7 +109,7 @@ public class UnitUtil
     /**
      * Convert milliseconds to readable time.
      */
-    public static String convertTime(long millis)
+    public static String toTime(long millis)
     {
         long day = millis / (24 * 60 * 60 * 1000);
         millis %= (24 * 60 * 60 * 1000);
@@ -116,16 +118,12 @@ public class UnitUtil
         long minute = millis / (60 * 1000);
         millis %= (60 * 1000);
         long second = millis / 1000;
-        millis %= 1000;
+        
         if (day > 0)
         {
-            return String.format("%1$02d:%2$02d:%3$02d:%4$02d", day, hour, minute, second);
+            return String.format("%1$03d:%2$02d:%3$02d:%4$02d", day, hour, minute, second);
         }
-        else if (hour > 0 || minute > 0)
-        {
-            return String.format("%1$02d:%2$02d:%3$02d", hour, minute, second);
-        }
-        return String.format("%1$02d:%2$03d", second, millis);
+        return String.format("%1$02d:%2$02d:%3$02d", hour, minute, second);
     }
     
     /**
@@ -133,7 +131,7 @@ public class UnitUtil
      * @param decimal Value in decimalism.
      * @param radix Which system to convert. (Only 2, 8, 16)
      */
-    public static String convertBits(int decimal, int radix)
+    public static String toBits(int decimal, int radix)
     {
         String num;
         switch (radix)
@@ -151,4 +149,44 @@ public class UnitUtil
                 return UNKNOWN;
         }
     }
+    
+    /**
+     * Convert integer wraped in string to int safely.
+     */
+    public static int toIntSafely(String text)
+    {
+        int result = -1;
+
+        text = text.trim();
+        try
+        {
+            result = Integer.parseInt(text);
+        }
+        catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    /**
+     * Convert float value wraped in string to float safely.
+     */
+    /*public static float toFloatSafely(String text)
+    {
+        float result = -1.0f;
+
+        text = text.trim();
+        try
+        {
+            result = Float.parseFloat(text);
+        }
+        catch (NumberFormatException e)
+        {
+            e.printStackTrace();
+        }
+
+        return result;
+    }*/
 }

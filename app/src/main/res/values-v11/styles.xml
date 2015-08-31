@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
   
     <style name="AppTheme" parent="@android:style/Theme.Holo"/>
         
-    <style name="TextSel" parent="@style/Text">
-        <item name="android:textIsSelectable">true</item>
-    </style>
+    <style name="AppTheme_Wide" parent="@android:style/Theme.Holo.NoActionBar"/>
+        
+    <style name="AppTheme_Fullscreen" parent="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
 
 </resources>

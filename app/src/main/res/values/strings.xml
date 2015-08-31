@@ -3,38 +3,81 @@
 
     <string name="app_name">OSBuild</string>
     <string name="copyright">Copyright \u00a9 2015 By_syk. All rights reserved.</string>
-    <string name="my_email">shi201107201409@163.com</string>
-    <string name="program_github">https://github.com/by-syk/OSBuild</string>
+    <string name="developer">By_syk</string>
+    <string name="my_email">By_syk@163.com</string>
+    <string name="url_program">https://github.com/by-syk/OSBuild</string>
+    
+    <string name="activity_reader">OSBuild Reader</string>
     
     <string name="dia_title_with_tel">With Telephony Module?</string>
     <string name="dia_title_const">Constant Reference</string>
     <string name="dia_title_sys_files">View System Files</string>
     <string name="dia_title_sys_settings">System Settings</string>
-    <string name="dia_title_donate">Donate</string>
     <string name="dia_title_about">What\'s OSBuild?</string>
     <string name="dia_title_warning">Warning</string>
-    <string name="dia_title_share_app">Share Installed App</string>
+    <string name="dia_title_check_app">Check App</string>
     <string name="dia_title_ascii">ASCII Chart</string>
+    <string name="dia_title_unicode">Unicode Viewer</string>
+    <string name="dia_title_feedback">Raise Your Voice</string>
+    <string name="dia_title_donate">Donate</string>
+    <string name="dia_title_user">User</string>
     <string name="dia_pos_ok">OK</string>
-    <string name="dia_pos_continue">Continue</string>
-    <string name="dia_neg_cancel">Cancel</string>
     <string name="dia_pos_yes">Yes</string>
+    <string name="dia_pos_continue">Continue</string>
+    <string name="dia_pos_email">E-mail</string>
+    <string name="dia_pos_back">Back</string>
+    <string name="dia_neg_cancel">Cancel</string>
     <string name="dia_neg_no">No</string>
-    <string name="dia_neu_github">GitHub</string>
+    <string name="dia_neg_back">Back</string>
+    <string name="dia_neg_market">Market</string>
+    <string name="dia_neu_cancel">Cancel</string>
+    <string name="dia_neu_share">Share App</string>
+    <string name="dia_neu_installed">Installed</string>
+    <string name="dia_neu_charsets">Charsets</string>
+    <string name="dia_not_show">Don\'t show again.</string>
+    <string name="dia_loading">Loading...</string>
     <string name="dia_su_desc">"OSBuild need get root permission to read this file, are you sure to continue?
 \nNotice:
 + It\'s NOT a problem with OSBuild if you see nothing then. You should make sure that your device has been rooted and you have authorized OSBuild's request for root permission.
 + OSBuild just do what should do with root permission."
     </string>
-    <string name="hint_enter_app_name">App name or package name</string>
-    <string name="share_app_steps">Steps: Copy the found apk file to \"%s\" and then share it.</string>
-    <string name="show_more_menu">Menu \"Small Tools\" has been added! Reboot to see.</string>
-    <string name="share_via">Share via...</string>
-    <!--<string name="copied">Developer\'s E-mail address has been copied.</string>-->
-    <string name="not_show">Don\'t show again.</string>
-    <string name="sys_settings_development">Development</string>
+    <string name="dia_app_desc">"OSBuild - FOR ANDROID DEVELOPERS
+\nEver wanted to peek inside and know more about your device? Well, OSBuild, a simple, lightweight, clean and beautiful app, meets your needs. And it works on all phones running Android 2.2 and above!
+\nA simple UI and some nice features make it great tool especially for Android developers and learners.
+\nFeatures
++ List RICH RAW info about the device with keeping most programming words.
++ Provide RICH related data, like \"19  KITKAT  4.4  2013-10  39.3%  19\".
++ List all features the system supported, such as \"FEATURE_USB_HOST\".
++ Expose details of installed apps, including SIGNATURE.
++ OPEN SOURCE. You can see its source codes on GitHub to get useful code sections. (https://github.com/by-syk/OSBuild)
+\nModules
++ Primer
++ Build
++ Display
++ Telephony
++ CPU
++ Memory
++ Package
++ Sensor
++ Superuser
++ App
++ etc.
+\nPS: Maybe OSBuild could help you with smartphone reviews.
+\nSalute to Sony Xperia AppXplore."
+    </string>
+    <string name="dia_feedback_desc">"Any BUGs, mistakes, suggestion or confusion, feedback by E-mail or revise on a market. I would take to heart.
+\nYour voice can make a difference!"</string>
+    <string name="dia_donate_desc">"Not financially.
+\nJust \"Share the Page\" to me by E-mail or any other available way. As you can see, only some hardware info about the device (NO PRIVACY).
+\nEach received file helps me expand the OSBuild - DAD (Database of Android Devices).
+\nI've spent plenty of time programming. If you find OSBuild useful, please help me a lot. Thank you."
+    </string>
+    
+    <string name="sys_settings_development">Developer Options</string>
     <string name="sys_settings_miui_cit">MIUI Cit</string>
     <string name="sys_settings_testing">Testing</string>
+    <string name="filter_reader">OSBuild Reader</string>
+    <string name="share_via">Share via...</string>
     
     <string name="action_share">Share...</string>
     <string name="action_sub_share_text">Share the Page</string>
@@ -42,41 +85,19 @@
     <string name="action_const">Constant Reference</string>
     <string name="action_sys_files">View System Files</string>
     <string name="action_sys_settings">System Settings</string>
-    <string name="action_tools">Small Tools...</string>
-    <string name="action_sub_tools_app">Share Installed App</string>
-    <string name="action_sub_tools_rotation">Rotation Vector</string>
-    <string name="action_sub_tools_compass">Compass</string>
-    <string name="action_sub_tools_ascii">ASCII Chart</string>
-    <string name="action_sub_tools_white">White Paper</string>
-    <string name="action_sub_tools_kube">Kube</string>
-    <string name="action_donate">Donate</string>
-    
-    <string name="app_desc">"OSBuild - FOR ANDROID DEVELOPERS
-\nEver wanted to peek inside and know more about your device? Well, OSBuild, a simple, lightweight, clean and beautiful app, meets your needs. And it works on all phones running Android 2.2 and above!
-\nA simple UI and some nice features make it great tool especially for Android developers and learners.
-\nFeatures
-+ List RICH RAW info about the device with keeping most programming words.
-+ Provide RICH related data, like "19  KITKAT  2013-10  39.2%  19".
-+ List all features the system supported, such as FEATURE_USB_HOST.
-+ READ WIFI PASSWORDS. (If ROOTED)
-+ OPEN SOURCE. You can see its source codes on GitHub to get useful code sections. (https://github.com/by-syk/OSBuild)
-\nModules
-+ Build (MODEL, etc.)
-+ Display (densityDpi, etc.)
-+ Telephony (deviceId, etc.)
-+ CPU (cpuinfo_max_freq, etc.)
-+ Memory (volumePaths, etc.)
-+ Package (systemAvailableFeatures, etc.)
-+ Sensor (sensorList, etc.)
-+ Superuser
-etc.
-\nMeet a new device and want to figure its characteristic out? Install OSBuild and "Share the Page". OK, you've got it.
-\nSalute to Sony Xperia AppXplore."
-    </string>
-    <string name="donate_desc">"Not financially.
-\nJust \"Share the Page\" to me by E-mail. As you can see, only some hardware info about the device (NO PRIVACY).
-\nI'm making the effort to finish my project, DAD (Database of Android Devices). If you find OSBuild useful, please help me a lot. Thank you."
-    </string>
+    <string name="action_experimentally">Experimentally...</string>
+    <string name="action_sub_ex_app">Check App</string>
+    <string name="action_sub_ex_ascii">ASCII Chart</string>
+    <string name="action_sub_ex_unicode">Unicode Viewer</string>
+    <string name="action_sub_ex_white">White Paper</string>
+    <string name="action_more">More...</string>
+    <string name="action_sub_more_github">Sources on GitHub</string>
+    <string name="action_sub_more_feedback">Raise Your Voice</string>
+    <string name="action_sub_more_donate">Donate</string>
+    <!-- <string name="action_charset">Charset</string> -->
+    <string name="action_sub_charset_utf8">UTF-8</string>
+    <string name="action_sub_charset_gbk">GBK</string>
+    <string name="action_sub_charset_user">User</string>
     
     <string name="module_primer">Primer:</string>
     <string name="primer_model">"Device Model:         "</string>
@@ -92,7 +113,10 @@ etc.
     <string name="primer_nfc">"NFC:                  "</string>
     <string name="primer_otg">"OTG (USB Host):       "</string>
     <string name="primer_ir">"IR Transmitter:       "</string>
+    <string name="primer_step">"Step Counter:         "</string>
     <string name="primer_heart_rate">"Heart Rate Monitor:   "</string>
+    <string name="primer_dual_sim">"Dual SIM:             "</string>
     <string name="primer_root">"Root Access:          "</string>
+    <string name="primer_absentees">"Absentee(s):          "</string>
     
 </resources>

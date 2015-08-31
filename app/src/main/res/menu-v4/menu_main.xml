@@ -30,34 +30,38 @@
         android:icon="@android:drawable/ic_menu_preferences"/>
     
     <item
-        android:title="@string/action_tools"
-        android:icon="@android:drawable/ic_menu_recent_history"
-        android:visible="false">
+        android:title="@string/action_experimentally"
+        android:icon="@android:drawable/ic_menu_recent_history">
         <menu>
             <item
-                android:id="@+id/action_sub_tools_app"
-                android:title="@string/action_sub_tools_app"/>
+                android:id="@+id/action_sub_ex_app"
+                android:title="@string/action_sub_ex_app"/>
             <item
-                android:id="@+id/action_sub_tools_rotation"
-                android:title="@string/action_sub_tools_rotation"/>
+                android:id="@+id/action_sub_ex_unicode"
+                android:title="@string/action_sub_ex_unicode"/>
             <item
-                android:id="@+id/action_sub_tools_compass"
-                android:title="@string/action_sub_tools_compass"/>
+                android:id="@+id/action_sub_ex_white"
+                android:title="@string/action_sub_ex_white"/>
             <item
-                android:id="@+id/action_sub_tools_ascii"
-                android:title="@string/action_sub_tools_ascii"/>
-            <item
-                android:id="@+id/action_sub_tools_white"
-                android:title="@string/action_sub_tools_white"/>
-            <item
-                android:id="@+id/action_sub_tools_kube"
-                android:title="@string/action_sub_tools_kube"/>
+                android:id="@+id/action_sub_ex_ascii"
+                android:title="@string/action_sub_ex_ascii"/>
         </menu>
     </item>
     
     <item
-        android:id="@+id/action_donate"
-        android:title="@string/action_donate"
-        android:icon="@android:drawable/ic_menu_send"/>
+        android:title="@string/action_more"
+        android:icon="@android:drawable/ic_menu_info_details">
+        <menu>
+            <item
+                android:id="@+id/action_sub_more_github"
+                android:title="@string/action_sub_more_github"/>
+            <item
+                android:id="@+id/action_sub_more_feedback"
+                android:title="@string/action_sub_more_feedback"/>
+            <item
+                android:id="@+id/action_sub_more_donate"
+                android:title="@string/action_sub_more_donate"/>
+        </menu>
+    </item>
 
 </menu>

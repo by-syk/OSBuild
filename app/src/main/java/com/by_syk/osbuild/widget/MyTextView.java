@@ -4,34 +4,46 @@
 
 package com.by_syk.osbuild.widget;
 
+import com.by_syk.osbuild.R;
+
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
+import android.os.Build;
 
 public class MyTextView extends TextView
 {
     public MyTextView(Context context)
     {
-        super(context);
+        super(context, null);
     }
     
     public MyTextView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        changeTypeFace(context, attrs);
+        
+        init(context);
     }
     
-    /**
-     * Modify typeface to Monaco, a monospaced font from Apple Mac.
-     */
-    private void changeTypeFace(Context context, AttributeSet attrs)
+    private void init(Context context)
     {
-        if (attrs != null)
+        //Modify typeface to Monaco, a monospaced font from Apple Mac.
+        super.setTypeface(Typeface
+            .createFromAsset(context.getAssets(), "Monaco.ttf"));
+        
+        //Set line space to 1.4 times.
+        super.setLineSpacing(0f, 1.4f);
+        
+        //Set edge distance of page.
+        int padding_page = getResources().getDimensionPixelSize(R.dimen.padding_text);
+        if (Build.VERSION.SDK_INT >= 16)
         {
-            Typeface typeface = Typeface.createFromAsset(context.getAssets(),
-                "Monaco.ttf");
-            super.setTypeface(typeface);
+            super.setPaddingRelative(padding_page, padding_page, padding_page, padding_page);
+        }
+        else
+        {
+            super.setPadding(padding_page, padding_page, padding_page, padding_page);
         }
     }
 }

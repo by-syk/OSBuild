@@ -1,0 +1,51 @@
+android.telephony.TelephonyManager.
+   getPhoneType(): Value  Name  (API Level)
+      0  PHONE_TYPE_NONE  1
+      1  PHONE_TYPE_GSM  1
+      2  PHONE_TYPE_CDMA  4
+      3  PHONE_TYPE_SIP  11
+   getDeviceId(): _  (ID Length)  (Phone Type)  ID Type
+      _  15  PHONE_TYPE_GSM  IMEI
+      _  8  PHONE_TYPE_CDMA  ESN
+      _  14  PHONE_TYPE_CDMA  MEID
+      _  15  PHONE_TYPE_CDMA  MEID
+   getSimState(): Value  Name  (API Level)
+      0  SIM_STATE_UNKNOWN  1
+      1  SIM_STATE_ABSENT  1
+      2  SIM_STATE_PIN_REQUIRED  1
+      3  SIM_STATE_PUK_REQUIRED  1
+      4  SIM_STATE_NETWORK_LOCKED  1
+      5  SIM_STATE_READY  1
+   getSimOperator(): Value  Sim Operator
+      454xx  Hong Kong
+      455xx  Macao
+      46000  China Mobile
+      46001  China Unicom
+      46002  China Mobile
+      46003  China Telecom
+      46005  China Telecom
+      46006  China Unicom
+      46007  China Mobile
+      46020  China Tietong
+      466xx  Taiwan
+   getNetworkType(): Value  Name  (Generation)  (API Level)
+      0  NETWORK_TYPE_UNKNOWN  null  1
+      1  NETWORK_TYPE_GPRS  2.5G  1
+      2  NETWORK_TYPE_EDGE  2.75G  1
+      3  NETWORK_TYPE_UMTS  3G  1
+      4  NETWORK_TYPE_CDMA  2G  4
+      5  NETWORK_TYPE_EVDO_0  3G  4
+      6  NETWORK_TYPE_EVDO_A  3G  4
+      7  NETWORK_TYPE_1xRTT  2.5G/2.75G  4
+      8  NETWORK_TYPE_HSDPA  3.5G  5
+      9  NETWORK_TYPE_HSUPA  3.5G  5
+      10  NETWORK_TYPE_HSPA  3G  5
+      11  NETWORK_TYPE_IDEN  2G  8
+      12  NETWORK_TYPE_EVDO_B  3G  9
+      13  NETWORK_TYPE_LTE  4G  11
+      14  NETWORK_TYPE_EHRPD  3G  11
+      15  NETWORK_TYPE_HSPAP  3.75G  13
+      16  NETWORK_TYPE_GSM  2G  ?
+      17  NETWORK_TYPE_TD_SCDMA  3G  ?
+
+(From: API docs of level 23, https://developer.android.com/reference, partly)
