@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <integer name="cur_ver_order">6</integer>
+    <!-- Mark the order of current version since v1.0.0. -->
+    <integer name="cur_ver_order">8</integer>
     
 </resources>

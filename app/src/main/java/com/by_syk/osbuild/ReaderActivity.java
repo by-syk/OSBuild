@@ -4,8 +4,10 @@
 
 package com.by_syk.osbuild;
 
+import com.by_syk.osbuild.util.C;
 import com.by_syk.osbuild.widget.MyTextView;
 import com.by_syk.osbuild.util.ExtraUtil;
+import com.by_syk.osbuild.util.AndroidManifestUtil;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -33,6 +35,11 @@ import android.view.View;
 import android.annotation.TargetApi;
 import android.os.Handler;
 import android.content.SharedPreferences;
+import android.widget.Button;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.TextView;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 
 public class ReaderActivity extends Activity
 {
@@ -42,6 +49,7 @@ public class ReaderActivity extends Activity
     
     //A URI reference of source file.
     Uri uri_file = null;
+    String file_name = null;
     
     //Text of the file. (Only part if the file is too big.)
     String text = "";
@@ -53,9 +61,6 @@ public class ReaderActivity extends Activity
     
     //Default: UTF-8
     MyCharset myCharset = null;
-    
-    //Android Version
-    final int SDK = Build.VERSION.SDK_INT;
     
     //Mark the status of current Activity, running or not.
     boolean isRunning = true;
@@ -74,18 +79,11 @@ public class ReaderActivity extends Activity
         
         //Load data in another thread.
         uri_file = getIntent().getData();
+        file_name = ExtraUtil.getUriFileName(ReaderActivity.this, uri_file);
         
         myCharset = new MyCharset();
         
         (new LoadDataTask()).execute();
-    }
-    
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-
-        isRunning = true;
     }
 
     @Override
@@ -173,6 +171,7 @@ public class ReaderActivity extends Activity
         });
     }
     
+    @TargetApi(11)
     private class LoadDataTask extends AsyncTask<String, Integer, String>
     {
         @Override
@@ -186,6 +185,13 @@ public class ReaderActivity extends Activity
             //"...this is currently working as intended as the progress bar features are not supported
             //on Material action bars. This should throw an exception if you try to use them."
             setProgressBarIndeterminateVisibility(true);
+            
+            if (C.SDK >= 11)
+            {
+                //Show the file name on the ActionBar.
+                //Set to null to disable the subtitle entirely.
+                getActionBar().setSubtitle(file_name);
+            }
         }
 
         @Override
@@ -230,20 +236,34 @@ public class ReaderActivity extends Activity
         //    file (SCHEME_FILE)
         try
         {
-            //Limit lines of the file to 1024.
-            result = ExtraUtil.readFile(getContentResolver()
-                .openInputStream(uri_file), myCharset.charset, 1024);
+            //For testing.
+            if (file_name.equals("AndroidManifest.xml"))
+            {
+                result = AndroidManifestUtil.readAM(getContentResolver()
+                    .openInputStream(uri_file));
+            }
+            /*if (file_name.endsWith(".apk"))
+            {
+                result = AXMLPrinter.getManifestXMLFromAPK(uri_file.getPath());
+            }*/
             
-            /*System.out.println("File: " + uri_file.getPath());
+            if (result.length() < 64)
+            {
+                //Limit lines of the file to 1024.
+                result = ExtraUtil.readFile(getContentResolver()
+                    .openInputStream(uri_file), myCharset.charset, 1024);
             
-            long start = System.currentTimeMillis();
-            result = ExtraUtil.readFile(getContentResolver()
-                .openInputStream(uri_file), myCharset.charset);
-            System.out.println("Read File 1: " + (System.currentTimeMillis() - start));
+                /*System.out.println("File: " + uri_file.getPath());
             
-            start = System.currentTimeMillis();
-            result = ExtraUtil.fileChannelRead(uri_file.getPath());
-            System.out.println("Read File 2: " + (System.currentTimeMillis() - start));*/
+                long start = System.currentTimeMillis();
+                result = ExtraUtil.readFile(getContentResolver()
+                    .openInputStream(uri_file), myCharset.charset);
+                System.out.println("Read File 1: " + (System.currentTimeMillis() - start));
+            
+                start = System.currentTimeMillis();
+                result = ExtraUtil.fileChannelRead(uri_file.getPath());
+                System.out.println("Read File 2: " + (System.currentTimeMillis() - start));*/
+            }
         }
         catch (FileNotFoundException e)
         {
@@ -273,7 +293,7 @@ public class ReaderActivity extends Activity
         final EditText ET_CHARSET = (EditText) viewGroup.findViewById(R.id.et_text);
         ET_CHARSET.setText(myCharset.charsets[2]);
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_user)
             .setView(viewGroup)
@@ -287,7 +307,7 @@ public class ReaderActivity extends Activity
                         //Load data in another thread.
                         (new LoadDataTask()).execute();
 
-                        if (SDK >= 11)
+                        if (C.SDK >= 11)
                         {
                             invalidateOptionsMenu();
                         }
@@ -310,17 +330,33 @@ public class ReaderActivity extends Activity
                         public void run()
                         {
                             //Check if the app is running to avoid crashing.
-                            if (isRunning)
+                            if (!isRunning)
                             {
-                                //List all.
-                                setCharsetDialog(myCharset.availCharsets);
+                                return;
                             }
+                            //List all.
+                            setCharsetDialog(myCharset.availCharsets);
                         }
                     }, 600);
                 }
             })
             .create();
         alertDialog.show();
+        
+        final Button BT_POS = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        ET_CHARSET.setOnEditorActionListener(new OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView p1, int p2, KeyEvent p3)
+            {
+                if (p2 == EditorInfo.IME_ACTION_DONE)
+                {
+                    BT_POS.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
     
     /**
@@ -336,7 +372,7 @@ public class ReaderActivity extends Activity
             return;
         }
 
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_user)
             .setItems(CHARSETS, new DialogInterface.OnClickListener()
@@ -349,7 +385,7 @@ public class ReaderActivity extends Activity
                         //Load data in another thread.
                         (new LoadDataTask()).execute();
 
-                        if (SDK >= 11)
+                        if (C.SDK >= 11)
                         {
                             invalidateOptionsMenu();
                         }
@@ -424,7 +460,7 @@ public class ReaderActivity extends Activity
             //Load data in another thread.
             (new LoadDataTask()).execute();
             
-            if (SDK >= 11)
+            if (C.SDK >= 11)
             {
                 invalidateOptionsMenu();
             }

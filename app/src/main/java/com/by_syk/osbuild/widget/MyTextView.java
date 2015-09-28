@@ -5,12 +5,12 @@
 package com.by_syk.osbuild.widget;
 
 import com.by_syk.osbuild.R;
+import com.by_syk.osbuild.util.C;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
-import android.os.Build;
 
 public class MyTextView extends TextView
 {
@@ -37,7 +37,7 @@ public class MyTextView extends TextView
         
         //Set edge distance of page.
         int padding_page = getResources().getDimensionPixelSize(R.dimen.padding_text);
-        if (Build.VERSION.SDK_INT >= 16)
+        if (C.SDK >= 16)
         {
             super.setPaddingRelative(padding_page, padding_page, padding_page, padding_page);
         }

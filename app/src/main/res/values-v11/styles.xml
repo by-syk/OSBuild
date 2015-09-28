@@ -3,8 +3,8 @@
   
     <style name="AppTheme" parent="@android:style/Theme.Holo"/>
         
-    <style name="AppTheme_Wide" parent="@android:style/Theme.Holo.NoActionBar"/>
-        
     <style name="AppTheme_Fullscreen" parent="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
+        
+    <style name="AppTheme_Dialog" parent="@android:style/Theme.Holo.Dialog"/>
 
 </resources>

@@ -1,3 +1,64 @@
+v1.4.7.nightly 2015-09-26
+Fix the BUG: it crashes if the signatures is null in App Module.
+
+v1.4.7.nightly 2015-09-17
+Add the line "minSdkVersion" in App Module.
+OSBuild Reader could read AndroidManifest.xml of .apk file.
+
+v1.4.6.nightly 2015-09-15
+Remember what was selected last time in "Installed" of "Check App".
+Add the node "PackageManager" and its line "getComponent()" in Primer Module.
+
+v1.4.5.nightly 2015-09-14
+Fix the issue: wrong method to analyse signatures info in the line "getIssuerDN()" (like "Google, Inc" to "Google" and "Inc").
+Add extra info for more devices (500+).
+Add unit "mm" after the line "Dimensions" in Primer Module.
+Show lightness value in White Paper Activity.
+
+v1.4.4.nightly 2015-09-13
+Hide the line "flags & FLAG_SYSTEM" when the app is not installed in App Module.
+
+v1.4.4.nightly 2015-09-12
+Add the node "/sys/class/kgsl/kgsl-3d0/" in CPU Module.
+Show file name as a subtitle on the ActionBar in OSBuild Reader.
+
+v1.4.3.nightly 2015-09-11
+Tap ENTER to perform related operation instead of just closing the soft keyboard in dialogs.
+Add the lines "CPU_ABI" and "CPU_ABI2" in Build Module (API 21-).
+Fix the issue: wrong method to convert unit of frequency. Fortunately, the result is correct still.
+Optimize the launcher icon for mdpi devices.
+
+v1.4.3.nightly 2015-09-10
+Click hard search button (if there is one) to open the dialog "Check App" quickly.
+Add the VM type ("Dalvik" or "ART") after the line "getProperty("java.vm.version")" in Build Module.
+
+v1.4.2.nightly 2015-09-08
+Fix the issue: it can't load extra info, execute "Share the Page" and "Share OSBuild" due to full external storage.
+Enlarge the database of extra info (up to 41 brands, 276 models).
+
+v1.4.2.nightly 2015-09-07
+Fix the BUG: it crashes because database which saves extra info is not loaded.
+
+v1.4.2.nightly 2015-09-06
+Add the line "Pixel & Screen Area" in Primer Module.
+Fix the BUG: wrong value in the line "cpuinfo_min_freq" in CPU Module.
+
+v1.4.2.nightly 2015-09-05
+Add a real value (not calculated) after the line "Diagonal Size" in Display Module.
+Add the line "Dimensions" and "Weight" after the node "Extra" in Display Module.
+Add a value (diagonal size) after the line "Screen Resolution" in Primer Module.
+Add the line "Dimensions" in Primer Module.
+
+v1.4.1.nightly 2015-09-03
+Show modules one by one more smoothly when launching.
+
+v1.4.1.nightly 2015-09-01
+Play animation when showing the FAB.
+The steps to get GPU info become more simple and controllable.
+
+v1.4.1.nightly 2015-08-31
+Modify the size of FAB icon from 36dp to 24dp.
+
 v1.4.0.nightly 2015-08-30
 Elimilate the risk: it crashes when clicking the FAB occasionally.
 Fix the BUG: It crashed when get telephony info due to "permission denied" in API 23+.

@@ -27,7 +27,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * etc.
 
 ### Example
-There is a slice of data which **OSBuild** got from my Android phone:
+There is a slice of data which **OSBuild/* got from my Android phone:
 ```
 /proc/cpuinfo
    Processor: ARMv7 Processor rev 1 (v7l)
@@ -75,6 +75,8 @@ Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base
 [OSBuild_v1.3.0(150723).apk](/Other/OSBuild_v1.3.0(150723).apk)
 
 [OSBuild_v1.4.0(150830).apk](/Other/OSBuild_v1.4.0(150830).apk)
+
+[OSBuild_v1.4.3(150911).apk](/Other/OSBuild_v1.4.3(150911).apk)
 
 ### Screenshots
 ![screenshot.png](/Other/screenshot.png)

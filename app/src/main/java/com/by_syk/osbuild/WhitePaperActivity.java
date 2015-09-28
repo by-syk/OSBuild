@@ -4,6 +4,8 @@
 
 package com.by_syk.osbuild;
 
+import com.by_syk.osbuild.widget.MyTextView;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -13,6 +15,8 @@ import android.view.Window;
 
 public class WhitePaperActivity extends Activity
 {
+    MyTextView mtv_lightness;
+    
     Window window = null;
     WindowManager.LayoutParams layout_params = null;
     
@@ -25,6 +29,11 @@ public class WhitePaperActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_white_paper);
         
+        init();
+    }
+    
+    private void init()
+    {
         window = getWindow();
         layout_params = window.getAttributes();
         
@@ -36,6 +45,8 @@ public class WhitePaperActivity extends Activity
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);*/
+        
+        mtv_lightness = (MyTextView) findViewById(R.id.mtv_lightness);
     }
 
     @Override
@@ -44,12 +55,17 @@ public class WhitePaperActivity extends Activity
         switch (event.getAction())
         {
             case MotionEvent.ACTION_UP:
+            {
                 max_brightness = !max_brightness;
                 
                 layout_params.screenBrightness = max_brightness ?
                     WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
                     : WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
                 window.setAttributes(layout_params);
+                
+                mtv_lightness.setText(max_brightness
+                    ? "100%" : getString(R.string.light_auto));
+            }
         }
         return true;
     }

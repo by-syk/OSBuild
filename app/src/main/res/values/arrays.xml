@@ -17,6 +17,8 @@
         <item>"Brand \u0026 Manufacturer: "</item>
         <item>"OS Version:           "</item>
         <item>"Screen Resolution:    "</item>
+        <item>"Pixel \u0026 Screen Area:  "</item>
+        <item>"Dimensions:           "</item>
         <item>"Phone Type:           "</item>
         <item>"IMEI/MEID/ESN:        "</item>
         <item>"IMSI:                 "</item>
@@ -33,6 +35,7 @@
         <item>"Hi-Fi:                "</item>
         <item>"Fingerprint ID:       "</item>
         <item>"Root Access:          "</item>
+        <item>"Absentee(s):          "</item>
     </string-array>
     
     <string-array name="primer_absentees">

@@ -17,9 +17,11 @@
 
 package com.by_syk.osbuild;
 
+import com.by_syk.osbuild.util.C;
 import com.by_syk.osbuild.util.ExtraUtil;
 import com.by_syk.osbuild.util.ConstUtil;
 import com.by_syk.osbuild.util.UnitUtil;
+import com.by_syk.osbuild.util.MinSDKVersionUtil;
 import com.by_syk.osbuild.widget.MyTextView;
 
 import android.app.Activity;
@@ -93,6 +95,13 @@ import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import android.util.Log;
 import android.Manifest;
+import android.widget.ImageButton;
+import android.view.View.OnClickListener;
+import android.widget.TextView.OnEditorActionListener;
+import android.widget.TextView;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 
 public class MainActivity extends Activity
 {
@@ -124,27 +133,6 @@ public class MainActivity extends Activity
     //Line 1, Line 2, Primer.
     StringBuilder[] sb_modules = null;
     
-    //Android Version
-    final int SDK = Build.VERSION.SDK_INT;
-    
-    final String L = "";
-    final String L0 = "\n";
-    final String L1 = "\n   ";
-    final String L2 = "\n      ";
-    final String L3 = "\n         ";
-    final String NL = "\n";
-    final String NL1 = "\n\n";
-    final String NL2 = "\n\n\n";
-    final String SPACE = "  ";
-    
-    final String TRUE = "TRUE";
-    final String FALSE = "FALSE";
-    final String ON = "ON";
-    final String OFF = "OFF";
-    final String YES = "YES";
-    final String NO = "NO";
-    final String UNKNOWN = "UNKNOWN";
-    
     //Mark the status of current Activity, running or not.
     boolean isRunning = true;
     
@@ -161,14 +149,11 @@ public class MainActivity extends Activity
                 //.putString("gl_version", p1.glGetString(GL10.GL_VERSION))
                 .commit();
             
-            //Remove useless view.
             runOnUiThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    //((RelativeLayout)findViewById(R.id.rl_parent))
-                    //    .removeView(gLSurfaceView);
                     reboot();
                 }
             });
@@ -184,6 +169,7 @@ public class MainActivity extends Activity
     };
     
     @Override
+    @TargetApi(23)
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -195,8 +181,16 @@ public class MainActivity extends Activity
         
         init();
         
+        if (!sharedPreferences.contains("gl_renderer"))
+        {
+            //Just get and save GPU info when launching first time.
+            //Then reboot OSBuild quickly.
+            prepareGPUInfo();
+            return;
+        }
+        
         //Ask for permission: READ_PHONE_STATE
-        if (SDK >= 23 && checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
+        if (C.SDK >= 23 && checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
             != PackageManager.PERMISSION_GRANTED)
         {
             //Should we show an explanation?
@@ -212,7 +206,7 @@ public class MainActivity extends Activity
         }
         
         //Ask for permission: WRITE_EXTERNAL_STORAGE
-        if (SDK >= 23 && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (C.SDK >= 23 && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED)
         {
             requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
@@ -220,14 +214,6 @@ public class MainActivity extends Activity
         
         //Count and log times of launching.
         stats();
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        
-        isRunning = true;
     }
 
     @Override
@@ -244,6 +230,16 @@ public class MainActivity extends Activity
     }
     
     /**
+     * Get and save GPU info.
+     */
+    private void prepareGPUInfo()
+    {
+        gLSurfaceView = new GLSurfaceView(this);
+        gLSurfaceView.setRenderer(glsvRenderer);
+        ((RelativeLayout)findViewById(R.id.rl_parent)).addView(gLSurfaceView);
+    }
+
+    /**
      * API 23+
      */
     @Override
@@ -254,18 +250,9 @@ public class MainActivity extends Activity
         switch (requestCode)
         {
             case 0:
-            {
-                /*if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {}
-                else
-                {}*/
-
+                //No matter what result is returned, continue to load data.
                 //Load data in another thread.
                 (new LoadDataTask()).execute();
-
-                break;
-            }
-            case 1:
         }
     }
     
@@ -274,12 +261,9 @@ public class MainActivity extends Activity
      */
     private void stats()
     {
-        //If "Don't show again." is not checked and GPU info is prepared,
+        //If "Don't show again." is not checked,
         //show dialog with description of OSBuild after 2 seconds.
-        //To avoid show two such dialogs at the same time，
-        //it's necessary to check that GPU info is prepared.
-        if (!sharedPreferences.getBoolean("not_show_about", false)
-            && sharedPreferences.contains("gl_renderer"))
+        if (!sharedPreferences.getBoolean("not_show_about", false))
         {
             (new Handler()).postDelayed(new Runnable()
             {
@@ -287,17 +271,17 @@ public class MainActivity extends Activity
                 public void run()
                 {
                     //Check if the app is running to avoid crashing.
-                    if (isRunning)
+                    if (!isRunning)
                     {
-                        appDescDialog();
+                        return;
                     }
+                    appDescDialog();
                 }
             }, 2000);
         }
         
         //Log how many times the app was launched.
-        //Count from 0. Because launching the app firstly will be counted twice.
-        final int LAUNCH_TIME = sharedPreferences.getInt("launch_times", -1) + 1;
+        final int LAUNCH_TIME = sharedPreferences.getInt("launch_times", 0) + 1;
         sharedPreferences.edit().putInt("launch_times", LAUNCH_TIME).commit();
     }
     
@@ -315,8 +299,10 @@ public class MainActivity extends Activity
             //on Material action bars. This should throw an exception if you try to use them."
             setProgressBarIndeterminateVisibility(true);
             
-            //Get and save GPU info.
-            prepareGPUInfo();
+            if (C.SDK >= 21)
+            {
+                showFAB();
+            }
             
             //Initialize text views.
             initViews();
@@ -340,26 +326,15 @@ public class MainActivity extends Activity
             fillData();
             
             //Show animation.
-            ((LinearLayout)findViewById(R.id.ll_info)).setLayoutAnimation(AnimationUtils
+            LinearLayout ll_info = (LinearLayout) findViewById(R.id.ll_info);
+            ll_info.setVisibility(View.VISIBLE);
+            ll_info.setLayoutAnimation(AnimationUtils
                 .loadLayoutAnimation(MainActivity.this, R.anim.layout_anim));
             
             skipPrimer(1200);
             
             //Hide round progress bar on the ActionBar.
             setProgressBarIndeterminateVisibility(false);
-        }
-    }
-
-    /**
-     * Get and save GPU info.
-     */
-    private void prepareGPUInfo()
-    {
-        if (!sharedPreferences.contains("gl_renderer"))
-        {
-            gLSurfaceView = new GLSurfaceView(this);
-            gLSurfaceView.setRenderer(glsvRenderer);
-            ((RelativeLayout)findViewById(R.id.rl_parent)).addView(gLSurfaceView);
         }
     }
 
@@ -393,6 +368,8 @@ public class MainActivity extends Activity
 
     private void loadData()
     {
+        prepareExtraInfo();
+        
         sb_modules[0] = getBuildInfo();
         sb_modules[1] = getDisplayInfo();
         sb_modules[2] = getTelephonyInfo();
@@ -412,6 +389,35 @@ public class MainActivity extends Activity
         //Load data for Primer Module at last,
         //because it is from the others above.
         sb_modules[12] = getPrimerInfo();
+    }
+
+    /**
+     * Load extra info (Screen Size, Width, Length, Thickness, Weight).
+     */
+    private void prepareExtraInfo()
+    {
+        if (!sharedPreferences.contains(getString(R.string.tag_cur_extra))
+            || (sharedPreferences.getBoolean("recorded_extra", true)
+            && !sharedPreferences.contains("extra_screen")))
+        {
+            Map<String, Float> extraInfoMap = ExtraUtil.getExtraInfo(this);
+            if (extraInfoMap.size() > 0)
+            {
+                sharedPreferences.edit()
+                    .putFloat("extra_screen", extraInfoMap.get("screen"))
+                    .putFloat("extra_width", extraInfoMap.get("width"))
+                    .putFloat("extra_length", extraInfoMap.get("length"))
+                    .putFloat("extra_thickness", extraInfoMap.get("thickness"))
+                    .putInt("extra_weight", extraInfoMap.get("weight").intValue())
+                    .commit();
+            }
+            else
+            {
+                sharedPreferences.edit().putBoolean("recorded_extra", false).commit();
+            }
+            sharedPreferences.edit()
+                .putBoolean(getString(R.string.tag_cur_extra), true).commit();
+        }
     }
 
     private void fillData()
@@ -438,16 +444,10 @@ public class MainActivity extends Activity
     
     /*private void printAll()
     {
-        if (sharedPreferences.getInt("launch_times", 0) <= 0)
-        {
-            //The GPU info has not been prepared.
-            return;
-        }
-        
         final String TAG = "===OSBuild===";
         
         //File name: Device Info__Extra Info__OSBuild Info.info.txt
-        final String DEVICE = String.format("%1$s_%2$s_%3$s", Build.BRAND, Build.MODEL, SDK);
+        final String DEVICE = String.format("%1$s_%2$s_%3$s", Build.BRAND, Build.MODEL, C.SDK);
         final String APP = ExtraUtil.getVerInfo(this, false);
         final String FILE_TARGET_NAME = String.format("%1$s__wT__%2$s.info.txt", DEVICE, APP);
         
@@ -487,62 +487,69 @@ public class MainActivity extends Activity
     @SuppressWarnings("deprecation")
     private StringBuilder getBuildInfo()
     {
-        final String UNKN = Build.UNKNOWN;
-        final String MODEL = Build.MODEL.equals(UNKN) ? "" : Build.MODEL;
-        final String BRAND = Build.BRAND.equals(UNKN) ? "" : Build.BRAND;
+        final String UNKNOWN = Build.UNKNOWN;
+        final String MODEL = Build.MODEL.equals(UNKNOWN) ? "" : Build.MODEL;
+        final String BRAND = Build.BRAND.equals(UNKNOWN) ? "" : Build.BRAND;
         final String RELEASE = Build.VERSION.RELEASE;
-        final String MANUFACTURER = Build.MANUFACTURER.equals(UNKN) ? "" : Build.MANUFACTURER;
+        final String MANUFACTURER = Build.MANUFACTURER.equals(UNKNOWN) ? "" : Build.MANUFACTURER;
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("android.os.Build.");
-        stringBuilder.append(L1).append("ID: ").append(Build.ID);
-        stringBuilder.append(L1).append("DISPLAY: ").append(Build.DISPLAY);
-        stringBuilder.append(L1).append("VERSION.");
-        stringBuilder.append(L2).append("RELEASE: ").append(RELEASE);
-        stringBuilder.append(L2).append("SDK_INT: ").append(SDK);
-        stringBuilder.append(SPACE).append(ConstUtil.getSDKIntStr(Build.VERSION.SDK_INT));
-        stringBuilder.append(SPACE).append(ConstUtil.getSDKIntDateStr(Build.VERSION.SDK_INT));
-        stringBuilder.append(L2).append("INCREMENTAL: ").append(Build.VERSION.INCREMENTAL);
-        stringBuilder.append(L1).append("MODEL: ").append(MODEL);
-        stringBuilder.append(L1).append("BRAND: ").append(BRAND);
-        stringBuilder.append(L1).append("MANUFACTURER: ").append(MANUFACTURER);
-        stringBuilder.append(L1).append("PRODUCT: ").append(Build.PRODUCT.equals(UNKN)
+        stringBuilder.append(C.L).append("android.os.Build.");
+        stringBuilder.append(C.L1).append("ID: ").append(Build.ID);
+        stringBuilder.append(C.L1).append("DISPLAY: ").append(Build.DISPLAY);
+        stringBuilder.append(C.L1).append("VERSION.");
+        stringBuilder.append(C.L2).append("RELEASE: ").append(Build.VERSION.RELEASE);
+        stringBuilder.append(C.L2).append("SDK_INT: ").append(C.SDK);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getSDKIntStr(C.SDK));
+        stringBuilder.append(C.SPACE).append(ConstUtil.getSDKIntDateStr(C.SDK));
+        stringBuilder.append(C.L2).append("INCREMENTAL: ").append(Build.VERSION.INCREMENTAL);
+        stringBuilder.append(C.L1).append("MODEL: ").append(MODEL);
+        stringBuilder.append(C.L1).append("BRAND: ").append(BRAND);
+        stringBuilder.append(C.L1).append("MANUFACTURER: ").append(MANUFACTURER);
+        stringBuilder.append(C.L1).append("PRODUCT: ").append(Build.PRODUCT.equals(UNKNOWN)
             ? "" : Build.PRODUCT);
-        stringBuilder.append(L1).append("DEVICE: ").append(Build.DEVICE.equals(UNKN)
+        stringBuilder.append(C.L1).append("DEVICE: ").append(Build.DEVICE.equals(UNKNOWN)
             ? "" : Build.DEVICE);
-        stringBuilder.append(L1).append("BOARD: ").append(Build.BOARD.equals(UNKN)
+        stringBuilder.append(C.L1).append("BOARD: ").append(Build.BOARD.equals(UNKNOWN)
             ? "" : Build.BOARD);
-        stringBuilder.append(L1).append("HARDWARE: ").append(Build.HARDWARE.equals(UNKN)
+        stringBuilder.append(C.L1).append("HARDWARE: ").append(Build.HARDWARE.equals(UNKNOWN)
             ? "" : Build.HARDWARE);
-        if (SDK >= 21)
+        if (C.SDK >= 21)
         {
             final String[] SUPPORTED_ABIS = Build.SUPPORTED_ABIS;
             
-            stringBuilder.append(L1).append("SUPPORTED_ABIS: ").append(SUPPORTED_ABIS.length);
+            stringBuilder.append(C.L1).append("SUPPORTED_ABIS: ").append(SUPPORTED_ABIS.length);
             for (String supported_abi : SUPPORTED_ABIS)
             {
-                stringBuilder.append(L2).append(supported_abi);
+                stringBuilder.append(C.L2).append(supported_abi);
             }
         }
-        if (SDK >= 9)
+        else
         {
-            stringBuilder.append(L1).append("SERIAL: ").append(Build.SERIAL.equals(UNKN)
+            stringBuilder.append(C.L1).append("CPU_ABI: ").append(Build.CPU_ABI.equals(UNKNOWN)
+                ? "" : Build.CPU_ABI);
+            stringBuilder.append(C.L1).append("CPU_ABI2: ").append(Build.CPU_ABI2.equals(UNKNOWN)
+                ? "" : Build.CPU_ABI2);
+        }
+        if (C.SDK >= 9)
+        {
+            stringBuilder.append(C.L1).append("SERIAL: ").append(Build.SERIAL.equals(UNKNOWN)
                 ? "" : Build.SERIAL);
         }
-        stringBuilder.append(L1).append("TIME: ").append(Build.TIME);
-        stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(Build.TIME, "yyyy-MM-dd"));
+        stringBuilder.append(C.L1).append("TIME: ").append(Build.TIME);
+        stringBuilder.append(C.SPACE).append(ExtraUtil.convertMillisTime(Build.TIME, "yyyy-MM-dd"));
         
         //Get baseband.
         /*if (SDK >= 14)
         {
             //May return null (if, for instance, the radio is not currently on).
-            stringBuilder.append(L1).append("getRadioVersion(): ").append(Build
+            stringBuilder.append(C.L1).append("getRadioVersion(): ").append(Build
                 .getRadioVersion() == null ? "" : Build.getRadioVersion());
         }
         else //Another way to get baseband.
         {
-            stringBuilder.append(L0).append("android.os.SystemProperties.");
-            stringBuilder.append(L1).append("get(\"gsm.version.baseband\"): ");
+            stringBuilder.append(C.L0).append("android.os.SystemProperties.");
+            stringBuilder.append(C.L1).append("get(\"gsm.version.baseband\"): ");
             try
             {
                 Class c = Class.forName("android.os.SystemProperties");
@@ -558,35 +565,42 @@ public class MainActivity extends Activity
             }
         }*/
         
-        stringBuilder.append(L0).append("android.provider.Settings.Secure.");
-        stringBuilder.append(L1).append("get(ANDROID_ID): ").append(Settings.Secure
+        stringBuilder.append(C.L0).append("android.provider.Settings.Secure.");
+        stringBuilder.append(C.L1).append("get(ANDROID_ID): ").append(Settings.Secure
             .getString(getContentResolver(), Settings.Secure.ANDROID_ID));
         
-        //final String OS_NAME = System.getProperty("os.name", "");
         final String OS_ARCH = System.getProperty("os.arch", "");
+        //final String OS_NAME = System.getProperty("os.name", "");
         final String OS_VERSION = System.getProperty("os.version", "");
+        //final String VM_NAME = System.getProperty("java.vm.name", "");
         final String VM_VERSION = System.getProperty("java.vm.version", "");
         
-        stringBuilder.append(L0).append("java.lang.System.");
-        /*stringBuilder.append(L1).append("getProperty(\"os.name\"): ");
-        if (OS_NAME != null)
-        {
-            stringBuilder.append(OS_NAME);
-        }*/
-        stringBuilder.append(L1).append("getProperty(\"os.arch\"): ");
+        stringBuilder.append(C.L0).append("java.lang.System.");
+        stringBuilder.append(C.L1).append("getProperty(\"os.arch\"): ");
         if (OS_ARCH != null)
         {
             stringBuilder.append(OS_ARCH);
         }
-        stringBuilder.append(L1).append("getProperty(\"os.version\"): ");
+        /*stringBuilder.append(C.L1).append("getProperty(\"os.name\"): ");
+        if (OS_NAME != null)
+        {
+            stringBuilder.append(OS_NAME);
+        }*/
+        stringBuilder.append(C.L1).append("getProperty(\"os.version\"): ");
         if (OS_VERSION != null)
         {
             stringBuilder.append(OS_VERSION);
         }
-        stringBuilder.append(L1).append("getProperty(\"java.vm.version\"): ");
+        /*stringBuilder.append(C.L1).append("getProperty(\"java.vm.name\"): ");
+        if (VM_VERSION != null)
+        {
+            stringBuilder.append(VM_NAME);
+        }*/
+        stringBuilder.append(C.L1).append("getProperty(\"java.vm.version\"): ");
         if (VM_VERSION != null)
         {
             stringBuilder.append(VM_VERSION);
+            stringBuilder.append(C.SPACE).append(ConstUtil.getVMType(VM_VERSION));
         }
         
         //Add data for Primer Module
@@ -598,7 +612,7 @@ public class MainActivity extends Activity
         else
         {
             map_primer.put("brand", String.format("%1$s (%2$s)", BRAND,
-                "".equals(MANUFACTURER) ? UNKNOWN : MANUFACTURER));
+                "".equals(MANUFACTURER) ? C.UNKNOWN : MANUFACTURER));
         }
         map_primer.put("version", "Android " + RELEASE);
         
@@ -636,21 +650,21 @@ public class MainActivity extends Activity
         final float YDPI = displayMetrics.ydpi;
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("android.view.Display.");
+        stringBuilder.append(C.L).append("android.view.Display.");
         //Get real physical resolution.
-        if (SDK >= 17)
+        if (C.SDK >= 17)
         {
             Point point = new Point();
             display.getRealSize(point);
             width = point.x;
             height = point.y;
-            stringBuilder.append(L1).append("getRealSize().");
-            stringBuilder.append(L2).append("x: ").append(width);
-            stringBuilder.append(SPACE).append(UnitUtil.toDp(width / DENSITY));
-            stringBuilder.append(L2).append("y: ").append(height);
-            stringBuilder.append(SPACE).append(UnitUtil.toDp(height / DENSITY));
+            stringBuilder.append(C.L1).append("getRealSize().");
+            stringBuilder.append(C.L2).append("x: ").append(width);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toDp(width / DENSITY));
+            stringBuilder.append(C.L2).append("y: ").append(height);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toDp(height / DENSITY));
         }
-        else if (SDK >= 13)
+        else if (C.SDK >= 13)
         {
             try
             {
@@ -663,44 +677,44 @@ public class MainActivity extends Activity
             {
                 e.printStackTrace();
             }
-            stringBuilder.append(L1).append("getRawWidth(): ");
+            stringBuilder.append(C.L1).append("getRawWidth(): ");
             if (width > 0)
             {
                 stringBuilder.append(width);
-                stringBuilder.append(SPACE).append(UnitUtil.toDp(width / DENSITY));
+                stringBuilder.append(C.SPACE).append(UnitUtil.toDp(width / DENSITY));
             }
-            stringBuilder.append(L1).append("getRawHeight(): ");
+            stringBuilder.append(C.L1).append("getRawHeight(): ");
             if (height > 0)
             {
                 stringBuilder.append(height);
-                stringBuilder.append(SPACE).append(UnitUtil.toDp(height / DENSITY));
+                stringBuilder.append(C.SPACE).append(UnitUtil.toDp(height / DENSITY));
             }
         }
         else
         {
             width = display.getWidth();
             height = display.getHeight();
-            stringBuilder.append(L1).append("getWidth(): ").append(width);
-            stringBuilder.append(SPACE).append(UnitUtil.toDp(width / DENSITY));
-            stringBuilder.append(L1).append("getHeight(): ").append(height);
-            stringBuilder.append(SPACE).append(UnitUtil.toDp(height / DENSITY));
+            stringBuilder.append(C.L1).append("getWidth(): ").append(width);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toDp(width / DENSITY));
+            stringBuilder.append(C.L1).append("getHeight(): ").append(height);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toDp(height / DENSITY));
         }
-        stringBuilder.append(L1).append("getRefreshRate(): ").append(display.getRefreshRate());
-        stringBuilder.append(L1).append("getRotation(): ").append(ROTATION);
-        stringBuilder.append(SPACE).append(ConstUtil.getRotationStr(ROTATION));
+        stringBuilder.append(C.L1).append("getRefreshRate(): ").append(display.getRefreshRate());
+        stringBuilder.append(C.L1).append("getRotation(): ").append(ROTATION);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getRotationStr(ROTATION));
         
-        stringBuilder.append(L0).append("android.util.DisplayMetrics.");
-        stringBuilder.append(L1).append("density: ").append(DENSITY);
-        stringBuilder.append(L1).append("densityDpi: ").append(DENSITY_DPI);
-        stringBuilder.append(SPACE).append(ConstUtil.getDensityDPIStr(DENSITY_DPI));
-        stringBuilder.append(L1).append("widthPixels: ").append(WIDTH_PIXELS);
-        stringBuilder.append(SPACE).append(UnitUtil.toDp(WIDTH_PIXELS / DENSITY));
-        stringBuilder.append(L1).append("heightPixels: ").append(HEIGHT_PIXELS);
-        stringBuilder.append(SPACE).append(UnitUtil.toDp(HEIGHT_PIXELS / DENSITY));
-        stringBuilder.append(L1).append("xdpi: ").append(displayMetrics.xdpi);
-        stringBuilder.append(SPACE).append(UnitUtil.toInch(width / XDPI));
-        stringBuilder.append(L1).append("ydpi: ").append(displayMetrics.ydpi);
-        stringBuilder.append(SPACE).append(UnitUtil.toInch(height / YDPI));
+        stringBuilder.append(C.L0).append("android.util.DisplayMetrics.");
+        stringBuilder.append(C.L1).append("density: ").append(DENSITY);
+        stringBuilder.append(C.L1).append("densityDpi: ").append(DENSITY_DPI);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getDensityDPIStr(DENSITY_DPI));
+        stringBuilder.append(C.L1).append("widthPixels: ").append(WIDTH_PIXELS);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toDp(WIDTH_PIXELS / DENSITY));
+        stringBuilder.append(C.L1).append("heightPixels: ").append(HEIGHT_PIXELS);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toDp(HEIGHT_PIXELS / DENSITY));
+        stringBuilder.append(C.L1).append("xdpi: ").append(displayMetrics.xdpi);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toInch(width / XDPI));
+        stringBuilder.append(C.L1).append("ydpi: ").append(displayMetrics.ydpi);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toInch(height / YDPI));
         
         Configuration configuration = getResources().getConfiguration();
         
@@ -711,48 +725,81 @@ public class MainActivity extends Activity
             & Configuration.SCREENLAYOUT_SIZE_MASK;
         Locale locale = configuration.locale;
         
-        stringBuilder.append(L0).append("android.content.res.Configuration.");
-        if (SDK >= 13)
+        stringBuilder.append(C.L0).append("android.content.res.Configuration.");
+        if (C.SDK >= 13)
         {
             screen_width_dp = configuration.screenWidthDp;
             screen_height_dp = configuration.screenHeightDp;
             
-            stringBuilder.append(L1).append("screenWidthDp: ").append(screen_width_dp);
-            stringBuilder.append(SPACE).append(ConstUtil.getScreenWidthDpStr(screen_width_dp));
-            stringBuilder.append(L1).append("screenHeightDp: ").append(screen_height_dp);
-            stringBuilder.append(SPACE).append(ConstUtil.getScreenHeightDpStr(screen_height_dp));
+            stringBuilder.append(C.L1).append("screenWidthDp: ").append(screen_width_dp);
+            stringBuilder.append(C.SPACE).append(ConstUtil.getScreenWidthDpStr(screen_width_dp));
+            stringBuilder.append(C.L1).append("screenHeightDp: ").append(screen_height_dp);
+            stringBuilder.append(C.SPACE).append(ConstUtil.getScreenHeightDpStr(screen_height_dp));
         }
-        stringBuilder.append(L1).append("orientation: ").append(ORIENTATION);
-        stringBuilder.append(SPACE).append(ConstUtil.getOrientationStr(ORIENTATION));
-        stringBuilder.append(L1).append("fontScale: ").append(configuration.fontScale);
-        stringBuilder.append(L1).append("screenLayout & SCREENLAYOUT_SIZE_MASK: ").append(SL_SIZE_MASK);
-        stringBuilder.append(SPACE).append(ConstUtil.getSLSizeMaskStr(SL_SIZE_MASK));
-        stringBuilder.append(SPACE).append(ConstUtil.getDeviceTypeStr(SL_SIZE_MASK));
-        stringBuilder.append(L1).append("locale: ").append(locale);
-        stringBuilder.append(SPACE).append(ConstUtil.getLocale(locale));
+        stringBuilder.append(C.L1).append("orientation: ").append(ORIENTATION);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getOrientationStr(ORIENTATION));
+        stringBuilder.append(C.L1).append("fontScale: ").append(configuration.fontScale);
+        stringBuilder.append(C.L1).append("screenLayout & SCREENLAYOUT_SIZE_MASK: ").append(SL_SIZE_MASK);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getSLSizeMaskStr(SL_SIZE_MASK));
+        stringBuilder.append(C.SPACE).append(ConstUtil.getDeviceTypeStr(SL_SIZE_MASK));
+        stringBuilder.append(C.L1).append("locale: ").append(locale);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getLocale(locale));
         
-        stringBuilder.append(L0).append("Extra:");
-        stringBuilder.append(L1).append("Width-height Ratio: ").append(ExtraUtil
+        float extra_screen = sharedPreferences.getFloat("extra_screen", -1.0f);
+        float[] extra_width_length = { -1, -1 };
+        float extra_thickness = sharedPreferences.getFloat("extra_thickness", -1.0f);
+        int extra_weight = sharedPreferences.getInt("extra_weight", -1);
+        
+        stringBuilder.append(C.L0).append("Extra:");
+        stringBuilder.append(C.L1).append("Width-height Ratio: ").append(ExtraUtil
             .getWHRatioInt(width, height));
-        stringBuilder.append(SPACE).append(ConstUtil.getResolutionFormat(width, height));
-        stringBuilder.append(L1).append("Diagonal Size: ").append(UnitUtil.toInch(Math
+        stringBuilder.append(C.SPACE).append(ConstUtil.getResolutionFormat(width, height));
+        stringBuilder.append(C.L1).append("Diagonal Size: ").append(UnitUtil.toInch(Math
             .sqrt(Math.pow(height / YDPI, 2) + Math.pow(width / XDPI, 2))));
+        if (sharedPreferences.contains("extra_screen"))
+        {
+            stringBuilder.append(C.SPACE).append(UnitUtil.toInch(extra_screen));
+        }
         //"height / DENSITY - screen_height_dp" should be the height of
         //the status bar and the navigation bar (if supported) in dp.
         //The standard height of the status bar is 25dp, and 48dp for the navigation bar.
-        if (SDK >= 14)
+        if (C.SDK >= 14)
         {
-            stringBuilder.append(L1).append("Navigation Bar: ");
+            stringBuilder.append(C.L1).append("Navigation Bar: ");
             if (height != -1 && screen_height_dp != -1)
             {
                 stringBuilder.append(height / DENSITY
-                    - screen_height_dp > 30 ? TRUE : FALSE);
+                    - screen_height_dp > 30 ? C.TRUE : C.FALSE);
             }
+        }
+        if (sharedPreferences.contains("extra_screen"))
+        {
+            extra_width_length = ExtraUtil.sort2Same(width, height,
+                sharedPreferences.getFloat("extra_width", -1),
+                sharedPreferences.getFloat("extra_length", -1));
+            
+            stringBuilder.append(C.L1).append("Dimensions: ").append(String.format("%1$.2f %2$.2f %3$.2f",
+                extra_width_length[0], extra_width_length[1], extra_thickness));
+            stringBuilder.append(C.L1).append("Weight: ").append(extra_weight);
         }
         
         //Add data for Primer Module
-        map_primer.put("resolution", (width != -1 && height != -1)
-            ? (width + "x" + height) : UNKNOWN);
+        String resolution = (width != -1 && height != -1)
+            ? (String.format("%1$dx%2$d", width, height)) : C.UNKNOWN;
+        if (sharedPreferences.contains("extra_screen"))
+        {
+            resolution = String.format("%1$s (%2$.2f\")", resolution, extra_screen);
+            double ppi = ExtraUtil.getPPI(width, height, extra_screen);
+            double screen_ratio = ExtraUtil.getScreenRatio(extra_width_length[0], extra_width_length[1],
+                width, height, extra_screen);
+            
+            map_primer.put("ppi", String.format("%1$s (%2$s)",
+                ppi > 0.0 ? UnitUtil.toPPI(ppi) : C.UNKNOWN,
+                screen_ratio > 0.0 ? "~" + UnitUtil.toPercent(screen_ratio, 2) : C.UNKNOWN));
+            map_primer.put("dimensions", String.format("%1$.2fx%2$.2fx%3$.2fmm (~%4$dg)",
+                extra_width_length[0], extra_width_length[1], extra_thickness, extra_weight));
+        }
+        map_primer.put("resolution", resolution);
         
         return stringBuilder;
     }
@@ -760,7 +807,7 @@ public class MainActivity extends Activity
     /**
      * Telephony Module
      */
-    @TargetApi(22)
+    @TargetApi(23)
     private StringBuilder getTelephonyInfo()
     {
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -787,66 +834,66 @@ public class MainActivity extends Activity
         boolean is_world_phone = false;
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("android.telephony.TelephonyManager.");
-        if (SDK >= 23)
+        stringBuilder.append(C.L).append("android.telephony.TelephonyManager.");
+        if (C.SDK >= 23)
         {
             phone_count = telephonyManager.getPhoneCount();
-            stringBuilder.append(L1).append("getPhoneCount(): ").append(phone_count);
+            stringBuilder.append(C.L1).append("getPhoneCount(): ").append(phone_count);
         }
-        stringBuilder.append(L1).append("getPhoneType(): ").append(PHONE_TYPE);
-        stringBuilder.append(SPACE).append(ConstUtil.getPhoneTypeStr(PHONE_TYPE));
-        stringBuilder.append(L1).append("getDeviceId(): ");
+        stringBuilder.append(C.L1).append("getPhoneType(): ").append(PHONE_TYPE);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getPhoneTypeStr(PHONE_TYPE));
+        stringBuilder.append(C.L1).append("getDeviceId(): ");
         if (!TextUtils.isEmpty(device_id))
         {
             stringBuilder.append(device_id);
-            stringBuilder.append(SPACE).append(ConstUtil
+            stringBuilder.append(C.SPACE).append(ConstUtil
                 .getDeviceIdType(PHONE_TYPE, device_id.length()));
         }
-        if (SDK >= 23 && phone_count == 2)
+        if (C.SDK >= 23 && phone_count == 2)
         {
             String temp_device_id;
             for (int i = 0; i < 2; ++ i)
             {
                 temp_device_id = telephonyManager.getDeviceId(i);
-                stringBuilder.append(L1).append(String.format("getDeviceId(%d): ", i));
+                stringBuilder.append(C.L1).append(String.format("getDeviceId(%d): ", i));
                 if (TextUtils.isEmpty(temp_device_id))
                 {
                     continue;
                 }
                 stringBuilder.append(device_id);
-                stringBuilder.append(SPACE).append(ConstUtil
+                stringBuilder.append(C.SPACE).append(ConstUtil
                     .getDeviceIdType(PHONE_TYPE, device_id.length()));
             }
         }
-        stringBuilder.append(L1).append("getSimState(): ").append(SIM_STATE);
-        stringBuilder.append(SPACE).append(ConstUtil.getSimStateStr(SIM_STATE));
+        stringBuilder.append(C.L1).append("getSimState(): ").append(SIM_STATE);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getSimStateStr(SIM_STATE));
         if (SIM_STATE == TelephonyManager.SIM_STATE_READY)
         {
-            stringBuilder.append(L1).append("getSimOperator(): ").append(SIM_OPERATOR);
-            stringBuilder.append(SPACE).append(ConstUtil.getSimOperator(SIM_OPERATOR));
+            stringBuilder.append(C.L1).append("getSimOperator(): ").append(SIM_OPERATOR);
+            stringBuilder.append(C.SPACE).append(ConstUtil.getSimOperator(SIM_OPERATOR));
             
-            stringBuilder.append(L1).append("getSimOperatorName(): ").append(telephonyManager
+            stringBuilder.append(C.L1).append("getSimOperatorName(): ").append(telephonyManager
                 .getSimOperatorName());
         }
-        stringBuilder.append(L1).append("getSubscriberId(): ");
+        stringBuilder.append(C.L1).append("getSubscriberId(): ");
         if (!TextUtils.isEmpty(subscriber_id))
         {
             stringBuilder.append(subscriber_id);
         }
-        stringBuilder.append(L1).append("getSimSerialNumber(): ");
+        stringBuilder.append(C.L1).append("getSimSerialNumber(): ");
         if (!TextUtils.isEmpty(sim_serial_number))
         {
             stringBuilder.append(sim_serial_number);
         }
         
-        stringBuilder.append(L1).append("getNetworkType(): ").append(NETWORK_TYPE);
-        stringBuilder.append(SPACE).append(ConstUtil.getNetworkTypeStr(NETWORK_TYPE));
-        if (SDK >= 23)
+        stringBuilder.append(C.L1).append("getNetworkType(): ").append(NETWORK_TYPE);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getNetworkTypeStr(NETWORK_TYPE));
+        if (C.SDK >= 23)
         {
             try
             {
                 is_world_phone = telephonyManager.isWorldPhone();
-                stringBuilder.append(L1).append("isWorldPhone(): ").append(is_world_phone);
+                stringBuilder.append(C.L1).append("isWorldPhone(): ").append(is_world_phone);
             }
             catch (SecurityException e)
             {
@@ -857,7 +904,7 @@ public class MainActivity extends Activity
         
 /* Waiting for testing. */
         int active_subscription_info_count_max = 1;
-        if (SDK >= 22)
+        if (C.SDK >= 22)
         {
             SubscriptionManager subscriptionManager = SubscriptionManager.from(this);
             
@@ -876,9 +923,9 @@ public class MainActivity extends Activity
                 e.printStackTrace();
             }
             
-            stringBuilder.append(L0).append("android.telephony.SubscriptionManager.");
-            stringBuilder.append(L1).append("getActiveSubscriptionInfoCountMax(): ").append(active_subscription_info_count_max);
-            stringBuilder.append(L1).append("getActiveSubscriptionInfoCount(): ");
+            stringBuilder.append(C.L0).append("android.telephony.SubscriptionManager.");
+            stringBuilder.append(C.L1).append("getActiveSubscriptionInfoCountMax(): ").append(active_subscription_info_count_max);
+            stringBuilder.append(C.L1).append("getActiveSubscriptionInfoCount(): ");
             if (active_subscription_info_count != -1)
             {
                 stringBuilder.append(active_subscription_info_count);
@@ -887,20 +934,27 @@ public class MainActivity extends Activity
             {
                 for (SubscriptionInfo subscriptionInfo : subscriptioninfos)
                 {
-                    stringBuilder.append(L1).append(String.format("getActiveSubscriptionInfoForSimSlotIndex(%d).",
+                    stringBuilder.append(C.L1).append(String.format("getActiveSubscriptionInfoForSimSlotIndex(%d).",
                         subscriptionInfo.getSimSlotIndex()));
-                    stringBuilder.append(L2).append("getDisplayName(): ").append(subscriptionInfo.getDisplayName());
-                    stringBuilder.append(L2).append("getIccId(): ").append(subscriptionInfo.getIccId());
+                    stringBuilder.append(C.L2).append("getDisplayName(): ").append(subscriptionInfo.getDisplayName());
+                    stringBuilder.append(C.L2).append("getIccId(): ").append(subscriptionInfo.getIccId());
                 }
             }
         }
         
+        /*final String GSF_ID_KEY = ExtraUtil.getGSFIDKEY(this);
+        if (!TextUtils.isEmpty(GSF_ID_KEY))
+        {
+            stringBuilder.append(C.L0).append("Extra:");
+            stringBuilder.append(C.L1).append("GSF ID KEY: ").append(GSF_ID_KEY);
+        }*/
+        
         //Add data for Primer Module
-        map_primer.put("imei", TextUtils.isEmpty(device_id) ? UNKNOWN : device_id);
-        map_primer.put("imsi", TextUtils.isEmpty(subscriber_id) ? UNKNOWN : subscriber_id);
-        map_primer.put("dual_sim", phone_count == 2 ? YES
-            : (active_subscription_info_count_max == 2 ? YES : NO));//API 22, 23
-        map_primer.put("world_phone", is_world_phone ? YES : NO);//API 23
+        map_primer.put("imei", TextUtils.isEmpty(device_id) ? C.UNKNOWN : device_id);
+        map_primer.put("imsi", TextUtils.isEmpty(subscriber_id) ? C.UNKNOWN : subscriber_id);
+        map_primer.put("dual_sim", phone_count == 2 ? C.YES
+            : (active_subscription_info_count_max == 2 ? C.YES : C.NO));//API 22, 23
+        map_primer.put("world_phone", is_world_phone ? C.YES : C.NO);//API 23
         
         return stringBuilder;
     }
@@ -913,7 +967,7 @@ public class MainActivity extends Activity
         final String TEXT = ExtraUtil.readFile("/proc/cpuinfo");
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("/proc/cpuinfo");
+        stringBuilder.append(C.L).append("/proc/cpuinfo");
         
         final String TAG_PROCESSOR_ARM = "Processor";
         final String TAG_HARDWARE_ARM = "Hardware";
@@ -922,7 +976,7 @@ public class MainActivity extends Activity
         
         if (TEXT.contains(TAG_PROCESSOR_X86))
         {
-            stringBuilder.append(L1).append("model name: ");
+            stringBuilder.append(C.L1).append("model name: ");
             final int INDEX = TEXT.indexOf(TAG_PROCESSOR_X86) + TAG_PROCESSOR_X86.length();
             final int INDEX_END = TEXT.indexOf("\n", INDEX);
             stringBuilder.append(TEXT.substring(INDEX + 3,
@@ -931,7 +985,7 @@ public class MainActivity extends Activity
         else
         {
             //Like: "Processor	: ARMv7 Processor rev 1 (v7l)"
-            stringBuilder.append(L1).append("Processor: ");
+            stringBuilder.append(C.L1).append("Processor: ");
             if (TEXT.contains(TAG_PROCESSOR_ARM))
             {
                 final int INDEX = TEXT.indexOf(TAG_PROCESSOR_ARM) + TAG_PROCESSOR_ARM.length();
@@ -943,7 +997,7 @@ public class MainActivity extends Activity
         
         if (TEXT.contains(TAG_HARDWARE_X86))
         {
-            stringBuilder.append(L1).append("vendor_id: ");
+            stringBuilder.append(C.L1).append("vendor_id: ");
             final int INDEX = TEXT.indexOf(TAG_HARDWARE_X86) + TAG_HARDWARE_X86.length();
             final int INDEX_END = TEXT.indexOf("\n", INDEX);
             stringBuilder.append(TEXT.substring(INDEX + 3,
@@ -952,7 +1006,7 @@ public class MainActivity extends Activity
         else
         {
             //Like: "Hardware	: Qualcomm MSM8974PRO-AB"
-            stringBuilder.append(L1).append("Hardware: ");
+            stringBuilder.append(C.L1).append("Hardware: ");
             if (TEXT.contains(TAG_HARDWARE_ARM))
             {
                 final int INDEX = TEXT.indexOf(TAG_HARDWARE_ARM) + TAG_HARDWARE_ARM.length();
@@ -962,67 +1016,72 @@ public class MainActivity extends Activity
             }
         }
         
-        final String CPU_PATH = "/sys/devices/system/cpu/";
-        final String CPU0_PATH = CPU_PATH + "cpu0/cpufreq/";
-        final String ONLINE = "online";
-        final String CPUINFO_MIN_FREQ = "cpuinfo_min_freq";
-        final String CPUINFO_MAX_FREQ = "cpuinfo_max_freq";
-        final String SCALING_GOVERNOR = "scaling_governor";
-        
-        final String ONLINE_INFO = ExtraUtil.readFile(CPU_PATH + ONLINE).trim();
+        final String ONLINE_INFO = ExtraUtil.readFile("/sys/devices/system/cpu/online").trim();
         final int ONLINE_CORES = ExtraUtil.getCPUOnlineCores(ONLINE_INFO);
         final int CORES = ExtraUtil.getCPUCores();
-        final int MIN_FREQ = UnitUtil.toIntSafely(ExtraUtil
-            .readFile(CPU0_PATH + CPUINFO_MIN_FREQ));
-        final int MAX_FREQ = UnitUtil.toIntSafely(ExtraUtil
-            .readFile(CPU0_PATH + CPUINFO_MAX_FREQ));
-        final String GOVERNOR = ExtraUtil.readFile(CPU0_PATH + SCALING_GOVERNOR).trim();
+        final long MIN_FREQ = UnitUtil.toIntSafely(ExtraUtil
+            .readFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq"));//Unit: KHz
+        final long MAX_FREQ = UnitUtil.toIntSafely(ExtraUtil
+            .readFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"));//Unit: KHz
+        final String GOVERNOR = ExtraUtil
+            .readFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").trim();
         
-        stringBuilder.append(L0).append(CPU_PATH);
-        stringBuilder.append(L1).append("online: ").append(ONLINE_INFO);
-        if (ONLINE_CORES != -1)
+        stringBuilder.append(C.L0).append("/sys/devices/system/cpu/");
+        stringBuilder.append(C.L1).append("online: ").append(ONLINE_INFO);
+        if (ONLINE_CORES > 0)
         {
-            stringBuilder.append(SPACE).append(ONLINE_CORES);
+            stringBuilder.append(C.SPACE).append(ONLINE_CORES);
         }
-        stringBuilder.append(L1).append("cpu[0-9]/  ").append(CORES);
-        stringBuilder.append(L1).append("cpu0/cpufreq/");
-        stringBuilder.append(L2).append(CPUINFO_MIN_FREQ).append(": ");
-        if (MIN_FREQ != -1)
+        stringBuilder.append(C.L1).append("cpu[0-9]/  ").append(CORES);
+        stringBuilder.append(C.L1).append("cpu0/cpufreq/");
+        stringBuilder.append(C.L2).append("cpuinfo_min_freq: ");
+        if (MIN_FREQ > 0)
         {
             stringBuilder.append(MIN_FREQ);
-            stringBuilder.append(SPACE).append(UnitUtil.toFreq(MAX_FREQ));
+            stringBuilder.append(C.SPACE).append(UnitUtil.toFreq(MIN_FREQ * 1000));
         }
-        stringBuilder.append(L2).append(CPUINFO_MAX_FREQ).append(": ");
-        if (MAX_FREQ != -1)
+        stringBuilder.append(C.L2).append("cpuinfo_max_freq: ");
+        if (MAX_FREQ > 0)
         {
             stringBuilder.append(MAX_FREQ);
-            stringBuilder.append(SPACE).append(UnitUtil.toFreq(MAX_FREQ));
+            stringBuilder.append(C.SPACE).append(UnitUtil.toFreq(MAX_FREQ * 1000));
         }
-        stringBuilder.append(L2).append(SCALING_GOVERNOR).append(": ");
-        stringBuilder.append(GOVERNOR);
+        stringBuilder.append(C.L2).append("scaling_governor: ").append(GOVERNOR);
         
-        //The GPU node.
+        //For Adreno GPUs.
+        //("/sys/kernel/gpu_control/max_freq" for Defy 2.6?)
+        //("/sys/devices/platform/omap/pvrsrvkm.0/sgx_fck_rate" for Defy 3.0?)
+        final long MAX_GPU_CLK = UnitUtil.toIntSafely(ExtraUtil
+            .readFile("/sys/class/kgsl/kgsl-3d0/max_gpuclk"));//Unit: Hz
+        
         if (sharedPreferences.contains("gl_renderer"))
         {
-            stringBuilder.append(L0).append("javax.microedition.khronos.opengles.GL10.");
-            stringBuilder.append(L1).append("glGetString(GL_RENDERER): ")
+            stringBuilder.append(C.L0).append("javax.microedition.khronos.opengles.GL10.");
+            stringBuilder.append(C.L1).append("glGetString(GL_RENDERER): ")
                 .append(sharedPreferences.getString("gl_renderer", ""));
-            stringBuilder.append(L1).append("glGetString(GL_VENDOR): ")
+            stringBuilder.append(C.L1).append("glGetString(GL_VENDOR): ")
                 .append(sharedPreferences.getString("gl_vendor", ""));
-            /*stringBuilder.append(L1).append("glGetString(GL_VERSION): ")
-                .append(sharedPreferences.getString("gl_version", ""));*/
+            //stringBuilder.append(C.L1).append("glGetString(GL_VERSION): ")
+            //    .append(sharedPreferences.getString("gl_version", ""));
+        }
+        
+        if (MAX_GPU_CLK > 0)
+        {
+            stringBuilder.append(C.L0).append("/sys/class/kgsl/kgsl-3d0/");
+            stringBuilder.append(C.L1).append("max_gpuclk: ").append(MAX_GPU_CLK);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toFreq(MAX_GPU_CLK));
         }
         
         //Add data for Primer Module
-        if (MIN_FREQ != -1 && MAX_FREQ != -1)
+        if (MIN_FREQ > 0 && MAX_FREQ > 0)
         {
             map_primer.put("cpu", String.format("%1$s-%2$s (%3$dx)",
-                UnitUtil.toFreq(MIN_FREQ), UnitUtil.toFreq(MAX_FREQ), CORES));
+                UnitUtil.toFreq(MIN_FREQ), UnitUtil.toFreq(MAX_FREQ * 1000), CORES));
         }
         else
         {
             map_primer.put("cpu", String.format("%1$s (%2$dx)",
-                (MAX_FREQ != -1 ? UnitUtil.toFreq(MAX_FREQ) : UNKNOWN), CORES));
+                (MAX_FREQ > 0 ? UnitUtil.toFreq(MAX_FREQ * 1000) : C.UNKNOWN), CORES));
         }
         
         return stringBuilder;
@@ -1046,47 +1105,47 @@ public class MainActivity extends Activity
         final long AVAIL_MEM = memoryInfo.availMem;//Unit: byte
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("android.app.ActivityManager.");
-        stringBuilder.append(L1).append("getDeviceConfigurationInfo().");
-        stringBuilder.append(L2).append("reqGlEsVersion: ").append(UnitUtil
+        stringBuilder.append(C.L).append("android.app.ActivityManager.");
+        stringBuilder.append(C.L1).append("getDeviceConfigurationInfo().");
+        stringBuilder.append(C.L2).append("reqGlEsVersion: ").append(UnitUtil
             .toBits(GLES_VERSION, 16));
-        stringBuilder.append(SPACE).append(ConstUtil.getGlEsVersion(GLES_VERSION));
-        stringBuilder.append(L1).append("getMemoryClass(): ").append(MEM_CLASS);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(MEM_CLASS * 1024 * 1024));
-        if (SDK >= 11)
+        stringBuilder.append(C.SPACE).append(ConstUtil.getGlEsVersion(GLES_VERSION));
+        stringBuilder.append(C.L1).append("getMemoryClass(): ").append(MEM_CLASS);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(MEM_CLASS * 1024 * 1024));
+        if (C.SDK >= 11)
         {
             large_mem_class = activityManager.getLargeMemoryClass();//Unit: MB
-            stringBuilder.append(L1).append("getLargeMemoryClass(): ").append(large_mem_class);
-            stringBuilder.append(SPACE).append(UnitUtil
+            stringBuilder.append(C.L1).append("getLargeMemoryClass(): ").append(large_mem_class);
+            stringBuilder.append(C.SPACE).append(UnitUtil
                 .toMemory(large_mem_class * 1024 * 1024));
         }
-        if (SDK >= 19)
+        if (C.SDK >= 19)
         {
-            stringBuilder.append(L1).append("isLowRamDevice(): ").append(activityManager.isLowRamDevice());
+            stringBuilder.append(C.L1).append("isLowRamDevice(): ").append(activityManager.isLowRamDevice());
         }
-        stringBuilder.append(L1).append("MemoryInfo.");
-        stringBuilder.append(L2).append("threshold: ").append(THRESHOLD);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(THRESHOLD));
-        if (SDK >= 16)
+        stringBuilder.append(C.L1).append("MemoryInfo.");
+        stringBuilder.append(C.L2).append("threshold: ").append(THRESHOLD);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(THRESHOLD));
+        if (C.SDK >= 16)
         {
             total_mem = memoryInfo.totalMem;//Unit: byte
-            stringBuilder.append(L2).append("totalMem: ").append(total_mem);
-            stringBuilder.append(SPACE).append(UnitUtil.toMemory(total_mem));
-            stringBuilder.append(L2).append("availMem: ").append(AVAIL_MEM);
-            stringBuilder.append(SPACE).append(UnitUtil.toMemory(AVAIL_MEM));
-            stringBuilder.append(SPACE).append(UnitUtil.toPercent(total_mem, AVAIL_MEM));
+            stringBuilder.append(C.L2).append("totalMem: ").append(total_mem);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(total_mem));
+            stringBuilder.append(C.L2).append("availMem: ").append(AVAIL_MEM);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(AVAIL_MEM));
+            stringBuilder.append(C.SPACE).append(UnitUtil.toPercent(total_mem, AVAIL_MEM));
         }
         else
         {
             total_mem = ExtraUtil.getTotalRAM() * 1024;//Unit: byte
-            stringBuilder.append(L2).append("availMem: ").append(AVAIL_MEM);
-            stringBuilder.append(SPACE).append(UnitUtil.toMemory(AVAIL_MEM));
-            stringBuilder.append(L0).append("/proc/meminfo");
-            stringBuilder.append(L1).append("MemTotal: ");
+            stringBuilder.append(C.L2).append("availMem: ").append(AVAIL_MEM);
+            stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(AVAIL_MEM));
+            stringBuilder.append(C.L0).append("/proc/meminfo");
+            stringBuilder.append(C.L1).append("MemTotal: ");
             if (total_mem != -1)
             {
                 stringBuilder.append(total_mem / 1024);
-                stringBuilder.append(SPACE).append(UnitUtil.toMemory(total_mem));
+                stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(total_mem));
             }
         }
         
@@ -1094,50 +1153,50 @@ public class MainActivity extends Activity
         File dir = Environment.getRootDirectory();
         long[] usage = ExtraUtil.getStorageUsage(dir);
         
-        stringBuilder.append(L0).append("android.os.Environment.");
-        stringBuilder.append(L1).append("getRootDirectory(): ").append(ExtraUtil.getPathRuled(dir));
-        stringBuilder.append(L2).append("Total Size: ").append(usage[0]);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(usage[0]));
-        stringBuilder.append(L2).append("Available Size: ").append(usage[1]);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(usage[1]));
-        stringBuilder.append(SPACE).append(UnitUtil.toPercent(usage));
+        stringBuilder.append(C.L0).append("android.os.Environment.");
+        stringBuilder.append(C.L1).append("getRootDirectory(): ").append(ExtraUtil.getPathRuled(dir));
+        stringBuilder.append(C.L2).append("Total Size: ").append(usage[0]);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(usage[0]));
+        stringBuilder.append(C.L2).append("Available Size: ").append(usage[1]);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(usage[1]));
+        stringBuilder.append(C.SPACE).append(UnitUtil.toPercent(usage));
         dir = Environment.getDataDirectory();
         usage = ExtraUtil.getStorageUsage(dir);
-        stringBuilder.append(L1).append("getDataDirectory(): ").append(ExtraUtil.getPathRuled(dir));
-        stringBuilder.append(L2).append("Total Size: ").append(usage[0]);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(usage[0]));
-        stringBuilder.append(L2).append("Available Size: ").append(usage[1]);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(usage[1]));
-        stringBuilder.append(SPACE).append(UnitUtil.toPercent(usage));
-        stringBuilder.append(L1).append("getExternalStorageState(): ").append(STATE);
-        stringBuilder.append(SPACE).append(ConstUtil.getExternalStorageState(STATE));
-        if (SDK >= 9)
+        stringBuilder.append(C.L1).append("getDataDirectory(): ").append(ExtraUtil.getPathRuled(dir));
+        stringBuilder.append(C.L2).append("Total Size: ").append(usage[0]);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(usage[0]));
+        stringBuilder.append(C.L2).append("Available Size: ").append(usage[1]);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(usage[1]));
+        stringBuilder.append(C.SPACE).append(UnitUtil.toPercent(usage));
+        stringBuilder.append(C.L1).append("getExternalStorageState(): ").append(STATE);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getExternalStorageState(STATE));
+        if (C.SDK >= 9)
         {
-            stringBuilder.append(L1).append("isExternalStorageRemovable(): ").append(Environment
+            stringBuilder.append(C.L1).append("isExternalStorageRemovable(): ").append(Environment
                 .isExternalStorageRemovable());
         }
-        stringBuilder.append(L1).append("getExternalStorageDirectory(): ");
+        stringBuilder.append(C.L1).append("getExternalStorageDirectory(): ");
         if (STATE.equals(Environment.MEDIA_MOUNTED))
         {
             dir = Environment.getExternalStorageDirectory();
             usage = ExtraUtil.getStorageUsage(Environment.getExternalStorageDirectory());
             stringBuilder.append(ExtraUtil.getPathRuled(dir));
-            stringBuilder.append(L2).append("Total Size: ");
+            stringBuilder.append(C.L2).append("Total Size: ");
             stringBuilder.append(usage[0]);
-            stringBuilder.append(SPACE).append(UnitUtil.toMemory(usage[0]));
-            stringBuilder.append(L2).append("Available Size: ");
+            stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(usage[0]));
+            stringBuilder.append(C.L2).append("Available Size: ");
             stringBuilder.append(usage[1]);
-            stringBuilder.append(SPACE).append(UnitUtil.toMemory(usage[1]));
-            stringBuilder.append(SPACE).append(UnitUtil.toPercent(usage));
+            stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(usage[1]));
+            stringBuilder.append(C.SPACE).append(UnitUtil.toPercent(usage));
         }
         else
         {
-            stringBuilder.append(L2).append("Total Size: ");
-            stringBuilder.append(L2).append("Available Size: ");
+            stringBuilder.append(C.L2).append("Total Size: ");
+            stringBuilder.append(C.L2).append("Available Size: ");
         }
         
         //Get all available storage by reflecting.
-        if (SDK >= 9)
+        if (C.SDK >= 9)
         {
             StorageManager storageManager = (StorageManager)
                 getSystemService(STORAGE_SERVICE);
@@ -1159,8 +1218,8 @@ public class MainActivity extends Activity
                 e.printStackTrace();
             }
             
-            stringBuilder.append(L0).append("android.os.storage.StorageManager.");
-            stringBuilder.append(L1).append("getVolumePaths(): ");
+            stringBuilder.append(C.L0).append("android.os.storage.StorageManager.");
+            stringBuilder.append(C.L1).append("getVolumePaths(): ");
             if (paths != null)
             {
                 stringBuilder.append(paths.length);
@@ -1169,16 +1228,15 @@ public class MainActivity extends Activity
                 for (String path : paths)
                 {
                     temp_file = new File(path);
-                    stringBuilder.append(L2).append(ExtraUtil.getPathRuled(path));
-                    stringBuilder.append(SPACE).append(temp_file.exists() && temp_file.canRead()
-                        && temp_file.list().length > 0 ? TRUE : FALSE);
+                    stringBuilder.append(C.L2).append(ExtraUtil.getPathRuled(path));
+                    stringBuilder.append(C.SPACE).append(temp_file.exists() && temp_file.canRead()
+                        && temp_file.list().length > 0 ? C.TRUE : C.FALSE);
                 }
             }
-            
         }
         
         //Add data for Primer Module
-        map_primer.put("ram", total_mem == -1 ? UNKNOWN : UnitUtil.toMemory(total_mem));
+        map_primer.put("ram", total_mem == -1 ? C.UNKNOWN : UnitUtil.toMemory(total_mem));
         
         return stringBuilder;
     }
@@ -1196,8 +1254,8 @@ public class MainActivity extends Activity
         List<String> features = new ArrayList<>();
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("android.content.pm.PackageManager.");
-        stringBuilder.append(L1).append("getSystemAvailableFeatures(): ").append(featureInfos.length);
+        stringBuilder.append(C.L).append("android.content.pm.PackageManager.");
+        stringBuilder.append(C.L1).append("getSystemAvailableFeatures(): ").append(featureInfos.length);
 
         String temp_str;
         for (FeatureInfo featureInfo : featureInfos)
@@ -1211,16 +1269,16 @@ public class MainActivity extends Activity
         Collections.sort(features);
         for (String feature : features)
         {
-            stringBuilder.append(L2).append(feature);
-            stringBuilder.append(SPACE).append(ConstUtil.getFeature(feature));
+            stringBuilder.append(C.L2).append(feature);
+            stringBuilder.append(C.SPACE).append(ConstUtil.getFeature(feature));
         }
         
         /*String[] libraries = packageManager.getSystemSharedLibraryNames();
         Arrays.sort(libraries);
-        stringBuilder.append(L1).append("getSystemSharedLibraryNames():");
+        stringBuilder.append(C.L1).append("getSystemSharedLibraryNames():");
         for (String library : libraries)
         {
-            stringBuilder.append(L2).append(library);
+            stringBuilder.append(C.L2).append(library);
         }*/
         
         /*if (SDK >= 10)
@@ -1238,9 +1296,9 @@ public class MainActivity extends Activity
                 e.printStackTrace();
             }
             
-            stringBuilder.append(L0).append("android.nfc.NfcManager.");
-            stringBuilder.append(L1).append("getDefaultAdapter().");
-            stringBuilder.append(L2).append("isEnabled(): ");
+            stringBuilder.append(C.L0).append("android.nfc.NfcManager.");
+            stringBuilder.append(C.L1).append("getDefaultAdapter().");
+            stringBuilder.append(C.L2).append("isEnabled(): ");
             if (nfcAdapter != null)
             {
                 //ON or OFF.
@@ -1249,19 +1307,19 @@ public class MainActivity extends Activity
         }*/
         
         boolean ir = false;
-        if (SDK >= 19)
+        if (C.SDK >= 19)
         {
             ConsumerIrManager consumerIrManager = (ConsumerIrManager)
                 getSystemService(CONSUMER_IR_SERVICE);
             ir = consumerIrManager.hasIrEmitter();
             
-            stringBuilder.append(L0).append("android.hardware.ConsumerIrManager.");
-            stringBuilder.append(L1).append("hasIrEmitter(): ").append(ir);
+            stringBuilder.append(C.L0).append("android.hardware.ConsumerIrManager.");
+            stringBuilder.append(C.L1).append("hasIrEmitter(): ").append(ir);
         }
         
-        stringBuilder.append(L0).append("Extra:");
-        stringBuilder.append(L1).append("GSF: ").append(ExtraUtil.getPackageInfo(this,
-            "com.google.android.gsf") != null ? TRUE : FALSE);
+        stringBuilder.append(C.L0).append("Extra:");
+        stringBuilder.append(C.L1).append("GSF: ").append(ExtraUtil.getPackageInfo(this,
+            "com.google.android.gsf") != null ? C.TRUE : C.FALSE);
         
         //Add data for Primer Module
         if (packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_GSM))
@@ -1283,39 +1341,39 @@ public class MainActivity extends Activity
         {
             //It's probably that the device doesn't has a telephony radio
             //with data communication support.
-            map_primer.put("phone_type", UNKNOWN);
+            map_primer.put("phone_type", C.UNKNOWN);
         }
         
         map_primer.put("nfc", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_NFC) ? YES : NO);//API 9
+            .hasSystemFeature(PackageManager.FEATURE_NFC) ? C.YES : C.NO);//API 9
         
         map_primer.put("otg", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_USB_HOST) ? YES : NO);//API 12
+            .hasSystemFeature(PackageManager.FEATURE_USB_HOST) ? C.YES : C.NO);//API 12
         
-        map_primer.put("ir", ir ? YES : NO);//API 19
+        map_primer.put("ir", ir ? C.YES : C.NO);//API 19
         
         map_primer.put("hifi", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_HIFI_SENSORS) ? YES : NO);//API 23
+            .hasSystemFeature(PackageManager.FEATURE_HIFI_SENSORS) ? C.YES : C.NO);//API 23
         
         map_primer.put("fingerprint", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) ? YES : NO);//API 23
+            .hasSystemFeature(PackageManager.FEATURE_FINGERPRINT) ? C.YES : C.NO);//API 23
         
         map_primer.put("telephony", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_TELEPHONY) ? YES : NO);
+            .hasSystemFeature(PackageManager.FEATURE_TELEPHONY) ? C.YES : C.NO);
         map_primer.put("camera", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_CAMERA) ? YES : NO);
+            .hasSystemFeature(PackageManager.FEATURE_CAMERA) ? C.YES : C.NO);
         map_primer.put("flash_lamp", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH) ? YES : NO);
+            .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH) ? C.YES : C.NO);
         map_primer.put("bluetooth", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH) ? YES : NO);
+            .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH) ? C.YES : C.NO);
         map_primer.put("wifi", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_WIFI) ? YES : NO);
+            .hasSystemFeature(PackageManager.FEATURE_WIFI) ? C.YES : C.NO);
         map_primer.put("gps", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) ? YES : NO);
+            .hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) ? C.YES : C.NO);
         map_primer.put("camera_front", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT) ? YES : NO);//API 9
+            .hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT) ? C.YES : C.NO);//API 9
         map_primer.put("ble", packageManager
-            .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) ? YES : NO);//API 18
+            .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) ? C.YES : C.NO);//API 18
         
         return stringBuilder;
 	}
@@ -1331,8 +1389,8 @@ public class MainActivity extends Activity
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("android.hardware.SensorManager.");
-        stringBuilder.append(L1).append("getSensorList(TYPE_ALL): ").append(sensors.size());
+        stringBuilder.append(C.L).append("android.hardware.SensorManager.");
+        stringBuilder.append(C.L1).append("getSensorList(TYPE_ALL): ").append(sensors.size());
 
         if (sensors != null)
         {
@@ -1347,26 +1405,31 @@ public class MainActivity extends Activity
             for (int sensor_id : sensors_id)
             {
                 tempSensor = sensorManager.getDefaultSensor(sensor_id);
-            
-                stringBuilder.append(L2).append(sensor_id);
-                stringBuilder.append(SPACE).append(ConstUtil.getSensorTypeStr(sensor_id));
-                stringBuilder.append(SPACE).append(tempSensor.getVendor());
-                if (SDK >= 21)
+/* Waiting for Testing... */
+                if (tempSensor == null)
                 {
-                    stringBuilder.append(SPACE).append(tempSensor.isWakeUpSensor() ? ON : OFF);
+                    continue;
+                }
+                
+                stringBuilder.append(C.L2).append(sensor_id);
+                stringBuilder.append(C.SPACE).append(ConstUtil.getSensorTypeStr(sensor_id));
+                stringBuilder.append(C.SPACE).append(tempSensor.getVendor());
+                if (C.SDK >= 21)
+                {
+                    stringBuilder.append(C.SPACE).append(tempSensor.isWakeUpSensor() ? C.ON : C.OFF);
                 }
             }
         }
         
         //Add data for Primer Module
         map_primer.put("gyro", sensorManager
-            .getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null ? YES : NO);
+            .getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null ? C.YES : C.NO);
         map_primer.put("step", sensorManager
-            .getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null ? YES : NO);//API 19
+            .getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null ? C.YES : C.NO);//API 19
         map_primer.put("heart", sensorManager
-            .getDefaultSensor(Sensor.TYPE_HEART_RATE) != null ? YES : NO);//API 20
+            .getDefaultSensor(Sensor.TYPE_HEART_RATE) != null ? C.YES : C.NO);//API 20
         map_primer.put("light", sensorManager
-            .getDefaultSensor(Sensor.TYPE_LIGHT) != null ? YES : NO);
+            .getDefaultSensor(Sensor.TYPE_LIGHT) != null ? C.YES : C.NO);
         
         return stringBuilder;
 	}
@@ -1380,7 +1443,7 @@ public class MainActivity extends Activity
             "/system/sbin/su", "/sbin/su", "/vendor/bin/su" };
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("Superuser:");
+        stringBuilder.append(C.L).append("Superuser:");
         
         boolean rooted = false;
         for (String path : SU_PATHS)
@@ -1388,22 +1451,22 @@ public class MainActivity extends Activity
             if ((new File(path)).exists())
             {
                 rooted = true;
-                stringBuilder.append(L1).append(path);
-                stringBuilder.append(SPACE).append(TRUE);
+                stringBuilder.append(C.L1).append(path);
+                stringBuilder.append(C.SPACE).append(C.TRUE);
             }
         }
         
 /* Waiting for Testing... */
         final String VER_BUSYBOX = ExtraUtil.getBusyBoxVer();
         
-        stringBuilder.append(L0).append("BusyBox:");
+        stringBuilder.append(C.L0).append("BusyBox:");
         if (!TextUtils.isEmpty(VER_BUSYBOX))
         {
-            stringBuilder.append(L1).append("Version: ").append(VER_BUSYBOX);
+            stringBuilder.append(C.L1).append("Version: ").append(VER_BUSYBOX);
         }
         
         //Add data for Primer Module
-        map_primer.put("root", rooted ? YES : NO);
+        map_primer.put("root", rooted ? C.YES : C.NO);
 
         return stringBuilder;
     }
@@ -1416,23 +1479,23 @@ public class MainActivity extends Activity
         Provider[] providers = Security.getProviders();
         
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("java.secirity.Security.");
-        stringBuilder.append(L1).append("getProviders():");
+        stringBuilder.append(C.L).append("java.secirity.Security.");
+        stringBuilder.append(C.L1).append("getProviders():");
         for (Provider provider : providers)
         {
-            stringBuilder.append(L2).append(provider.getName());
-            stringBuilder.append(L3).append("Version: ").append(provider.getVersion());
-            stringBuilder.append(L3).append("Info: ").append(provider.getInfo());
+            stringBuilder.append(C.L2).append(provider.getName());
+            stringBuilder.append(C.L3).append("Version: ").append(provider.getVersion());
+            stringBuilder.append(C.L3).append("Info: ").append(provider.getInfo());
         }
-        stringBuilder.append(L1).append("getAlgorithms(\"MessageDigest\"):");
+        stringBuilder.append(C.L1).append("getAlgorithms(\"MessageDigest\"):");
         for (String algorithm : Security.getAlgorithms("MessageDigest"))
         {
-            stringBuilder.append(L2).append(algorithm);
+            stringBuilder.append(C.L2).append(algorithm);
         }
-        stringBuilder.append(L1).append("getAlgorithms(\"KeyPairGenerator\"):");
+        stringBuilder.append(C.L1).append("getAlgorithms(\"KeyPairGenerator\"):");
         for (String algorithm : Security.getAlgorithms("KeyPairGenerator"))
         {
-            stringBuilder.append(L2).append(algorithm);
+            stringBuilder.append(C.L2).append(algorithm);
         }
         
         return stringBuilder;
@@ -1451,15 +1514,15 @@ public class MainActivity extends Activity
         final long UPTIME_MILLIS = SystemClock.uptimeMillis();//Unit: ms
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("java.lang.System.");
-        stringBuilder.append(L1).append("currentTimeMillis(): ").append(CURRENT_TIME);
-        stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(CURRENT_TIME));
-        stringBuilder.append(L0).append("android.os.SystemClock.");
-        stringBuilder.append(L1).append("elapsedRealtime(): ").append(ELAPSED_REAL_TIME);
-        stringBuilder.append(SPACE).append(UnitUtil.toTime(ELAPSED_REAL_TIME));
-        stringBuilder.append(L1).append("uptimeMillis(): ").append(UPTIME_MILLIS);
-        stringBuilder.append(SPACE).append(UnitUtil.toTime(UPTIME_MILLIS));
-        stringBuilder.append(SPACE).append(UnitUtil.toPercent(ELAPSED_REAL_TIME, UPTIME_MILLIS));
+        stringBuilder.append(C.L).append("java.lang.System.");
+        stringBuilder.append(C.L1).append("currentTimeMillis(): ").append(CURRENT_TIME);
+        stringBuilder.append(C.SPACE).append(ExtraUtil.convertMillisTime(CURRENT_TIME));
+        stringBuilder.append(C.L0).append("android.os.SystemClock.");
+        stringBuilder.append(C.L1).append("elapsedRealtime(): ").append(ELAPSED_REAL_TIME);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toTime(ELAPSED_REAL_TIME));
+        stringBuilder.append(C.L1).append("uptimeMillis(): ").append(UPTIME_MILLIS);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toTime(UPTIME_MILLIS));
+        stringBuilder.append(C.SPACE).append(UnitUtil.toPercent(ELAPSED_REAL_TIME, UPTIME_MILLIS));
 
         return stringBuilder;
     }
@@ -1470,13 +1533,13 @@ public class MainActivity extends Activity
     private StringBuilder getAboutInfo()
     {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(L).append("About:");
-        stringBuilder.append(L1).append(ExtraUtil.getVerInfo(this, false));
-        stringBuilder.append(SPACE).append(getResources().getInteger(R.integer.cur_ver_order));
-        stringBuilder.append(L1).append("Typeface: ").append("Monaco.ttf");
-        stringBuilder.append(L1).append("Developer: ").append(getString(R.string.developer));
-        stringBuilder.append(SPACE).append(getString(R.string.my_email));
-        stringBuilder.append(L1).append(getString(R.string.copyright));
+        stringBuilder.append(C.L).append("About:");
+        stringBuilder.append(C.L1).append(ExtraUtil.getVerInfo(this, false));
+        stringBuilder.append(C.SPACE).append(getResources().getInteger(R.integer.cur_ver_order));
+        stringBuilder.append(C.L1).append("Typeface: ").append("Monaco.ttf");
+        stringBuilder.append(C.L1).append("Developer: ").append(getString(R.string.developer));
+        stringBuilder.append(C.SPACE).append(getString(R.string.my_email));
+        stringBuilder.append(C.L1).append(getString(R.string.copyright));
 
         return stringBuilder;
     }
@@ -1492,123 +1555,134 @@ public class MainActivity extends Activity
         final String[] PRIMER_ALL = getResources().getStringArray(R.array.primer_all);
         
         //Line: Device Model
-        stringBuilder.append(L1).append(PRIMER_ALL[0]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[0]);
         stringBuilder.append(map_primer.get("model"));
         
         //Line: Brand & Manufacturer
-        stringBuilder.append(L1).append(PRIMER_ALL[1]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[1]);
         stringBuilder.append(map_primer.get("brand"));
         
         //Line: OS Version
-        stringBuilder.append(L1).append(PRIMER_ALL[2]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[2]);
         stringBuilder.append(map_primer.get("version"));
         
         //Line: Screen Resolution
-        stringBuilder.append(L1).append(PRIMER_ALL[3]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[3]);
         stringBuilder.append(map_primer.get("resolution"));
         
-        if (!map_primer.get("phone_type").equals(UNKNOWN))
+        if (sharedPreferences.contains("extra_screen"))
+        {
+            //Line: Pixel & Screen Area
+            stringBuilder.append(C.L1).append(PRIMER_ALL[4]);
+            stringBuilder.append(map_primer.get("ppi"));
+            
+            //Line: Dimensions
+            stringBuilder.append(C.L1).append(PRIMER_ALL[5]);
+            stringBuilder.append(map_primer.get("dimensions"));
+        }
+        
+        if (!map_primer.get("phone_type").equals(C.UNKNOWN))
         {
             //Line: Phone Type
-            stringBuilder.append(L1).append(PRIMER_ALL[4]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[6]);
             stringBuilder.append(map_primer.get("phone_type"));
             
             //Line: IMEI/MEID/ESN
-            stringBuilder.append(L1).append(PRIMER_ALL[5]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[7]);
             stringBuilder.append(map_primer.get("imei"));
             
             //Line: IMSI
-            stringBuilder.append(L1).append(PRIMER_ALL[6]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[8]);
             stringBuilder.append(map_primer.get("imsi"));
         }
         
         //Line: CPU Clock Speed
-        stringBuilder.append(L1).append(PRIMER_ALL[7]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[9]);
         stringBuilder.append(map_primer.get("cpu"));
         
         //Line: Total RAM
-        stringBuilder.append(L1).append(PRIMER_ALL[8]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[10]);
         stringBuilder.append(map_primer.get("ram"));
         
-        if (SDK >= 9)
+        if (C.SDK >= 9)
         {
             //Line: Gyroscope Sensor
-            stringBuilder.append(L1).append(PRIMER_ALL[9]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[11]);
             stringBuilder.append(map_primer.get("gyro"));
             
             //Line: NFC
-            stringBuilder.append(L1).append(PRIMER_ALL[10]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[12]);
             stringBuilder.append(map_primer.get("nfc"));
         }
         
-        if (SDK >= 12)
+        if (C.SDK >= 12)
         {
             //Line: OTG (USB Host)
-            stringBuilder.append(L1).append(PRIMER_ALL[11]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[13]);
             stringBuilder.append(map_primer.get("otg"));
         }
         
-        if (SDK >= 19)
+        if (C.SDK >= 19)
         {
             //Line: IR Transmitter
-            stringBuilder.append(L1).append(PRIMER_ALL[12]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[14]);
             stringBuilder.append(map_primer.get("ir"));
             
             //Line: Step Counter
-            stringBuilder.append(L1).append(PRIMER_ALL[13]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[15]);
             stringBuilder.append(map_primer.get("step"));
         }
         
-        if (SDK >= 20)
+        if (C.SDK >= 20)
         {
             //Line: Heart Rate Monitor
-            stringBuilder.append(L1).append(PRIMER_ALL[14]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[16]);
             stringBuilder.append(map_primer.get("heart"));
         }
         
-        if (SDK >= 22)
+        if (C.SDK >= 22)
         {
             //Line: Dual SIM
-            stringBuilder.append(L1).append(PRIMER_ALL[15]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[17]);
             stringBuilder.append(map_primer.get("dual_sim"));
         }
         
         //Only for testing.
-        if (SDK >= 23)
+        if (C.SDK >= 23)
         {
             //Line: World Phone
-            stringBuilder.append(L1).append(PRIMER_ALL[16]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[18]);
             stringBuilder.append(map_primer.get("world_phone"));
             
             //Line: Hi-Fi
-            stringBuilder.append(L1).append(PRIMER_ALL[17]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[19]);
             stringBuilder.append(map_primer.get("hifi"));
             
             //Line: Fingerprint ID
-            stringBuilder.append(L1).append(PRIMER_ALL[18]);
+            stringBuilder.append(C.L1).append(PRIMER_ALL[20]);
             stringBuilder.append(map_primer.get("fingerprint"));
         }
         
         //Line: Root Access
-        stringBuilder.append(L1).append(PRIMER_ALL[19]);
+        stringBuilder.append(C.L1).append(PRIMER_ALL[21]);
         stringBuilder.append(map_primer.get("root"));
         
         final String[] TITLE_ABSENTEES = getResources().getStringArray(R.array.primer_absentees);
         final String[] TAG_ABSENTEES = { "light", "telephony", "camera", "flash_lamp",
             "bluetooth", "wifi", "gps", "camera_front", "ble" };
         final int[] NEED_SDKS = { 3, 7, 7, 7, 8, 8, 8, 9, 18 };
-        final String STR_SPAN = ExtraUtil.makeStrs(' ', getString(R.string.primer_absentees).length());
+        final String STR_SPAN = ExtraUtil.makeStrs(' ', PRIMER_ALL[22].length());
         for (int i = 0, num_absentees = 0, len = TITLE_ABSENTEES.length; i < len; ++ i)
         {
-            if (NEED_SDKS[i] <= SDK && map_primer.get(TAG_ABSENTEES[i]).equals(NO))
+            if (NEED_SDKS[i] <= C.SDK && map_primer.get(TAG_ABSENTEES[i]).equals(C.NO))
             {
                 if (++ num_absentees == 1)
                 {
-                    stringBuilder.append(L1).append(getString(R.string.primer_absentees));
+                    stringBuilder.append(C.L1).append(PRIMER_ALL[22]);
                 }
                 else
                 {
-                    stringBuilder.append(L1).append(STR_SPAN);
+                    stringBuilder.append(C.L1).append(STR_SPAN);
                 }
                 stringBuilder.append(TITLE_ABSENTEES[i]);
             }
@@ -1633,12 +1707,14 @@ public class MainActivity extends Activity
             return stringBuilder;
         }
         
+        PackageManager packageManager = getPackageManager();
         ApplicationInfo applicationInfo = packageInfo.applicationInfo;
         
         final String PUBLIC_SOURCE_DIR = applicationInfo.publicSourceDir;
         final long SIZE_APK = (new File(PUBLIC_SOURCE_DIR)).length();
-        int target_sdk_version = applicationInfo.targetSdkVersion;
-        final int FLAG_SYSTEM = applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM;
+        final int MIN_SDK_VERSION = MinSDKVersionUtil.getMinSdkVersion(PUBLIC_SOURCE_DIR);
+        final int TARGET_SDK_VERSION = applicationInfo.targetSdkVersion;
+        int flag_system;
         final int FLAG_DEBUGGABLE = applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE;
         
         final String PACKAGE_NAME = packageInfo.packageName;
@@ -1646,36 +1722,50 @@ public class MainActivity extends Activity
         long first_install_time;
         long last_update_time;
         
-        stringBuilder.append(L).append("android.content.pm.PackageInfo.");
-        stringBuilder.append(L1).append("applicationInfo.");
-        stringBuilder.append(L2).append("publicSourceDir: ").append(PUBLIC_SOURCE_DIR);
-        stringBuilder.append(L3).append("Total Size: ").append(SIZE_APK);
-        stringBuilder.append(SPACE).append(UnitUtil.toMemory(SIZE_APK));
-        stringBuilder.append(L2).append("loadLabel(): ").append(applicationInfo
-            .loadLabel(getPackageManager()));
-        stringBuilder.append(L2).append("targetSdkVersion: ").append(target_sdk_version);
-        stringBuilder.append(SPACE).append(ConstUtil.getSDKIntStr(target_sdk_version));
-        stringBuilder.append(L2).append("flags & FLAG_SYSTEM: ").append(FLAG_SYSTEM);
-        stringBuilder.append(SPACE).append(FLAG_SYSTEM == 1 ? TRUE : FALSE);
-        stringBuilder.append(L2).append("flags & FLAG_DEBUGGABLE: ").append(FLAG_DEBUGGABLE);
-        stringBuilder.append(SPACE).append(FLAG_DEBUGGABLE == 2 ? TRUE : FALSE);
+        stringBuilder.append(C.L).append("android.content.pm.PackageInfo.");
+        stringBuilder.append(C.L1).append("applicationInfo.");
+        stringBuilder.append(C.L2).append("publicSourceDir: ").append(PUBLIC_SOURCE_DIR);
+        stringBuilder.append(C.L3).append("Total Size: ").append(SIZE_APK);
+        stringBuilder.append(C.SPACE).append(UnitUtil.toMemory(SIZE_APK));
+        stringBuilder.append(C.L2).append("loadLabel(): ").append(applicationInfo
+            .loadLabel(packageManager));
+        if (MIN_SDK_VERSION > 0)
+        {
+            //Get minSdkVersion using undocumented API which is marked as
+            //"not to be used by applications".
+            stringBuilder.append(C.L2).append("minSdkVersion: ").append(MIN_SDK_VERSION);
+            stringBuilder.append(C.SPACE).append(ConstUtil.getSDKIntStr(MIN_SDK_VERSION));
+        }
+        stringBuilder.append(C.L2).append("targetSdkVersion: ").append(TARGET_SDK_VERSION);
+        stringBuilder.append(C.SPACE).append(ConstUtil.getSDKIntStr(TARGET_SDK_VERSION));
+        if (is_installed)
+        {
+            flag_system = applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM;
+            
+            stringBuilder.append(C.L2).append("flags & FLAG_SYSTEM: ").append(flag_system);
+            stringBuilder.append(C.SPACE).append(flag_system == ApplicationInfo.FLAG_SYSTEM ? C.TRUE : C.FALSE);
+        }
+        stringBuilder.append(C.L2).append("flags & FLAG_DEBUGGABLE: ").append(FLAG_DEBUGGABLE);
+        stringBuilder.append(C.SPACE).append(FLAG_DEBUGGABLE == ApplicationInfo.FLAG_DEBUGGABLE ? C.TRUE : C.FALSE);
         
-        stringBuilder.append(L1).append("packageName: ").append(PACKAGE_NAME);
-        stringBuilder.append(L1).append("versionName: ").append(VERSION_NAME == null ? "" : VERSION_NAME);
-        stringBuilder.append(L1).append("versionCode: ").append(packageInfo.versionCode);
+        stringBuilder.append(C.L1).append("packageName: ").append(PACKAGE_NAME);
+        stringBuilder.append(C.L1).append("versionName: ").append(VERSION_NAME == null ? "" : VERSION_NAME);
+        stringBuilder.append(C.L1).append("versionCode: ").append(packageInfo.versionCode);
         
-        if (SDK >= 9 && is_installed)
+        if (C.SDK >= 9 && is_installed)
         {
             first_install_time = packageInfo.firstInstallTime;
             last_update_time = packageInfo.lastUpdateTime;
-            stringBuilder.append(L1).append("firstInstallTime: ").append(first_install_time);
-            stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(first_install_time));
-            stringBuilder.append(L1).append("lastUpdateTime: ").append(last_update_time);
-            stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(last_update_time));
+            
+            stringBuilder.append(C.L1).append("firstInstallTime: ").append(first_install_time);
+            stringBuilder.append(C.SPACE).append(ExtraUtil.convertMillisTime(first_install_time));
+            stringBuilder.append(C.L1).append("lastUpdateTime: ").append(last_update_time);
+            stringBuilder.append(C.SPACE).append(ExtraUtil.convertMillisTime(last_update_time));
         }
         
-        stringBuilder.append(L1).append("requestedPermissions: ");
+        stringBuilder.append(C.L1).append("requestedPermissions: ");
         String[] requestedPermissions = packageInfo.requestedPermissions;
+        //If the number of requested permissions is 0, it will be null.
         if (requestedPermissions != null)
         {
             stringBuilder.append(requestedPermissions.length);
@@ -1683,35 +1773,49 @@ public class MainActivity extends Activity
             Arrays.sort(requestedPermissions);
             for (String requestedPermission : requestedPermissions)
             {
-                stringBuilder.append(L2).append(requestedPermission);
+                stringBuilder.append(C.L2).append(requestedPermission);
             }
         }
         
-        stringBuilder.append(L0).append("java.security.cert.X509Certificate.");
+        if (is_installed)
+        {
+            Intent launchIntent = packageManager.getLaunchIntentForPackage(PACKAGE_NAME);
+            
+            stringBuilder.append(C.L0).append("android.content.pm.PackageManager.");
+            stringBuilder.append(C.L1).append("getLaunchIntentForPackage().");
+            stringBuilder.append(C.L2).append("getComponent(): ");
+            if (launchIntent != null)
+            {
+                stringBuilder.append(launchIntent.getComponent().getClassName());
+            }
+        }
+        
+        stringBuilder.append(C.L0).append("java.security.cert.X509Certificate.");
         InputStream inputStream = null;
         try
         {
             //"X509" or "X.509"?
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            X509Certificate x509Certificate;
-            for (Signature signature : packageInfo.signatures)
+            Signature[] signatures = packageInfo.signatures;
+            if (signatures != null && signatures.length > 0)
             {
-                inputStream = new ByteArrayInputStream(signature.toByteArray());
-                x509Certificate = (X509Certificate) certificateFactory.generateCertificate(inputStream);
+                inputStream = new ByteArrayInputStream(signatures[0].toByteArray());
+                X509Certificate x509Certificate = (X509Certificate)
+                    certificateFactory.generateCertificate(inputStream);
 
                 long not_before = x509Certificate.getNotBefore().getTime();
                 long not_after = x509Certificate.getNotAfter().getTime();
-                String[] isser_DN = x509Certificate.getIssuerDN().toString().split(", ");
+                String[] isser_DN = ExtraUtil.analyseSignature(x509Certificate.getIssuerDN(), "-_-").split("-_-");
 
-                stringBuilder.append(L1).append("getSigAlgName(): ").append(x509Certificate.getSigAlgName());
-                stringBuilder.append(L1).append("getNotBefore(): ").append(not_before);
-                stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(not_before, "yyyy-MM-dd"));
-                stringBuilder.append(L1).append("getNotAfter(): ").append(not_after);
-                stringBuilder.append(SPACE).append(ExtraUtil.convertMillisTime(not_after, "yyyy-MM-dd"));
-                stringBuilder.append(L1).append("getIssuerDN(): ").append(isser_DN.length);
+                stringBuilder.append(C.L1).append("getSigAlgName(): ").append(x509Certificate.getSigAlgName());
+                stringBuilder.append(C.L1).append("getNotBefore(): ").append(not_before);
+                stringBuilder.append(C.SPACE).append(ExtraUtil.convertMillisTime(not_before, "yyyy-MM-dd"));
+                stringBuilder.append(C.L1).append("getNotAfter(): ").append(not_after);
+                stringBuilder.append(C.SPACE).append(ExtraUtil.convertMillisTime(not_after, "yyyy-MM-dd"));
+                stringBuilder.append(C.L1).append("getIssuerDN(): ").append(isser_DN.length);
                 for (String dn : isser_DN)
                 {
-                    stringBuilder.append(L2).append(dn);
+                    stringBuilder.append(C.L2).append(dn);
                 }
             }
         }
@@ -1731,7 +1835,7 @@ public class MainActivity extends Activity
                 {}
             }
         }
-
+        
         return stringBuilder;
     }
     
@@ -1780,7 +1884,7 @@ public class MainActivity extends Activity
     @TargetApi(11)
     private void reboot()
     {
-        if (SDK >= 11)
+        if (C.SDK >= 11)
         {
             recreate();
         }
@@ -1789,19 +1893,6 @@ public class MainActivity extends Activity
             Intent intent = getIntent();
             finish();
             startActivity(intent);
-        }
-    }
-    
-    /**
-     * Press the FAB to execute this method.
-     * API 21+
-     */
-    public void myClick(View view)
-    {
-        switch (view.getId())
-        {
-            case R.id.fab_top:
-                skipPrimer(0);
         }
     }
     
@@ -1823,6 +1914,28 @@ public class MainActivity extends Activity
     }
     
     /**
+     * Show the FAB and make it clickable.
+     * API 21+
+     */
+    private void showFAB()
+    {
+        final ImageButton FAB_TOP = (ImageButton) findViewById(R.id.fab_top);
+        
+        FAB_TOP.setOnClickListener(new OnClickListener()
+        {
+            @Override
+            public void onClick(View p1)
+            {
+                skipPrimer(0);
+            }
+        });
+       
+        FAB_TOP.setVisibility(View.VISIBLE);
+        FAB_TOP.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,
+            R.anim.anim_right_in));
+    }
+    
+    /**
      * Dialog: Share the Page
      * Ask user whether to add “Telephony Module” to the sharing text file or not.
      * @param TO_DEVELOPER Whether or not to "Share the Page" to developer.
@@ -1833,7 +1946,7 @@ public class MainActivity extends Activity
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_file, null);
         ((MyTextView)viewGroup.findViewById(R.id.mtv_file)).setText(sb_modules[2]);
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_with_tel)
             .setView(viewGroup)
@@ -1868,32 +1981,40 @@ public class MainActivity extends Activity
         
         stringBuilder.append(sb_modules[10]);
         
-        stringBuilder.append(NL1).append(sb_modules[0]);
-        stringBuilder.append(NL2).append(sb_modules[1]);
+        stringBuilder.append(C.NL1).append(sb_modules[0]);
+        stringBuilder.append(C.NL2).append(sb_modules[1]);
         if (with_telephony)
         {
-            stringBuilder.append(NL2).append(sb_modules[2]);
+            stringBuilder.append(C.NL2).append(sb_modules[2]);
         }
-        stringBuilder.append(NL2).append(sb_modules[3]);
-        stringBuilder.append(NL2).append(sb_modules[4]);
-        stringBuilder.append(NL2).append(sb_modules[5]);
-        stringBuilder.append(NL2).append(sb_modules[6]);
-        stringBuilder.append(NL2).append(sb_modules[7]);
-        stringBuilder.append(NL2).append(sb_modules[8]);
-        stringBuilder.append(NL2).append(sb_modules[9]);
+        stringBuilder.append(C.NL2).append(sb_modules[3]);
+        stringBuilder.append(C.NL2).append(sb_modules[4]);
+        stringBuilder.append(C.NL2).append(sb_modules[5]);
+        stringBuilder.append(C.NL2).append(sb_modules[6]);
+        stringBuilder.append(C.NL2).append(sb_modules[7]);
+        stringBuilder.append(C.NL2).append(sb_modules[8]);
+        stringBuilder.append(C.NL2).append(sb_modules[9]);
         
-        stringBuilder.append(NL1).append(sb_modules[11]);
+        stringBuilder.append(C.NL1).append(sb_modules[11]);
         
         //File name: Device Info__Extra Info__OSBuild Info.info.txt
         final String FILE_NAME = with_telephony ? "%1$s__wT__%2$s.info.txt" : "%1$s__%2$s.info.txt";
-        String device = String.format("%1$s_%2$s_%3$s", Build.BRAND, Build.MODEL, SDK);
+        String device = String.format("%1$s_%2$s_%3$s", Build.BRAND, Build.MODEL, C.SDK);
         String app = ExtraUtil.getVerInfo(this, false);
         String file_target_name = String.format(FILE_NAME, device, app);
-        final File FILE_TARGET = new File(getExternalCacheDir(), file_target_name);
+        File file_target = new File(getExternalCacheDir(), file_target_name);
 
-        if (ExtraUtil.saveFile(FILE_TARGET, stringBuilder.toString().trim()))
+        ExtraUtil.saveFile(file_target, stringBuilder.toString().trim());
+        if (!file_target.exists())
         {
-            share(FILE_TARGET, to_developer);
+            //There are no more space to copy file on external storage maybe.
+            //So we have to try to copy it to internal storage.
+            file_target = new File(getCacheDir(), file_target_name);
+            ExtraUtil.saveFile(file_target, stringBuilder.toString().trim());
+        }
+        if (file_target.exists())
+        {
+            share(file_target, to_developer);
         }
     }
     
@@ -1942,7 +2063,7 @@ public class MainActivity extends Activity
             R.raw.telephony_module, R.raw.cpu_module, R.raw.memory_module,
             R.raw.package_module, R.raw.sensor_module, R.raw.app_module };
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_const)
             .setItems(CONST_FILES, new DialogInterface.OnClickListener()
@@ -1971,7 +2092,7 @@ public class MainActivity extends Activity
         ((MyTextView)viewGroup.findViewById(R.id.mtv_file))
             .setText(ExtraUtil.readFile(getResources().openRawResource(file_id)));
 
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(title)
             .setView(viewGroup)
@@ -2010,7 +2131,7 @@ public class MainActivity extends Activity
         LIST_TITLE.add("build.prop");
         LIST_PATH.add("/system/build.prop");
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_sys_files)
             .setItems(LIST_TITLE.toArray(new String[LIST_TITLE.size()]),
@@ -2065,7 +2186,7 @@ public class MainActivity extends Activity
             }
         });
 
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_warning)
             .setView(viewGroup)
@@ -2110,7 +2231,7 @@ public class MainActivity extends Activity
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_file, null);
         ((MyTextView)viewGroup.findViewById(R.id.mtv_file)).setText(stringBuilder);
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(file.getName())
             .setView(viewGroup)
@@ -2148,7 +2269,7 @@ public class MainActivity extends Activity
         LIST_PKG.add("com.android.settings");
         LIST_CLASS.add("com.android.settings.TestingSettings");
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_sys_settings)
             .setItems(LIST_TITLE.toArray(new String[LIST_TITLE.size()]),
@@ -2211,9 +2332,10 @@ public class MainActivity extends Activity
     {
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_input, null);
         final EditText ET_NAME = (EditText) viewGroup.findViewById(R.id.et_text);
+        
         ET_NAME.setText(sharedPreferences.getString("app_searched", ""));
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_check_app)
             .setView(viewGroup)
@@ -2237,11 +2359,12 @@ public class MainActivity extends Activity
                         public void run()
                         {
                             //Check if the app is running to avoid crashing.
-                            if (isRunning)
+                            if (!isRunning)
                             {
-                                checkAppDialog(ExtraUtil.getPackageInfo(MainActivity.this, TEXT),
-                                    !(new File(TEXT)).isFile());
+                                return;
                             }
+                            checkAppDialog(ExtraUtil.getPackageInfo(MainActivity.this, TEXT),
+                                !(new File(TEXT)).isFile());
                         }
                     }, 600);
                 }
@@ -2258,18 +2381,34 @@ public class MainActivity extends Activity
                         public void run()
                         {
                             //Check if the app is running to avoid crashing.
-                            if (isRunning)
+                            if (!isRunning)
                             {
-                                //List all (including system apps).
-                                checkAppDialog(ExtraUtil
-                                    .getAllInstalledPackageNames(MainActivity.this, true));
+                                return;
                             }
+                            //List all (including system apps).
+                            checkAppDialog(ExtraUtil
+                                .getAllInstalledPackageNames(MainActivity.this, true));
                         }
                     }, 600);
                 }
             })
             .create();
         alertDialog.show();
+        
+        final Button BT_POS = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        ET_NAME.setOnEditorActionListener(new OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView p1, int p2, KeyEvent p3)
+            {
+                if (p2 == EditorInfo.IME_ACTION_DONE)
+                {
+                    BT_POS.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
     
     /**
@@ -2289,7 +2428,7 @@ public class MainActivity extends Activity
         ((MyTextView)viewGroup.findViewById(R.id.mtv_file))
             .setText(getAppInfo(PACKAGEINFO, is_installed));
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_check_app)
             .setView(viewGroup)
@@ -2338,7 +2477,7 @@ public class MainActivity extends Activity
             return;
         }
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_check_app)
             .setItems(PACKAGE_NAMES, new DialogInterface.OnClickListener()
@@ -2346,6 +2485,8 @@ public class MainActivity extends Activity
                 @Override
                 public void onClick(DialogInterface p1, int p2)
                 {
+                    sharedPreferences.edit().putString("app_searched", PACKAGE_NAMES[p2]).commit();
+                    
                     checkAppDialog(ExtraUtil.getPackageInfo(MainActivity.this, PACKAGE_NAMES[p2]), true);
                 }
             })
@@ -2406,7 +2547,7 @@ public class MainActivity extends Activity
             }
         });
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_unicode)
             .setView(viewGroup)
@@ -2424,7 +2565,7 @@ public class MainActivity extends Activity
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text, null);
         ((MyTextView)viewGroup.findViewById(R.id.mtv_text)).setText(R.string.dia_feedback_desc);
 
-        final AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        final AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_feedback)
             .setView(viewGroup)
@@ -2472,7 +2613,7 @@ public class MainActivity extends Activity
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text, null);
         ((MyTextView)viewGroup.findViewById(R.id.mtv_text)).setText(R.string.dia_donate_desc);
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_donate)
             .setView(viewGroup)
@@ -2510,6 +2651,7 @@ public class MainActivity extends Activity
      * Dialog: What's OSBuild?
      * Show description about OSBuild.
      */
+    @TargetApi(11)
     private void appDescDialog()
     {
         ViewGroup viewGroup = (ViewGroup) getLayoutInflater().inflate(R.layout.dialog_text_ask, null);
@@ -2526,13 +2668,23 @@ public class MainActivity extends Activity
             }
         });
         
-        AlertDialog alertDialog = (SDK >= 21 ? (new AlertDialog.Builder(this,
+        AlertDialog alertDialog = (C.SDK >= 21 ? (new AlertDialog.Builder(this,
             R.style.AlertDialogStyle)) : (new AlertDialog.Builder(this)))
             .setTitle(R.string.dia_title_about)
             .setView(viewGroup)
             .setPositiveButton(R.string.dia_pos_ok, null)
             .create();
         alertDialog.show();
+    }
+    
+    /**
+     * For devices equiped with hard search button.
+     */
+    @Override
+    public boolean onSearchRequested()
+    {
+        checkAppDialog();
+        return true;
     }
     
     @Override
@@ -2568,7 +2720,7 @@ public class MainActivity extends Activity
     {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         
-        if (SDK >= 21)
+        if (C.SDK >= 21)
         {
             menu.getItem(0).setIcon(R.drawable.ic_action_share);
         }

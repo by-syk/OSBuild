@@ -19,9 +19,6 @@ import android.content.pm.ConfigurationInfo;
 
 public class ConstUtil
 {
-    //Android Version
-    private static int SDK = Build.VERSION.SDK_INT;
-    
     private static String UNKNOWN = "";
     
     /**
@@ -486,7 +483,7 @@ public class ConstUtil
     @TargetApi(9)
     public static String getLocale(Locale locale)
     {
-        if (SDK >= 9 && locale.equals(Locale.ROOT))//null
+        if (C.SDK >= 9 && locale.equals(Locale.ROOT))//null
         {
             return "ROOT";
         }
@@ -1012,5 +1009,19 @@ public class ConstUtil
             default:
                 return UNKNOWN;
         }
+    }
+    
+    /**
+     * You can verify which runtime is in use by calling System.getProperty("java.vm.version").
+     * If ART is in use, the property's value is "2.0.0" or higher.
+     * @param java_vm_version "getProperty("java.vm.version")"
+     */
+    public static String getVMType(String java_vm_version)
+    {
+        if (java_vm_version.startsWith("2."))
+        {
+            return "ART";
+        }
+        return "Dalvik";
     }
 }

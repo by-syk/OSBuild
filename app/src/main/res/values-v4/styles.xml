@@ -2,9 +2,9 @@
 <resources>
 
     <style name="AppTheme" parent="@android:style/Theme.Black"/>
-        
-    <style name="AppTheme_Wide" parent="@android:style/Theme.Black.NoTitleBar"/>
-        
+    
     <style name="AppTheme_Fullscreen" parent="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+        
+    <style name="AppTheme_Dialog" parent="@android:style/Theme.Dialog"/>
 
 </resources>

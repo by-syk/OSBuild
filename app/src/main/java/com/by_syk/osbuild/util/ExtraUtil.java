@@ -37,16 +37,16 @@ import android.annotation.TargetApi;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import java.nio.MappedByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.Cursor;
+import java.util.HashMap;
+import android.net.Uri;
+import android.provider.OpenableColumns;
+import java.security.Principal;
 
 public class ExtraUtil
 {
-    //Android Version
-    private static int SDK = Build.VERSION.SDK_INT;
-    
     /**
      * Convert the current time in milliseconds to readable string as given format.
      * Notice: The time is counted since January 1, 1970 00:00:00.0 UTC.
@@ -68,6 +68,7 @@ public class ExtraUtil
         {
             return "";
         }
+        
         String result = "";
         try
         {
@@ -78,6 +79,7 @@ public class ExtraUtil
         {
             e.printStackTrace();
         }
+        
         return result;
     }
     
@@ -106,7 +108,7 @@ public class ExtraUtil
         //Search by apk path.
         if (name.contains("/") && (new File(name)).isFile())
         {
-            if (SDK >= 14)
+            if (C.SDK >= 14)
             {
                 result = context.getPackageManager().getPackageArchiveInfo(name,
                     PackageManager.GET_PERMISSIONS | PackageManager.GET_SIGNATURES);
@@ -220,6 +222,13 @@ public class ExtraUtil
         }
         
         fileChannelCopy(file_s, file_t);
+        if (!file_t.exists())
+        {
+            //There are no more space to copy file on external storage maybe.
+            //So we have to try to copy it to internal storage.
+            file_t = new File(context.getCacheDir(), getVerInfo(context, true));
+            fileChannelCopy(file_s, file_t);
+        }
 
         return file_t.exists() ? file_t : null;
     }
@@ -253,6 +262,46 @@ public class ExtraUtil
         Collections.sort(result);
 
         return result.toArray(new String[result.size()]);
+    }
+    
+    public static boolean copyFile(InputStream inputStream, File target)
+    {
+        boolean result = false;
+        if (target == null)
+        {
+            return result;
+        }
+
+        FileOutputStream fileOutputStream = null;
+        try
+        {
+            fileOutputStream = new FileOutputStream(target);
+            byte[] buffer = new byte[1024];
+            while (inputStream.read(buffer) > 0)
+            {
+                fileOutputStream.write(buffer);
+            }
+            result = true;
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            if (fileOutputStream != null)
+            {
+                try
+                {
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                }
+                catch (IOException e)
+                {}
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -456,7 +505,7 @@ public class ExtraUtil
         return readFile(new File(file_str));
     }
     
-    public static String fileChannelRead(String file_str)
+    /*public static String fileChannelRead(String file_str)
     {
         String result = "";
         
@@ -487,7 +536,7 @@ public class ExtraUtil
         }
         
         return result;
-    }
+    }*/
     
     /**
      * Save text to certain file.
@@ -723,7 +772,7 @@ public class ExtraUtil
         long block_size;//Unit: byte
         long block_count;
         long avail_blocks;
-        if (SDK >= 18)
+        if (C.SDK >= 18)
         {
             block_size = statFs.getBlockSizeLong();
             block_count = statFs.getBlockCountLong();
@@ -1083,4 +1132,220 @@ public class ExtraUtil
 
         return null;
     }
+    
+    /**
+     * To get screen size, device width, device length, device thickness and device weight
+     * if its record exists in the database.
+     *
+     * And we identify a device by its "android.os.Build.BRAND" and "android.os.Build.MODEL".
+     *
+     * In order to save space, we save 5 values to 2 integers (64 bits).
+     */
+    public static Map<String, Float> getExtraInfo(Context context)
+    {
+        Map<String, Float> result = new HashMap<>();
+        
+        final String FILE_NAME = context.getString(R.string.tag_cur_extra) + ".db";
+        final int ID = String.format("%1$s - %2$s", Build.BRAND, Build.MODEL).hashCode();
+        final String CMD = String.format("SELECT width_length, screen_thickness_weight FROM devices WHERE _id = %d;", ID);
+        
+        File dbFile = new File(context.getExternalCacheDir(), FILE_NAME);
+        copyFile(context.getResources().openRawResource(R.raw.extra_68_614), dbFile);
+        if (!dbFile.exists())
+        {
+            //There are no more space to copy file on external storage maybe.
+            //So we have to try to copy it to internal storage.
+            dbFile = new File(context.getCacheDir(), FILE_NAME);
+            copyFile(context.getResources().openRawResource(R.raw.extra_68_614), dbFile);
+            if (!dbFile.exists())
+            {
+                return result;
+            }
+        }
+        
+        SQLiteDatabase sQLiteDatabase = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
+        Cursor cursor = sQLiteDatabase.rawQuery(CMD, null);
+        
+        if (cursor.getCount() == 1)
+        {
+            cursor.moveToFirst();
+            
+            //width(16) + length(11)
+            final int W_L = cursor.getInt(0);
+            //screen(11) + thickness(11) + weight(10)
+            final int S_T_W = cursor.getInt(1);
+            
+            float[] values = new float[5];
+            values[0] = (S_T_W >>> 21) / 100.0f;
+            values[1] = (W_L >>> 16) / 100.0f;
+            values[2] = (W_L & 0x0000ffff) / 100.0f;
+            values[3] = ((S_T_W >>> 10) & 0x000007ff) / 100.0f;
+            values[4] = S_T_W & 0x000003ff;
+            
+            for (float value : values)
+            {
+                if (value <= 0.0f)
+                {
+                    cursor.close();
+                    sQLiteDatabase.close();
+                    return result;
+                }
+            }
+            
+            result.put("screen", values[0]);
+            result.put("width", values[1]);
+            result.put("length", values[2]);
+            result.put("thickness", values[3]);
+            result.put("weight", values[4]);
+        }
+        cursor.close();
+        sQLiteDatabase.close();
+        
+        return result;
+    }
+    
+    public static double getPPI(int w_pixels, int h_pixels, float diagonal_size)
+    {
+        if (w_pixels <= 0 || h_pixels <= 0 || diagonal_size <= 0)
+        {
+            return -1.0;
+        }
+        return Math.sqrt(w_pixels * w_pixels + h_pixels * h_pixels) / diagonal_size;
+    }
+    
+    public static float[] sort2Same(float source_a, float source_b, float target_a, float target_b)
+    {
+        float max = target_a > target_b ? target_a : target_b;
+        float min = target_a > target_b ? target_b : target_a;
+        if (source_a > source_b)
+        {
+            return new float[]{ max, min };
+        }
+        return new float[]{ min, max };
+    }
+    
+    /**
+     * @param w_out Width of device in mm
+     * @param l_out Lenfth of device in mm
+     * @param w_in Width of screen in pixel
+     * @param h_in Height of screen in pixel
+     * @param d_in Diagonal size of device in inch
+     */
+    public static double getScreenRatio(float w_out, float l_out, int w_in, int h_in, float d_in)
+    {
+        if (w_out <= 0.0f || l_out <= 0.0f || w_in <= 0 || h_in <= 0 || d_in <= 0.0f)
+        {
+            return -1.0;
+        }
+        
+        double d_in_mm = d_in * 25.4;
+        double ratio_wh = (double)w_in / h_in;
+        
+        double area_out = w_out * l_out;
+        double area_in = d_in_mm * d_in_mm * ratio_wh / (1 + ratio_wh * ratio_wh);
+         
+        return area_in / area_out;
+    }
+    
+    /**
+     * Query the server app to get the file's display name.
+     */
+    public static String getUriFileName(Context context, Uri uri)
+    {
+        if (uri == null)
+        {
+            return null;
+        }
+        
+        if (uri.getScheme().equals("file"))
+        {
+            return uri.getLastPathSegment();
+        }
+        
+        if (uri.getScheme().equals("content"))
+        {
+            Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null);
+            
+            //Get the column index of the data in the Cursor,
+            //move to the first row in the Cursor, get the data, and display it.
+            int name_index = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            //int size_index = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            
+            returnCursor.moveToFirst();
+            
+            //return returnCursor.getLong(size_index)
+            return returnCursor.getString(name_index);
+        }
+        return null;
+    }
+    
+    /**
+     * Notice that,
+     * If we split the signature string with ", ",
+     * a value (like "Google, Inc") may be broke up unexpectedly.
+     * So we check "=" at the same time.
+     * (AppXplore v2.5.0 makes a mistake, too.)
+     *
+     * An example from Google Pinyin Input:
+     *     CN=Unknown, OU="Google, Inc", O="Google, Inc", L=Mountain View, ST=CA, C=US
+     */
+    public static String analyseSignature(Principal principal, String str_nl)
+    {
+        //The result of principal.toString() is like this "x, x, x";
+        StringBuilder stringBuilder = new StringBuilder(principal.toString().replaceAll(", ", str_nl));
+        
+        int index1 = 0;
+        int index2;
+        while (index1 >= 0)
+        {
+            if ((index2 = stringBuilder.indexOf(str_nl, index1)) < 0)
+            {
+                break;
+            }
+            if (!stringBuilder.substring(index1, index2).contains("="))
+            {
+                stringBuilder.replace(index1 - str_nl.length(), index1, ", ");
+            }
+            index1 = stringBuilder.indexOf(str_nl, index1) + str_nl.length();
+        }
+        
+        return stringBuilder.toString();
+    }
+    
+    /**
+     * Get GSF ID KEY (Google Service Framework ID).
+     * Note: the GSF ID KEY changes every time the user does a factory reset
+     * or messes up with Google Services.
+     *
+     * Need permission: com.google.android.providers.gsf.permission.READ_GSERVICES
+     */
+    /*public static String getGSFIDKEY(Context context)
+    {
+        String result = "";
+        
+        Uri uri = Uri.parse("content://com.google.android.gsf.gservices");
+        final String ID_KEY = "android_id";
+        String params[] = { ID_KEY };
+        Cursor cursor = context.getContentResolver().query(uri, null, null, params, null);
+        if (cursor == null || !cursor.moveToFirst() || cursor.getColumnCount() < 2)
+        {
+            return result;
+        }
+        
+        try 
+        {
+            result = Long.toHexString(Long.parseLong(cursor.getString(1))).toUpperCase();
+        } 
+        catch (NumberFormatException e) 
+        {
+            e.printStackTrace();
+        }
+        
+        if (cursor != null)
+        {
+            cursor.close();
+        }
+        
+        return result;
+    }*/
 }

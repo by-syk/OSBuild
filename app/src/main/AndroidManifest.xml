@@ -25,6 +25,12 @@
         </activity>
         
         <activity
+            android:name=".WhitePaperActivity"
+            android:theme="@style/AppTheme_Fullscreen"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+        
+        <activity
             android:name=".ReaderActivity"
             android:label="@string/activity_reader"
             android:windowSoftInputMode="adjustPan"
@@ -37,12 +43,6 @@
                 <data android:mimeType="text/*"/>
             </intent-filter>
         </activity>
-        
-        <activity
-            android:name=".WhitePaperActivity"
-            android:theme="@style/AppTheme_Fullscreen"
-            android:launchMode="singleTop"
-            android:configChanges="orientation|keyboardHidden|screenSize"/>
         
     </application>
 

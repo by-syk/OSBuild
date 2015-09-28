@@ -3,13 +3,22 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:keepScreenOn="true">
 
 	<com.by_syk.osbuild.widget.MyTextView
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
-		android:text="#FFFFFFFF"
+		android:text="@string/hex_color_white"
         android:textColor="@color/black"/>
+    
+    <com.by_syk.osbuild.widget.MyTextView
+        android:id="@+id/mtv_lightness"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/light_auto"
+        android:textColor="@color/black"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
 

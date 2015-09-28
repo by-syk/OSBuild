@@ -9,6 +9,8 @@
     
     <string name="activity_reader">OSBuild Reader</string>
     
+    <string name="tag_cur_extra">extra_68_614</string>
+    
     <string name="dia_title_with_tel">With Telephony Module?</string>
     <string name="dia_title_const">Constant Reference</string>
     <string name="dia_title_sys_files">View System Files</string>
@@ -35,7 +37,6 @@
     <string name="dia_neu_installed">Installed</string>
     <string name="dia_neu_charsets">Charsets</string>
     <string name="dia_not_show">Don\'t show again.</string>
-    <string name="dia_loading">Loading...</string>
     <string name="dia_su_desc">"OSBuild need get root permission to read this file, are you sure to continue?
 \nNotice:
 + It\'s NOT a problem with OSBuild if you see nothing then. You should make sure that your device has been rooted and you have authorized OSBuild's request for root permission.
@@ -100,23 +101,8 @@
     <string name="action_sub_charset_user">User</string>
     
     <string name="module_primer">Primer:</string>
-    <string name="primer_model">"Device Model:         "</string>
-    <string name="primer_brand">"Brand \u0026 Manufacturer: "</string>
-    <string name="primer_version">"OS Version:           "</string>
-    <string name="primer_resolution">"Screen Resolution:    "</string>
-    <string name="primer_phone_type">"Phone Type:           "</string>
-    <string name="primer_imei">"IMEI/MEID/ESN:        "</string>
-    <string name="primer_imsi">"IMSI:                 "</string>
-    <string name="primer_cpu">"CPU Clock Speed:      "</string>
-    <string name="primer_ram">"Total RAM:            "</string>
-    <string name="primer_gyro">"Gyroscope Sensor:     "</string>
-    <string name="primer_nfc">"NFC:                  "</string>
-    <string name="primer_otg">"OTG (USB Host):       "</string>
-    <string name="primer_ir">"IR Transmitter:       "</string>
-    <string name="primer_step">"Step Counter:         "</string>
-    <string name="primer_heart_rate">"Heart Rate Monitor:   "</string>
-    <string name="primer_dual_sim">"Dual SIM:             "</string>
-    <string name="primer_root">"Root Access:          "</string>
-    <string name="primer_absentees">"Absentee(s):          "</string>
+    
+    <string name="hex_color_white">#FFFFFFFF</string>
+    <string name="light_auto">DEFAULT</string>
     
 </resources>

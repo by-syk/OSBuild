@@ -14,15 +14,19 @@ public class UnitUtil
      * About CPU frequency.
      * @param freq Unit: Hz
      */
-    public static String toFreq(int freq)
+    public static String toFreq(long freq)
     {
-        if (freq >= 1000 * 1000)
+        if (freq >= 1e9)
         {
-            return String.format("%.2fGHz", (double)freq / (1000 * 1000));
+            return String.format("%.2fGHz", (double)freq / (1e9));
         }
-        else if (freq >= 1000)
+        else if (freq >= 1e6)
         {
-            return String.format("%.2fMHz", (double)freq / 1000);
+            return String.format("%.2fMHz", (double)freq / 1e6);
+        }
+        else if (freq >= 1e3)
+        {
+            return String.format("%.2fKHz", (double)freq / 1e3);
         }
         else
         {
@@ -103,9 +107,17 @@ public class UnitUtil
         {
             return UNKNOWN;
         }
-        return String.format("%." + precision + "f%%", avail * 100.0 / total);
+        return toPercent((double)avail / total, precision);
     }
     
+    /**
+     * @param precision How many decimal number to remain.
+     */
+    public static String toPercent(double value, int precision)
+    {
+        return String.format("%." + precision + "f%%", value * 100.0);
+    }
+
     /**
      * Convert milliseconds to readable time.
      */
@@ -173,7 +185,7 @@ public class UnitUtil
     /**
      * Convert float value wraped in string to float safely.
      */
-    /*public static float toFloatSafely(String text)
+    public static float toFloatSafely(String text)
     {
         float result = -1.0f;
 
@@ -188,5 +200,14 @@ public class UnitUtil
         }
 
         return result;
-    }*/
+    }
+    
+    /**
+     * Process ppi value.
+     * @param ppi Unit: pixels
+     */
+    public static String toPPI(double ppi)
+    {
+        return String.format("%.0fppi", ppi);
+    }
 }

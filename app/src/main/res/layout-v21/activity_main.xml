@@ -22,7 +22,8 @@
 				android:id="@+id/ll_info"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:orientation="vertical">
+				android:orientation="vertical"
+                android:visibility="invisible">
 
 				<com.by_syk.osbuild.widget.MyTextView
                     android:id="@+id/mtv_primer"
@@ -131,7 +132,7 @@
 		android:layout_marginEnd="@dimen/fab_margin"
 		android:layout_alignParentEnd="true"
 		android:layout_alignParentBottom="true"
-		android:onClick="myClick"/>
+		android:visibility="gone"/>
 
 </RelativeLayout>
 
