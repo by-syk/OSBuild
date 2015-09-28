@@ -80,5 +80,7 @@ Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base
 
 [OSBuild_v1.4.3(150911).apk](/Other/OSBuild_v1.4.3(150911).apk)
 
+[OSBuild_v1.4.7(150928).apk](/Other/OSBuild_v1.4.7(150928).apk)
+
 ### Screenshots
 ![screenshot.png](/Other/screenshot.png)
