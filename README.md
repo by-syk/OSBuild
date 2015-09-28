@@ -27,7 +27,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * etc.
 
 ### Example
-There is a slice of data which **OSBuild/* got from my Android phone:
+There is a slice of data which **OSBuild** got from my Android phone:
 ```
 /proc/cpuinfo
    Processor: ARMv7 Processor rev 1 (v7l)
@@ -42,6 +42,8 @@ There is a slice of data which **OSBuild/* got from my Android phone:
 javax.microedition.khronos.opengles.GL10.
    glGetString(GL_RENDERER): Adreno (TM) 330
    glGetString(GL_VENDOR): Qualcomm
+/sys/class/kgsl/kgsl-3d0/
+   max_gpuclk: 578000000  578.00MHz
 ```
 
 ### Raise Your Voice
