@@ -11,7 +11,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * Provide **RICH** related data, like `19  KITKAT  4.4  2013-10  39.3%  19`.
 * List all features the system supported, such as `FEATURE_USB_HOST`.
 * Expose details of installed apps, including **SIGNATURE**.
-* **OPEN SOURCE**. You can see its source codes on [GitHub](https://github.com/by-syk/OSBuild) to get useful code sections.
+* **OPEN SOURCE**. You can see its source codes on [GitHub](https://github.com/by-syk/OSBuild "GitHub") to get useful code sections.
 
 ### Modules
 * Primer [the outline for average uses]
@@ -47,7 +47,7 @@ javax.microedition.khronos.opengles.GL10.
 ```
 
 ### Raise Your Voice
-Any BUGs, mistakes, suggestion or confusion, feedback by [E-mail](By_syk@163.com) or revise on a market. I would take to heart.
+Any BUGs, mistakes, suggestion or confusion, feedback by E-mail (<By_syk@163.com>) or revise on a market. I would take to heart.
 
 Your voice can make a difference!
 
@@ -63,7 +63,7 @@ I've spent plenty of time programming. If you find **OSBuild** useful, please he
 ### Besides...
 Maybe **OSBuild** could help you with smartphone reviews.
 
-Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base/tools/download-appxplore-and-learn-more-about-your-apps/).
+Salute to [Sony Xperia AppXplore](http://developer.sonymobile.com/knowledge-base/tools/download-appxplore-and-learn-more-about-your-apps/ "AppXplore").
 
 ### History Versions
 [OSBuild_v1.1.0(150606).apk](/Other/OSBuild_v1.1.0(150606).apk)
