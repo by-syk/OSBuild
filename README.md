@@ -27,7 +27,7 @@ A simple UI and some nice features make it great tool especially for Android dev
 * etc.
 
 ### Example
-There is a slice of data which **OSBuild"* got from my Android phone:
+There is a slice of data which **OSBuild** got from my Android phone:
 ```
 /proc/cpuinfo
    Processor: ARMv7 Processor rev 1 (v7l)
@@ -47,7 +47,7 @@ javax.microedition.khronos.opengles.GL10.
 ```
 
 ### Raise Your Voice
-Any BUGs, mistakes, suggestion or confusion, feedback by E-mail or revise on a market. I would take to heart.
+Any BUGs, mistakes, suggestion or confusion, feedback by [E-mail](By_syk@163.com) or revise on a market. I would take to heart.
 
 Your voice can make a difference!
 
