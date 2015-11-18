@@ -24,6 +24,11 @@ public class MinSDKVersionUtil
      */
     public static int getMinSdkVersion(File apkFile)
     {
+        if (apkFile == null)
+        {
+            return -1;
+        }
+        
         try
         {
             XmlResourceParser parser = getParserForManifest(apkFile);

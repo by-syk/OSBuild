@@ -2,6 +2,6 @@
 <resources>
     
     <!-- Mark the order of current version since v1.0.0. -->
-    <integer name="cur_ver_order">8</integer>
+    <integer name="cur_ver_order">9</integer>
     
 </resources>

@@ -1,34 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="wrap_content"
 	android:layout_width="wrap_content"
+    android:orientation="vertical"
 	android:padding="@dimen/padding_dialog">
 
 	<ScrollView
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+        android:layout_weight="1.0">
 
-        <LinearLayout
+        <com.by_syk.osbuild.widget.MyTextView
+            android:id="@+id/mtv_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.by_syk.osbuild.widget.MyTextView
-                android:id="@+id/mtv_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textIsSelectable="true"/>
-
-            <CheckBox
-                android:id="@+id/cb_not_show"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:text="@string/dia_not_show"
-                android:layout_marginTop="@dimen/span_vertical_dialog"/>
-
-        </LinearLayout>
+            android:textIsSelectable="true"/>
 
 	</ScrollView>
+    
+    <CheckBox
+        android:id="@+id/cb_not_show"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="@string/dia_not_show"
+        android:layout_marginTop="@dimen/span_vertical_dialog"/>
 
-</RelativeLayout>
+</LinearLayout>

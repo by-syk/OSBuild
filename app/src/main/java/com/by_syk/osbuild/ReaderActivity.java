@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import java.io.FileNotFoundException;
 import android.view.MenuItem;
 import android.view.Menu;
@@ -237,7 +236,7 @@ public class ReaderActivity extends Activity
         try
         {
             //For testing.
-            if (file_name.equals("AndroidManifest.xml"))
+            if (file_name != null && file_name.equals("AndroidManifest.xml"))
             {
                 result = AndroidManifestUtil.readAM(getContentResolver()
                     .openInputStream(uri_file));

@@ -132,13 +132,13 @@ public class ConstUtil
             case Build.VERSION_CODES.KITKAT://19
                 return "2013-10";//Android 4.4
             case Build.VERSION_CODES.KITKAT_WATCH://20
-                return UNKNOWN;//Android 4.4W
+                return "2014-06";//Android 4.4W
             case Build.VERSION_CODES.LOLLIPOP://21
-                return UNKNOWN;//Android 5.0
+                return "2014-11";//Android 5.0
             case Build.VERSION_CODES.LOLLIPOP_MR1://22
-                return UNKNOWN;
+                return "2015-03";
             case Build.VERSION_CODES.M://23
-                return UNKNOWN;
+                return "2015-10";
             case Build.VERSION_CODES.CUR_DEVELOPMENT://1000
                 return UNKNOWN;
             default:

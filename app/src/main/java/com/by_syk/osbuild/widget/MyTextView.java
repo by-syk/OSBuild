@@ -11,6 +11,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
+import android.annotation.TargetApi;
 
 public class MyTextView extends TextView
 {
@@ -26,11 +27,12 @@ public class MyTextView extends TextView
         init(context);
     }
     
+    @TargetApi(16)
     private void init(Context context)
     {
         //Modify typeface to Monaco, a monospaced font from Apple Mac.
         super.setTypeface(Typeface
-            .createFromAsset(context.getAssets(), "Monaco.ttf"));
+            .createFromAsset(context.getAssets(), "fonts/Monaco.ttf"));
         
         //Set line space to 1.4 times.
         super.setLineSpacing(0f, 1.4f);

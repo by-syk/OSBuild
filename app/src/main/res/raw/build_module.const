@@ -8,23 +8,23 @@ android.os.Build.
          5  ECLAIR  2.0  2009-11  null  5
          6  ECLAIR_0_1  2.0.1  2009-12  null  6
          7  ECLAIR_MR1  2.1.x  2010-01  null  7
-         8  FROYO  2.2.x  2010-06  0.3%  8
+         8  FROYO  2.2.x  2010-06  0.2%  8
          9  GINGERBREAD  2.3/2.3.1/2.3.2  2010-11  null  9
-         10  GINGERBREAD_MR1  2.3.3/2.3.4  2011-02  4.6%  10
+         10  GINGERBREAD_MR1  2.3.3/2.3.4  2011-02  3.8%  10
          11  HONEYCOMB  3.0.x  2011-02  null  11
          12  HONEYCOMB_MR1  3.1.x  2011-05  null  12
          13  HONEYCOMB_MR2  3.2  2011-06  null  13
          14  ICE_CREAM_SANDWICH  4.0/4.0.1/4.0.2  2011-10  null  14
-         15  ICE_CREAM_SANDWICH_MR1  4.0.3/4.0.4  2011-12  4.1%  15
-         16  JELLY_BEAN  4.1/4.1.1  2012-06  13.0%  16
-         17  JELLY_BEAN_MR1  4.2/4.2.2  2012-11  15.9%  17
-         18  JELLY_BEAN_MR2  4.3  2013-07  4.7%  18
-         19  KITKAT  4.4  2013-10  39.3%  19
-         20  KITKAT_WATCH  4.4W  ?  null  20
-         21  LOLLIPOP  5.0  ?  15.5%  21
-         22  LOLLIPOP_MR1  5.1  ?  2.6%  22
-         23  M  6.0  ?  null  23
+         15  ICE_CREAM_SANDWICH_MR1  4.0.3/4.0.4  2011-12  3.3%  15
+         16  JELLY_BEAN  4.1/4.1.1  2012-06  11.0%  16
+         17  JELLY_BEAN_MR1  4.2/4.2.2  2012-11  13.9%  17
+         18  JELLY_BEAN_MR2  4.3  2013-07  4.1%  18
+         19  KITKAT  4.4  2013-10  37.8%  19
+         20  KITKAT_WATCH  4.4W  2014-06  null  20
+         21  LOLLIPOP  5.0  2014-11  15.5%  21
+         22  LOLLIPOP_MR1  5.1  2015-03  10.1%  22
+         23  M  6.0  2015-10  0.3%  23
          1000  CUR_DEVELOPMENT  null  null  null  null
 
-[Statistics: Data collected from Google Play during a 7-day period ending on August 3, 2015.]
-(From: API docs of level 23, https://developer.android.com/reference)
+[Statistics: Data collected from Google Play during a 7-day period ending on November 2, 2015.]
+(From: API docs of level 23, https://developer.android.com/reference, partly)

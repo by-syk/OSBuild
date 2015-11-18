@@ -429,7 +429,7 @@ public class ExtraUtil
                 //Indicate that the content is part of the file.
                 stringBuilder.append(String.format("...  >%d!", lines_limit));
             }
-            else
+            else if (stringBuilder.length() > 0)
             {
                 //Remove the final superfluous "\n".
                 stringBuilder.setLength(stringBuilder.length() - 1);
@@ -1150,13 +1150,13 @@ public class ExtraUtil
         final String CMD = String.format("SELECT width_length, screen_thickness_weight FROM devices WHERE _id = %d;", ID);
         
         File dbFile = new File(context.getExternalCacheDir(), FILE_NAME);
-        copyFile(context.getResources().openRawResource(R.raw.extra_68_614), dbFile);
+        copyFile(context.getResources().openRawResource(R.raw.extra_77_694), dbFile);
         if (!dbFile.exists())
         {
             //There are no more space to copy file on external storage maybe.
             //So we have to try to copy it to internal storage.
             dbFile = new File(context.getCacheDir(), FILE_NAME);
-            copyFile(context.getResources().openRawResource(R.raw.extra_68_614), dbFile);
+            copyFile(context.getResources().openRawResource(R.raw.extra_77_694), dbFile);
             if (!dbFile.exists())
             {
                 return result;
@@ -1270,6 +1270,11 @@ public class ExtraUtil
             //move to the first row in the Cursor, get the data, and display it.
             int name_index = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
             //int size_index = returnCursor.getColumnIndex(OpenableColumns.SIZE);
+            
+            if (name_index < 0)
+            {
+                return null;
+            }
             
             returnCursor.moveToFirst();
             

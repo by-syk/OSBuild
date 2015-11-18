@@ -134,7 +134,7 @@ public class MainActivity extends Activity
     StringBuilder[] sb_modules = null;
     
     //Mark the status of current Activity, running or not.
-    boolean isRunning = true;
+    boolean is_running = true;
     
     GLSurfaceView gLSurfaceView = null;
     GLSurfaceView.Renderer glsvRenderer = new GLSurfaceView.Renderer()
@@ -221,7 +221,7 @@ public class MainActivity extends Activity
     {
         super.onDestroy();
         
-        isRunning = false;
+        is_running = false;
     }
     
     private void init()
@@ -271,7 +271,7 @@ public class MainActivity extends Activity
                 public void run()
                 {
                     //Check if the app is running to avoid crashing.
-                    if (!isRunning)
+                    if (!is_running)
                     {
                         return;
                     }
@@ -1023,7 +1023,7 @@ public class MainActivity extends Activity
             .readFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq"));//Unit: KHz
         final long MAX_FREQ = UnitUtil.toIntSafely(ExtraUtil
             .readFile("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"));//Unit: KHz
-        final String GOVERNOR = ExtraUtil
+        final String CPU_GOVERNOR = ExtraUtil
             .readFile("/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").trim();
         
         stringBuilder.append(C.L0).append("/sys/devices/system/cpu/");
@@ -1046,13 +1046,15 @@ public class MainActivity extends Activity
             stringBuilder.append(MAX_FREQ);
             stringBuilder.append(C.SPACE).append(UnitUtil.toFreq(MAX_FREQ * 1000));
         }
-        stringBuilder.append(C.L2).append("scaling_governor: ").append(GOVERNOR);
+        stringBuilder.append(C.L2).append("scaling_governor: ").append(CPU_GOVERNOR);
         
         //For Adreno GPUs.
         //("/sys/kernel/gpu_control/max_freq" for Defy 2.6?)
         //("/sys/devices/platform/omap/pvrsrvkm.0/sgx_fck_rate" for Defy 3.0?)
         final long MAX_GPU_CLK = UnitUtil.toIntSafely(ExtraUtil
             .readFile("/sys/class/kgsl/kgsl-3d0/max_gpuclk"));//Unit: Hz
+        //final String GPU_GOVERNOR = ExtraUtil
+        //    .readFile("/sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/governor");
         
         if (sharedPreferences.contains("gl_renderer"))
         {
@@ -1071,6 +1073,11 @@ public class MainActivity extends Activity
             stringBuilder.append(C.L1).append("max_gpuclk: ").append(MAX_GPU_CLK);
             stringBuilder.append(C.SPACE).append(UnitUtil.toFreq(MAX_GPU_CLK));
         }
+        /*if (!TextUtils.isEmpty(GPU_GOVERNOR))
+        {
+            stringBuilder.append(C.L1).append("devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/");
+            stringBuilder.append(C.L2).append("governor: ").append(GPU_GOVERNOR);
+        }*/
         
         //Add data for Primer Module
         if (MIN_FREQ > 0 && MAX_FREQ > 0)
@@ -1304,6 +1311,22 @@ public class MainActivity extends Activity
                 //ON or OFF.
                 stringBuilder.append(nfcAdapter.isEnabled());
             }
+        }*/
+        
+//Waiting for testing.
+        /*IntentFilter intentFilter = new IntentFilter(Intent.ACTION_MAIN);
+        intentFilter.addCategory(Intent.CATEGORY_HOME);
+        List<IntentFilter> intentList = new ArrayList<>();
+        intentList.add(intentFilter);
+        
+        List<ComponentName> componentList = new ArrayList<>();
+        
+        packageManager.getPreferredActivities(intentList, componentList, null);
+        
+        stringBuilder.append(C.L1).append("getPreferredActivities(): ").append(componentList.size());
+        for (ComponentName componentName : componentList)
+        {
+            stringBuilder.append(C.L2).append(componentName.getPackageName());
         }*/
         
         boolean ir = false;
@@ -2359,7 +2382,7 @@ public class MainActivity extends Activity
                         public void run()
                         {
                             //Check if the app is running to avoid crashing.
-                            if (!isRunning)
+                            if (!is_running)
                             {
                                 return;
                             }
@@ -2381,7 +2404,7 @@ public class MainActivity extends Activity
                         public void run()
                         {
                             //Check if the app is running to avoid crashing.
-                            if (!isRunning)
+                            if (!is_running)
                             {
                                 return;
                             }

@@ -1,3 +1,25 @@
+v1.4.9.nightly 2015-11-15
+Remove the node "devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/" for "MSM8974PRO" CPU in CPU Module.
+Check box of "Don't show again." is always visible in dialogs.
+Add extra info for more devices (690+).
+
+v1.4.9.nightly 2015-11-06
+Update Google Install Stats in "Constant Reference".
+Add extra info for more devices (670+).
+
+v1.4.8.nightly 2015-10-24
+Add some data of release date after the line "SDK_INT" in Build Module.
+
+v1.4.8.nightly 2015-10-12
+Add the node "devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/devfreq/" for "MSM8974PRO" CPU in CPU Module.
+
+v1.4.8.nightly 2015-10-07
+Update Google Install Stats in "Constant Reference".
+
+v1.4.8.nightly 2015-10-03
+Fix the BUG: it crashes when launching OSBuuld Reader with NULL URI.
+Fix the BUG: it crashes if the content of text file is empty in OSBuild Reader.
+
 v1.4.7.nightly 2015-09-26
 Fix the BUG: it crashes if the signatures is null in App Module.
 
@@ -125,7 +147,7 @@ Enter "*" to back up all installed apps in the dialog "Check Installed App".
 Add the node "BusyBox" in Root Module.
 
 v1.4.0.nightly 2015-08-17
-Update Google Install Stats in "Constant Reference",
+Update Google Install Stats in "Constant Reference".
 Remove menu option "Help Translate" in menu "More".
 Add menu option "Raise your voice" in menu "More".
 Slide the blank to control the text to scroll horizontally even if the text is not enough to fill the screen in vertical orientation.

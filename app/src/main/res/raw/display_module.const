@@ -6,16 +6,16 @@ android.view.Display.
       270  ROTATION_270  1
 android.util.DisplayMetrics.
    densityDpi: Value  Name  (Statistics)  (API Level)
-      120  DENSITY_LOW  3.9%  4
-      160  DENSITY_MEDIUM/DENSITY_DEFAULT  14.8%  4
-      213  DENSITY_TV  2.4%  13
-      240  DENSITY_HIGH  41.5%  4
+      120  DENSITY_LOW  3.4%  4
+      160  DENSITY_MEDIUM/DENSITY_DEFAULT  13.8%  4
+      213  DENSITY_TV  2.3%  13
+      240  DENSITY_HIGH  42.2%  4
       280  DENSITY_280  null  22
-      320  DENSITY_XHIGH  21.6%  9
+      320  DENSITY_XHIGH  23.0%  9
       360  DENSITY_360  null  23
       400  DENSITY_400  null  19
       420  DENSITY_420  null  23
-      480  DENSITY_XXHIGH  15.8%  16
+      480  DENSITY_XXHIGH  15.3%  16
       560  DENSITY_560  null  21
       640  DENSITY_XXXHIGH  null  18
 android.content.res.Configuration.
@@ -26,10 +26,10 @@ android.content.res.Configuration.
       3  ORIENTATION_SQUARE  1 16
    screenLayout & SCREENLAYOUT_SIZE_MASK: Value  Name  Device Type  (Statistics)  (API Level)
       0  SCREENLAYOUT_SIZE_UNDEFINED  null  null  4
-      1  SCREENLAYOUT_SIZE_SMALL  Handset  3.6%  4
-      2  SCREENLAYOUT_SIZE_NORMAL  Handset  83.8%  4
-      3  SCREENLAYOUT_SIZE_LARGE  Tablet  8.7%  4
-      4  SCREENLAYOUT_SIZE_XLARGE  Tablet  3.9%  9
+      1  SCREENLAYOUT_SIZE_SMALL  Handset  3.1%  4
+      2  SCREENLAYOUT_SIZE_NORMAL  Handset  84.5%  4
+      3  SCREENLAYOUT_SIZE_LARGE  Tablet  8.4%  4
+      4  SCREENLAYOUT_SIZE_XLARGE  Tablet  4.0%  9
    locale: Value  Name  (API Level)
       null  ROOT  9
       de  GERMAN  1
@@ -77,5 +77,5 @@ Extra:
       0.600  3:5  1152*1920  2212K  ?
       0.600  3:5  1536*2560  3932K  ?
 
-[Statistics: Data collected from Google Play during a 7-day period ending on August 3, 2015.]
+[Statistics: Data collected from Google Play during a 7-day period ending on November 2, 2015.]
 (From: API docs of level 23, https://developer.android.com/reference, partly)

@@ -12,17 +12,17 @@ import android.os.Build;
 public class C
 {
     //Android Version
-    final public static int SDK = Build.VERSION.SDK_INT;
+    public final static int SDK = Build.VERSION.SDK_INT;
     
-    final public static String L = "";
-    final public static String L0 = "\n";
-    final public static String L1 = "\n   ";
-    final public static String L2 = "\n      ";
-    final public static String L3 = "\n         ";
-    final public static String NL = "\n";
-    final public static String NL1 = "\n\n";
-    final public static String NL2 = "\n\n\n";
-    final public static String SPACE = "  ";
+    public final static String L = "";
+    public final static String L0 = "\n";
+    public final static String L1 = "\n   ";
+    public final static String L2 = "\n      ";
+    public final static String L3 = "\n         ";
+    public final static String NL = "\n";
+    public final static String NL1 = "\n\n";
+    public final static String NL2 = "\n\n\n";
+    public final static String SPACE = "  ";
     
     final public static String TRUE = "TRUE";
     final public static String FALSE = "FALSE";
