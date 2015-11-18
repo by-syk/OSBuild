@@ -47,7 +47,7 @@ javax.microedition.khronos.opengles.GL10.
 ```
 
 ### Raise Your Voice
-Any BUGs, mistakes, suggestion or confusion, feedback by E-mail (<By_syk@163.com>) or revise on a market. I would take to heart.
+Any BUGs, mistakes, suggestion or confusion, feedback by [E-mail](mailto:By_syk@163.com "Developer's E-mail address") or revise on a market. I would take to heart.
 
 Your voice can make a difference!
 
